@@ -154,3 +154,43 @@ form .knop { width: 100%; margin-top: 18px; }
 .devotion-acties { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 .devotion-acties .knop { min-height: 40px; padding: 8px 16px; font-size: 14px; }
 .deel-status { font-size: 13px; color: var(--stil); }
+
+/* Telefoon (25-09, Bas: "agenda staat niet mooi op mijn mobiel"). Veiligheidsnet: nooit breder dan het scherm. */
+html, body { overflow-x: clip; }
+.tegels { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.rij-naam { overflow-wrap: anywhere; }
+.rij-meta { flex-wrap: wrap; justify-content: flex-end; white-space: normal; row-gap: 2px; }
+.dagchips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px 2px; scroll-snap-type: x proximity; }
+.dagchips::-webkit-scrollbar { display: none; }
+.dagchips .chip { flex: none; scroll-snap-align: start; }
+/* Op een telefoon staan de drie diensten onder elkaar als rijen: tijd links, Service/Team rechts, namen eronder. */
+@media (max-width: 479px) {
+  .tegels { grid-template-columns: 1fr; gap: 8px; }
+  .tegel { display: grid; grid-template-columns: 82px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; row-gap: 0; align-items: center; text-align: left; padding: 10px 12px 10px 14px; }
+  .tegel-tijd { grid-column: 1; grid-row: 1; align-self: end; font-size: 22px; }
+  .tegel-tot { grid-column: 1; grid-row: 2; align-self: start; margin-bottom: 0; }
+  .schakels { grid-column: 2; grid-row: 1 / 3; flex-direction: row; justify-content: flex-end; align-items: center; gap: 14px; margin: 0; width: auto; }
+  .schakel { gap: 8px; padding: 0; }
+  .keuze, .teamkiezer, .lijst { grid-column: 1 / 3; }
+  .keuze, .lijst { margin-top: 8px; }
+  .lijst + .lijst { margin-top: 6px; }
+  .lijstkop { display: inline; margin-right: 6px; }
+  .namen { display: inline; margin: 0; font-size: 13px; line-height: 1.5; }
+  .namen li { display: inline; margin: 0; }
+  .namen li::after { content: ', '; }
+  .namen li:last-child::after { content: ''; }
+  .namen .n { font-weight: 600; }
+  .namen .w { color: var(--stil); font-size: 12px; }
+  .namen .w::before { content: ' · '; }
+  .meer { margin: 4px 0 0 6px; vertical-align: middle; }
+}
+/* Telefoon: in een regel staat de teller/hint onder de naam, zodat de naam de volle breedte krijgt. */
+@media (max-width: 479px) {
+  .rij-open { grid-template-columns: 58px minmax(0, 1fr) 16px; grid-template-areas: 'wanneer naam pijl' 'wanneer meta pijl'; row-gap: 3px; }
+  .rij-wanneer { grid-area: wanneer; }
+  .rij-naam { grid-area: naam; }
+  .rij-meta { grid-area: meta; justify-content: flex-start; }
+  .rij-meta:empty { display: none; }
+  .rij-pijl { grid-area: pijl; }
+  .rij.met-datum .rij-open { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: 'naam pijl' 'meta pijl' 'wanneer wanneer'; }
+}
