@@ -1,5 +1,5 @@
 // Opslaglaag: één interface, twee uitvoeringen. 'supabase' voor echt, 'mock' voor tests (tests/dev-server.mjs).
-// Interface: init() → mij() → wordLid(naam, woonplaats) → gaatNaar(ev, rol='gaat'|'helpt', team) → trekIn(ev) → wieGaat() → verwijderMij()
+// Interface: init() → mij() → wordLid(naam, connectgroep) → gaatNaar(ev, rol='gaat'|'helpt', team) → trekIn(ev) → wieGaat() → verwijderMij()
 // Elke functie gooit een OpslagFout als de opslag niet bereikbaar is; de schermen vangen dat op.
 
 import { parseLokaal } from './logica.js';
@@ -21,14 +21,14 @@ function mock(cfg) {
     soort: 'mock',
     async init() {},
     async mij() { const r = await call('/mij'); return r.ok ? r.json() : null; },
-    async wordLid(naam, woonplaats) { const r = await call('/leden', { method: 'POST', body: JSON.stringify({ naam, woonplaats }) }); if (!r.ok) throw new Error('aanmelden geweigerd'); return r.json(); },
+    async wordLid(naam, connectgroep) { const r = await call('/leden', { method: 'POST', body: JSON.stringify({ naam, connectgroep }) }); if (!r.ok) throw new Error('aanmelden geweigerd'); return r.json(); },
     async gaatNaar(ev, rol = 'gaat', team = null) {
       const r = await call('/gaat_naar', { method: 'POST', body: JSON.stringify({ event_identifier: ev.identifier, event_start: ev.start, rol, team }) });
       if (r.status === 409) { const p = await call(`/gaat_naar?event=${encodeURIComponent(ev.identifier)}`, { method: 'PATCH', body: JSON.stringify({ rol, team }) }); if (!p.ok) throw new Error('wijzigen geweigerd'); return; }
       if (!r.ok) throw new Error('opslaan geweigerd');
     },
     async trekIn(ev) { const r = await call(`/gaat_naar?event=${encodeURIComponent(ev.identifier)}`, { method: 'DELETE' }); if (!r.ok) throw new Error('intrekken geweigerd'); },
-    async wieGaat() { const r = await call('/gaat_naar'); return (await r.json()).map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden.naam, woonplaats: g.leden.woonplaats, rol: g.rol || 'gaat', team: g.team || null })); },
+    async wieGaat() { const r = await call('/gaat_naar'); return (await r.json()).map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden.naam, connectgroep: g.leden.connectgroep, rol: g.rol || 'gaat', team: g.team || null })); },
     async verwijderMij() { await call('/leden', { method: 'DELETE' }); },
     async gebedspunten(vanaf) { const r = await call(`/gebedspunten?vanaf=${vanaf}`); return (await r.json()).map(g => ({ id: g.id, soort: g.soort, tekst: g.tekst, week_eind: g.week_eind, anoniem: !!g.anoniem, naam: g.naam, van_mij: !!g.van_mij })); },
     async voegPuntToe(soort, tekst, week_eind, anoniem = false) { const r = await call('/gebedspunten', { method: 'POST', body: JSON.stringify({ soort, tekst, week_eind, anoniem }) }); if (!r.ok) throw new Error('toevoegen geweigerd'); },
@@ -66,11 +66,11 @@ function supabase(cfg) {
     async init() { await laad(); },
     async mij() {
       const c = await laad(); const { data } = await c.auth.getSession(); if (!data.session) return null; sessie = data.session;
-      return vang(await c.from('leden').select('id,naam,woonplaats,rol').eq('auth_uid', data.session.user.id).maybeSingle(), 'lid ophalen');
+      return vang(await c.from('leden').select('id,naam,connectgroep,rol').eq('auth_uid', data.session.user.id).maybeSingle(), 'lid ophalen');
     },
-    async wordLid(naam, woonplaats) {
+    async wordLid(naam, connectgroep) {
       await zorgSessie(); const c = await laad();
-      return vang(await c.from('leden').insert({ naam, woonplaats }).select('id,naam,woonplaats,rol').single(), 'aanmelden');
+      return vang(await c.from('leden').insert({ naam, connectgroep }).select('id,naam,connectgroep,rol').single(), 'aanmelden');
     },
     async gaatNaar(ev, rol = 'gaat', team = null) {
       const c = await laad(); const mij = await this.mij(); if (!mij) throw new Error('niet aangemeld');
@@ -83,8 +83,8 @@ function supabase(cfg) {
     },
     async wieGaat() {
       const c = await laad();
-      const rijen = vang(await c.from('gaat_naar').select('event_identifier,lid_id,rol,team,leden(naam,woonplaats)'), 'lijst ophalen');
-      return rijen.map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden?.naam || '', woonplaats: g.leden?.woonplaats || '', rol: g.rol || 'gaat', team: g.team || null }));
+      const rijen = vang(await c.from('gaat_naar').select('event_identifier,lid_id,rol,team,leden(naam,connectgroep)'), 'lijst ophalen');
+      return rijen.map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden?.naam || '', connectgroep: g.leden?.connectgroep || '', rol: g.rol || 'gaat', team: g.team || null }));
     },
     async verwijderMij() {
       const c = await laad(); const mij = await this.mij(); if (!mij) return;

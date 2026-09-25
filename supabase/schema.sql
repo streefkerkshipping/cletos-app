@@ -7,7 +7,7 @@ create table if not exists public.leden (
   id          uuid primary key default gen_random_uuid(),
   auth_uid    uuid not null unique default auth.uid(),
   naam        text not null check (char_length(btrim(naam)) between 2 and 60),
-  woonplaats  text not null check (char_length(btrim(woonplaats)) between 2 and 60),
+  connectgroep  text not null check (char_length(btrim(connectgroep)) between 2 and 60),
   rol         text not null default 'lid' check (rol in ('beheerder', 'lid')),
   gemaakt_op  timestamptz not null default now()
 );

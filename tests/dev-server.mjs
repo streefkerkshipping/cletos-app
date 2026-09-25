@@ -27,7 +27,7 @@ async function mock(req, res, url) {
   if (storing) return json(res, 503, { fout: 'opslag onbereikbaar (gesimuleerd)' });
   if (url.pathname === '/mock/seed' && req.method === 'POST') {
     const b = await lees(req); const namen = ['Karin', 'Piet', 'Joke', 'Henk', 'Els', 'Wim', 'Truus', 'Kees', 'Ans', 'Jan'];
-    for (let i = 0; i < (b.n || 0); i++) { const l = { id: randomUUID(), auth_uid: 'seed-' + i, naam: namen[i % namen.length] + (i >= namen.length ? ' ' + i : ''), woonplaats: 'Apeldoorn', rol: 'lid' }; db.leden.push(l); db.gaat_naar.push({ id: randomUUID(), lid_id: l.id, event_identifier: b.event, event_start: b.start || '', rol: b.rol || 'gaat', team: b.team || null }); }
+    for (let i = 0; i < (b.n || 0); i++) { const l = { id: randomUUID(), auth_uid: 'seed-' + i, naam: namen[i % namen.length] + (i >= namen.length ? ' ' + i : ''), connectgroep: 'Apeldoorn', rol: 'lid' }; db.leden.push(l); db.gaat_naar.push({ id: randomUUID(), lid_id: l.id, event_identifier: b.event, event_start: b.start || '', rol: b.rol || 'gaat', team: b.team || null }); }
     return json(res, 200, { ok: true, n: b.n });
   }
   if (url.pathname === '/mock/gebedspunten') {
@@ -36,21 +36,21 @@ async function mock(req, res, url) {
     if (req.method === 'POST') { const b = await lees(req); const g = { id: randomUUID(), auteur_lid_id: l.id, soort: b.soort, tekst: b.tekst, week_eind: b.week_eind, anoniem: !!b.anoniem, gemaakt_op: new Date().toISOString() }; db.gebedspunten.push(g); return json(res, 201, { id: g.id }); }
     if (req.method === 'DELETE') { const id = url.searchParams.get('id'); db.gebedspunten = db.gebedspunten.filter(g => !(g.id === id && g.auteur_lid_id === l.id)); return json(res, 200, {}); }
   }
-  if (url.pathname === '/mock/seedgebed' && req.method === 'POST') { const b = await lees(req); const l = { id: randomUUID(), auth_uid: 'seed-g', naam: 'Karin', woonplaats: 'Apeldoorn', rol: 'lid' }; db.leden.push(l); db.gebedspunten.push({ id: randomUUID(), auteur_lid_id: l.id, soort: b.soort || 'prayer', tekst: b.tekst, week_eind: b.week_eind, anoniem: !!b.anoniem, gemaakt_op: new Date().toISOString() }); return json(res, 200, {}); }
+  if (url.pathname === '/mock/seedgebed' && req.method === 'POST') { const b = await lees(req); const l = { id: randomUUID(), auth_uid: 'seed-g', naam: 'Karin', connectgroep: 'Apeldoorn', rol: 'lid' }; db.leden.push(l); db.gebedspunten.push({ id: randomUUID(), auteur_lid_id: l.id, soort: b.soort || 'prayer', tekst: b.tekst, week_eind: b.week_eind, anoniem: !!b.anoniem, gemaakt_op: new Date().toISOString() }); return json(res, 200, {}); }
   if (url.pathname === '/mock/mij') { const l = mij(); return l ? json(res, 200, zonderAuth(l)) : json(res, 404, {}); }
   if (url.pathname === '/mock/leden') {
     if (req.method === 'GET') return json(res, 200, db.leden.map(zonderAuth));
     if (req.method === 'POST') {
       const b = await lees(req);
-      if (!toestel || !b.naam || !b.woonplaats) return json(res, 400, { fout: 'naam/woonplaats' });
+      if (!toestel || !b.naam || !b.connectgroep) return json(res, 400, { fout: 'naam/connectgroep' });
       if (mij()) return json(res, 409, { fout: 'al lid' });
-      const lid = { id: randomUUID(), auth_uid: toestel, naam: b.naam, woonplaats: b.woonplaats, rol: 'lid' };
+      const lid = { id: randomUUID(), auth_uid: toestel, naam: b.naam, connectgroep: b.connectgroep, rol: 'lid' };
       db.leden.push(lid); return json(res, 201, zonderAuth(lid));
     }
     if (req.method === 'DELETE') { const l = mij(); if (!l) return json(res, 403, {}); db.leden = db.leden.filter(x => x !== l); db.gaat_naar = db.gaat_naar.filter(g => g.lid_id !== l.id); return json(res, 200, {}); }
   }
   if (url.pathname === '/mock/gaat_naar') {
-    if (req.method === 'GET') return json(res, 200, db.gaat_naar.map(g => { const l = db.leden.find(x => x.id === g.lid_id); return { ...g, leden: { naam: l.naam, woonplaats: l.woonplaats } }; }));
+    if (req.method === 'GET') return json(res, 200, db.gaat_naar.map(g => { const l = db.leden.find(x => x.id === g.lid_id); return { ...g, leden: { naam: l.naam, connectgroep: l.connectgroep } }; }));
     const l = mij(); if (!l) return json(res, 403, { fout: 'niet aangemeld' });
     if (req.method === 'POST') {
       const b = await lees(req);

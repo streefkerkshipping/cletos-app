@@ -2,10 +2,10 @@
 import { test, expect } from '@playwright/test';
 
 const reset = async (request) => { await request.post('/mock/reset'); };
-const meldAan = async (page, naam, woonplaats, pad = '/#/agenda') => {
+const meldAan = async (page, naam, connectgroep, pad = '/#/agenda') => {
   await page.goto(pad);
   await page.getByLabel('Name', { exact: true }).fill(naam);
-  await page.getByLabel('Town', { exact: true }).fill(woonplaats);
+  await page.getByLabel('Connect group', { exact: true }).fill(connectgroep);
   await page.getByRole('button', { name: 'Join' }).click();
 };
 
@@ -52,23 +52,23 @@ test('E2 ik ga → blijft na herladen, tweede toestel ziet het, intrekken werkt 
   await meldAan(page, 'Bas Streefkerk', 'Apeldoorn');
   const kaart = page.getByTestId('event-2do1gafm');
   await kaart.locator('.tegel-vink').click();
-  await expect(kaart.locator('.tegel-vink')).toHaveText('✓');
-  await expect(kaart.locator('.tegel-vink')).toHaveAttribute('aria-pressed', 'true');
+  await expect(kaart.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
+  await expect(kaart.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
   const ag = kaart.getByRole('link', { name: 'Add to calendar' });
   await expect(ag).toHaveAttribute('href', /^data:text\/calendar/);
   await expect(ag).toHaveAttribute('download', 'cletos-2do1gafm.ics');
   await page.reload();
-  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveText('✓');
+  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('event-2do1gafm')).toContainText('Bas Streefkerk'); await expect(page.getByTestId('event-2do1gafm')).toContainText('Apeldoorn');
 
   const ctx2 = await browser.newContext(); const p2 = await ctx2.newPage();
   await meldAan(p2, 'Test Persoon', 'Utrecht');
   await expect(p2.getByTestId('event-2do1gafm')).toContainText('Bas Streefkerk', { timeout: 5000 });
-  await expect(p2.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveText('✕');
+  await expect(p2.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'false');
 
   await page.getByTestId('event-2do1gafm').locator('.tegel-vink').click();
   await expect(page.getByTestId('event-2do1gafm')).not.toContainText('Bas Streefkerk');
-  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveText('✕');
+  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'false');
   await expect(p2.getByTestId('event-2do1gafm')).not.toContainText('Bas Streefkerk', { timeout: 6000 });
   await ctx2.close();
 });
@@ -82,7 +82,7 @@ test('S1 opslag onbereikbaar → evenementen blijven zichtbaar, melding, ik-ga f
   await expect(page.locator('#status')).toContainText('Storage is unavailable');
   await page.getByTestId('event-2do1gafm').locator('.tegel-vink').click();
   await expect(page.getByRole('alert')).toContainText('failed');
-  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveText('✕');
+  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'false');
   await request.post('/mock/storing?aan=0');
 });
 
@@ -115,13 +115,13 @@ test('E3 Team-schakelaar → teamkiezer → naam onder Team; Team uit = alleen g
   await tegel.getByRole('button', { name: 'Welcome' }).click();
   await expect(tegel.locator('.lijst.helpen .teamregel')).toHaveText('Welcome: Bas Streefkerk');
   await expect(tegel.locator('.lijst.gaan')).toContainText('no one yet');
-  await expect(tegel.locator('.tegel-vink')).toHaveText('✓');
-  await expect(tegel.locator('.tegel-team')).toHaveText('✓');
+  await expect(tegel.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
+  await expect(tegel.locator('.tegel-team')).toHaveAttribute('aria-checked', 'true');
   await tegel.locator('.tegel-team').click();
   await expect(tegel.locator('.lijst.helpen')).toBeHidden();
   await expect(tegel.locator('.lijst.gaan')).toContainText('Bas Streefkerk');
-  await expect(tegel.locator('.tegel-vink')).toHaveText('✓');
-  await expect(tegel.locator('.tegel-team')).toHaveText('✕');
+  await expect(tegel.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
+  await expect(tegel.locator('.tegel-team')).toHaveAttribute('aria-checked', 'false');
   // ander team via invulveld
   await tegel.locator('.tegel-team').click();
   await tegel.getByLabel('Other team').fill('Techniek');
@@ -130,7 +130,7 @@ test('E3 Team-schakelaar → teamkiezer → naam onder Team; Team uit = alleen g
   await expect(tegel.getByRole('button', { name: 'Shuttle' })).toBeHidden();
   // service uit → ook team weg
   await tegel.locator('.tegel-vink').click();
-  await expect(tegel.locator('.tegel-team')).toHaveText('✕');
+  await expect(tegel.locator('.tegel-team')).toHaveAttribute('aria-checked', 'false');
   await expect(tegel.locator('.lijst.helpen')).toBeHidden();
   const koppen = await page.locator('#home h2').allTextContents();
   assertVolgorde(koppen);
@@ -178,15 +178,15 @@ test('E5 vinkje in de ingeklapte regel: ✕ → tik → ✓ en "jij gaat", zonde
   await meldAan(page, 'Bas Streefkerk', 'Apeldoorn');
   const rij = page.getByTestId('event-uu9arbay');
   const vink = rij.locator('.vink');
-  await expect(vink).toHaveAttribute('aria-pressed', 'false');
-  await expect(vink).toHaveText('✕');
+  await expect(vink).toHaveAttribute('aria-checked', 'false');
+  await expect(vink).toHaveAttribute('aria-checked', 'false');
   await vink.click();
-  await expect(vink).toHaveAttribute('aria-pressed', 'true');
-  await expect(vink).toHaveText('✓');
+  await expect(vink).toHaveAttribute('aria-checked', 'true');
+  await expect(vink).toHaveAttribute('aria-checked', 'true');
   await expect(rij.locator('.tel')).toHaveText('you’re going');
   await expect(rij.locator('.rij-meer')).toBeHidden();
   await vink.click();
-  await expect(vink).toHaveAttribute('aria-pressed', 'false');
+  await expect(vink).toHaveAttribute('aria-checked', 'false');
   await expect(rij.locator('.tel')).toHaveCount(0);
 });
 

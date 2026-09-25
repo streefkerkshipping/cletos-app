@@ -29,8 +29,10 @@
       <form id="aanmeldformulier" autocomplete="on">
         <label for="naam" data-t="naam">Name</label>
         <input id="naam" name="naam" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="Bas Streefkerk">
-        <label for="woonplaats" data-t="woonplaats">Town</label>
-        <input id="woonplaats" name="woonplaats" type="text" required minlength="2" maxlength="60" autocomplete="address-level2" placeholder="Apeldoorn">
+        <label for="connectgroep" data-t="connectgroep">Connect group</label>
+        <input id="connectgroep" name="connectgroep" type="text" required minlength="2" maxlength="60" autocomplete="off" placeholder="Apeldoorn" list="connectgroepen">
+        <datalist id="connectgroepen"></datalist>
+        <p class="veld-uitleg" data-t="connectgroep_uitleg">The town of your connect group, e.g. Apeldoorn.</p>
         <button type="submit" class="knop primair" data-t="aanmelden">Join</button>
         <p class="fout" id="aanmeldfout" role="alert" hidden></p>
       </form>
@@ -133,8 +135,8 @@
       <div class="tegel-tot"></div>
       <span class="sr" aria-hidden="false"></span>
       <div class="schakels">
-        <div class="schakel"><span class="schakel-label" data-t="service_label">Service</span><button type="button" class="vink tegel-vink" aria-pressed="false" data-t-aria="snel_aan"><span aria-hidden="true">✕</span></button></div>
-        <div class="schakel"><span class="schakel-label" data-t="team">Team</span><button type="button" class="vink tegel-team" aria-pressed="false" data-t-aria="team_aan"><span aria-hidden="true">✕</span></button></div>
+        <div class="schakel"><span class="schakel-label" data-t="service_label">Service</span><button type="button" class="vink tegel-vink" role="switch" aria-checked="false" data-t-aria="snel_aan"><span class="knopje" aria-hidden="true"></span></button></div>
+        <div class="schakel"><span class="schakel-label" data-t="team">Team</span><button type="button" class="vink tegel-team" role="switch" aria-checked="false" data-t-aria="team_aan"><span class="knopje" aria-hidden="true"></span></button></div>
       </div>
       <div class="keuze">
         <button type="button" class="knop primair ikga" data-t="ik_ga" hidden>I’m going</button>
@@ -160,7 +162,7 @@
           <span class="rij-meta"></span>
           <span class="rij-pijl" aria-hidden="true"></span>
         </button>
-        <button type="button" class="vink" aria-pressed="false" data-t-aria="snel_aan"><span aria-hidden="true">✕</span></button>
+        <button type="button" class="vink" role="switch" aria-checked="false" data-t-aria="snel_aan"><span class="knopje" aria-hidden="true"></span></button>
       </div>
       <div class="rij-meer" hidden>
         <p class="wanneer-vol"></p>

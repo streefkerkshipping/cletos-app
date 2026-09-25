@@ -15,11 +15,11 @@ const url = env.SUPABASE_URL, anon = env.SUPABASE_ANON_KEY;
 const skip = !url || !anon || url.includes('<project>') ? 'BLOCKED: app/.env zonder SUPABASE_URL/SUPABASE_ANON_KEY' : false;
 
 const rest = (pad, init = {}, token = anon) => fetch(`${url}/rest/v1/${pad}`, { ...init, headers: { apikey: anon, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Prefer: 'return=representation', ...(init.headers || {}) } });
-const nieuwLid = async (naam, woonplaats) => {
+const nieuwLid = async (naam, connectgroep) => {
   const sb = createClient(url, anon, { auth: { persistSession: false } });
   const { data, error } = await sb.auth.signInAnonymously(); if (error) throw error;
   const token = data.session.access_token;
-  const r = await rest('leden', { method: 'POST', body: JSON.stringify({ naam, woonplaats }) }, token);
+  const r = await rest('leden', { method: 'POST', body: JSON.stringify({ naam, connectgroep }) }, token);
   const tekst = await r.text();
   assert.equal(r.status, 201, tekst);
   return { token, lid: JSON.parse(tekst)[0], sb };

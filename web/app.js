@@ -37,7 +37,7 @@ function toonAanmelden() {
     const fout = $('#aanmeldfout'); fout.hidden = true;
     const knop = $('#aanmeldformulier button'); knop.disabled = true;
     try {
-      lid = await opslag.wordLid($('#naam').value.trim(), $('#woonplaats').value.trim());
+      lid = await opslag.wordLid($('#naam').value.trim(), $('#connectgroep').value.trim());
       onthoudLid(lid);
       await toonHome();
     } catch (err) {
@@ -67,7 +67,7 @@ $('#askformulier').onsubmit = (e) => {
 async function toonHome() {
   $('#aanmelden').hidden = true; $('#app').hidden = false; $('#tabs').hidden = false; toonPagina();
   const w = $('#wie'); w.hidden = false; w.innerHTML = '';
-  w.append(`${lid.naam} · ${lid.woonplaats}`);
+  w.append(`${lid.naam} · ${lid.connectgroep}`);
   const uit = document.createElement('button'); uit.type = 'button'; uit.textContent = t('verwijder_mij');
   uit.onclick = async () => { if (!confirm(t('verwijder_bevestig'))) return; try { await opslag.verwijderMij(); lid = null; onthoudLid(null); location.reload(); } catch { zetAlert(t('fout_verwijderen')); } };
   w.append(uit);
@@ -250,6 +250,7 @@ fetch('data/devoties/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json
 }).catch(() => {});
 const weekdagNu = () => new Date(nu().toLocaleString('en-US', { timeZone: 'Europe/Amsterdam' })).getDay();
 const datumLang = (week) => new Date(week + 'T12:00:00').toLocaleDateString(taal === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long' });
+fetch('data/connectgroepen.json').then(r => r.json()).then(d => { const dl = $('#connectgroepen'); if (!dl) return; dl.innerHTML = ''; for (const g of d.connectgroepen || []) { const o = document.createElement('option'); o.value = g; dl.append(o); } }).catch(() => {});
 let teams = []; fetch('data/teams.json').then(r => r.json()).then(d => { teams = d.teams || []; }).catch(() => {});
 const teamOpen = new Set();
 
@@ -267,9 +268,9 @@ function tegel(ev) {
   $('.ikga', el).hidden = true; $('.tochniet', el).hidden = true;
   const help = $('.ikhelp', el); help.hidden = true;
   const fout = t('fout_opslaan');
-  const vink = $('.tegel-vink', el); vink.setAttribute('aria-pressed', String(!!mijn)); vink.setAttribute('aria-label', mijn ? t('snel_af') : t('snel_aan')); $('span', vink).textContent = mijn ? '✓' : '✕';
+  const vink = $('.tegel-vink', el); vink.setAttribute('aria-checked', String(!!mijn)); vink.setAttribute('aria-label', mijn ? t('snel_af') : t('snel_aan'));
   vink.onclick = () => { teamOpen.delete(ev.identifier); mijn ? actie(() => opslag.trekIn(ev), t('fout_intrekken')) : actie(() => opslag.gaatNaar(ev, 'gaat', null), t('fout_ikga')); };
-  const teamKnop = $('.tegel-team', el); teamKnop.setAttribute('aria-pressed', String(!!ikHelp)); teamKnop.setAttribute('aria-label', ikHelp ? t('team_uit') : t('team_aan')); $('span', teamKnop).textContent = ikHelp ? '✓' : '✕';
+  const teamKnop = $('.tegel-team', el); teamKnop.setAttribute('aria-checked', String(!!ikHelp)); teamKnop.setAttribute('aria-label', ikHelp ? t('team_uit') : t('team_aan'));
   teamKnop.onclick = () => { if (ikHelp) { teamOpen.delete(ev.identifier); actie(() => opslag.gaatNaar(ev, 'gaat', null), t('fout_opslaan')); } else { teamOpen.has(ev.identifier) ? teamOpen.delete(ev.identifier) : teamOpen.add(ev.identifier); render(); } };
   const ag = $('.agenda', el); ag.hidden = !mijn; ag.href = icsLink(ev); ag.download = `cletos-${ev.identifier}.ics`;
   // teamkiezer
@@ -305,7 +306,7 @@ function vulLijst(blok, gaan, sleutel, metTeam) {
   const ul = $('.namen', blok);
   const alles = uitgeklapt.has(sleutel);
   const toon = alles ? gaan : gaan.slice(0, MAX_NAMEN);
-  if (gaan.length) for (const g of toon) { const li = document.createElement('li'); const n = document.createElement('span'); n.className = 'n'; n.textContent = g.naam; const w = document.createElement('span'); w.className = 'w'; w.textContent = metTeam && g.team ? `${g.woonplaats} · ${g.team}` : g.woonplaats; li.append(n, w); if (lid && g.lid_id === lid.id) li.classList.add('ik'); ul.append(li); }
+  if (gaan.length) for (const g of toon) { const li = document.createElement('li'); const n = document.createElement('span'); n.className = 'n'; n.textContent = g.naam; const w = document.createElement('span'); w.className = 'w'; w.textContent = metTeam && g.team ? `${g.connectgroep} · ${g.team}` : g.connectgroep; li.append(n, w); if (lid && g.lid_id === lid.id) li.classList.add('ik'); ul.append(li); }
   else { const li = document.createElement('li'); li.className = 'leeg'; li.textContent = t('nog_niemand'); ul.append(li); }
   if (gaan.length > MAX_NAMEN) {
     const meer = document.createElement('button'); meer.type = 'button'; meer.className = 'meer';
@@ -333,7 +334,7 @@ function rij(ev, datum, metDatum = false) {
   const meer = $('.rij-meer', r), kop = $('.rij-open', r);
   const isOpen = open.has(ev.identifier); meer.hidden = !isOpen; kop.setAttribute('aria-expanded', String(isOpen));
   kop.onclick = () => { const nuOpen = meer.hidden; meer.hidden = !nuOpen; kop.setAttribute('aria-expanded', String(nuOpen)); nuOpen ? open.add(ev.identifier) : open.delete(ev.identifier); };
-  const vink = $('.vink', r); vink.setAttribute('aria-pressed', String(ikGa)); vink.setAttribute('aria-label', ikGa ? t('snel_af') : t('snel_aan')); $('span', vink).textContent = ikGa ? '✓' : '✕';
+  const vink = $('.vink', r); vink.setAttribute('aria-checked', String(ikGa)); vink.setAttribute('aria-label', ikGa ? t('snel_af') : t('snel_aan'));
   vink.onclick = (e2) => { e2.stopPropagation(); ikGa ? actie(() => opslag.trekIn(ev), t('fout_intrekken')) : actie(() => opslag.gaatNaar(ev), t('fout_ikga')); };
   const meerdaags = datumDeel(ev.start) !== datumDeel(ev.eind || ev.start);
   $('.wanneer-vol', r).textContent = meerdaags ? `${labelPeriode(ev.start, ev.eind)}${tijd === t('hele_dag') ? '' : ', ' + tijd}` : `${labelDag(datumDeel(ev.start))}, ${tijd}`;
@@ -345,7 +346,7 @@ function rij(ev, datum, metDatum = false) {
   const ag = $('.agenda', r); ag.href = icsLink(ev); ag.download = `cletos-${ev.identifier}.ics`;
   $('.ikga', r).hidden = ikGa; $('.tochniet', r).hidden = !ikGa;
   const wg = $('.wiegaat', r); wg.innerHTML = '';
-  if (gaan.length) { wg.append(taal === 'nl' ? 'Gaat ook: ' : 'Also going: '); gaan.forEach((g, i) => { const s = document.createElement('strong'); s.textContent = `${g.naam} · ${g.woonplaats}`; wg.append(s); if (i < gaan.length - 1) wg.append(', '); }); }
+  if (gaan.length) { wg.append(taal === 'nl' ? 'Gaat ook: ' : 'Also going: '); gaan.forEach((g, i) => { const s = document.createElement('strong'); s.textContent = `${g.naam} · ${g.connectgroep}`; wg.append(s); if (i < gaan.length - 1) wg.append(', '); }); }
   else wg.textContent = taal === 'nl' ? 'Nog niemand aangemeld.' : 'No one signed up yet.';
   $('.ikga', r).onclick = () => actie(() => opslag.gaatNaar(ev), t('fout_ikga'));
   $('.tochniet', r).onclick = () => actie(() => opslag.trekIn(ev), t('fout_intrekken'));

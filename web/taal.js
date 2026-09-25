@@ -2,8 +2,8 @@
 export const TEKST = {
   en: {
     tab_home: 'Home', tab_agenda: 'Agenda', tab_connect: 'Connect group', taal_wissel: 'NL',
-    welkom: 'Welcome', aanmeld_uitleg: 'Enter your name and town. That’s it. Others in the group will see your name and town next to the services you’re going to. You can remove yourself at any time.',
-    naam: 'Name', woonplaats: 'Town', aanmelden: 'Join', verwijder_mij: 'Remove me', verwijder_bevestig: 'Your name and all your choices will be removed. Continue?',
+    welkom: 'Welcome', aanmeld_uitleg: 'Enter your name and your connect group. That’s it. Others will see your name and connect group next to the services you’re going to. You can remove yourself at any time.',
+    naam: 'Name', connectgroep: 'Connect group', connectgroep_uitleg: 'The town of your connect group, e.g. Apeldoorn.', aanmelden: 'Join', verwijder_mij: 'Remove me', verwijder_bevestig: 'Your name and all your choices will be removed. Continue?',
     binnenkort: 'Coming up for you', deze_week: 'Next 7 days', belangrijk: 'Important', later: 'Later', toon_meer: 'Show {n} more', verberg: 'Hide', leeg_agenda: 'Nothing in the calendar for the coming weeks.',
     service_label: 'Service', team_aan: 'Serve in a team', team_uit: 'Stop serving (just going)', route: 'Directions', locatie_volgt: 'Location to follow', ik_ga: 'I’m going', toch_niet: 'Not going', team: 'Team', gaan_kop: 'Going', team_kop: 'Team', nog_niemand: 'no one yet', nog_n: '{n} more', minder: 'less',
     agenda_knop: 'Add to calendar', snel_aan: 'Quick sign-up', snel_af: 'Quick sign-off', team_wijzig: 'Change team (now {t})', geen_team: 'no team', in_welk_team: 'Which team?', ander_team: 'other team…', ok: 'OK', tot: 'until {t}', hele_dag: 'all day',
@@ -25,8 +25,8 @@ export const TEKST = {
   },
   nl: {
     tab_home: 'Home', tab_agenda: 'Agenda', tab_connect: 'Connectgroep', taal_wissel: 'EN',
-    welkom: 'Welkom', aanmeld_uitleg: 'Vul je naam en woonplaats in. Dat is alles. Anderen in de groep zien je naam en woonplaats bij de diensten waar je naartoe gaat. Je kunt jezelf altijd weer verwijderen.',
-    naam: 'Naam', woonplaats: 'Woonplaats', aanmelden: 'Aanmelden', verwijder_mij: 'Verwijder mij', verwijder_bevestig: 'Je naam en al je keuzes worden verwijderd. Doorgaan?',
+    welkom: 'Welkom', aanmeld_uitleg: 'Vul je naam en je connectgroep in. Dat is alles. Anderen zien je naam en connectgroep bij de diensten waar je naartoe gaat. Je kunt jezelf altijd weer verwijderen.',
+    naam: 'Naam', connectgroep: 'Connectgroep', connectgroep_uitleg: 'De plaats van je connectgroep, bijv. Apeldoorn.', aanmelden: 'Aanmelden', verwijder_mij: 'Verwijder mij', verwijder_bevestig: 'Je naam en al je keuzes worden verwijderd. Doorgaan?',
     binnenkort: 'Binnenkort voor jou', deze_week: 'Komende 7 dagen', belangrijk: 'Belangrijk', later: 'Later', toon_meer: 'Toon {n} volgende', verberg: 'Verberg', leeg_agenda: 'Er staat niets in de agenda voor de komende weken.',
     service_label: 'Dienst', team_aan: 'Helpen in een team', team_uit: 'Niet meer helpen (alleen gaan)', route: 'Route', locatie_volgt: 'Locatie volgt', ik_ga: 'Ik ga', toch_niet: 'Toch niet', team: 'Team', gaan_kop: 'Gaan', team_kop: 'Team', nog_niemand: 'nog niemand', nog_n: 'nog {n}', minder: 'minder',
     agenda_knop: 'Zet in agenda', snel_aan: 'Snel aanmelden', snel_af: 'Snel afmelden', team_wijzig: 'Team wijzigen (nu {t})', geen_team: 'zonder team', in_welk_team: 'In welk team?', ander_team: 'ander team…', ok: 'Ok', tot: 'tot {t}', hele_dag: 'hele dag',
