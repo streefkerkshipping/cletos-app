@@ -1,0 +1,45 @@
+# Zet de app online via GitHub Pages. Wat hij doet: web/ wordt de site-root, data/ komt ernaast, en config.js wordt
+# geschreven uit twee repo-secrets (SUPABASE_URL, SUPABASE_ANON_KEY). De anon-sleutel is publiek van ontwerp; de
+# database beschermt zichzelf met RLS. Draait bij elke push naar main en met de hand (workflow_dispatch).
+name: pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Site samenstellen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          test -n "$SUPABASE_URL" -a -n "$SUPABASE_ANON_KEY" || { echo "secrets SUPABASE_URL/SUPABASE_ANON_KEY ontbreken"; exit 1; }
+          rm -rf _site && mkdir _site
+          cp -R web/. _site/
+          rm -f _site/config.example.js
+          cp -R data _site/data
+          printf "window.KRING_CONFIG = { opslag: 'supabase', supabaseUrl: '%s', supabaseAnonKey: '%s', verversSeconden: 5 };\n" "$SUPABASE_URL" "$SUPABASE_ANON_KEY" > _site/config.js
+          [ -f CNAME ] && cp CNAME _site/CNAME || true
+          ls -R _site | head -40
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

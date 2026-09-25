@@ -1,0 +1,20 @@
+{
+  "name": "cletos-connect-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Connect App v1 (naam: Cletos) — wat, wanneer, waar; zie BOUWSPEC.md",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs && python3 ../bin/test_haal_evenementen.py",
+    "test:unit": "node --test tests/*.test.mjs",
+    "test:py": "python3 ../bin/test_haal_evenementen.py",
+    "test:rls": "node --test tests/rls/*.test.mjs",
+    "test:e2e": "playwright test",
+    "dev": "node tests/dev-server.mjs",
+    "haal-evenementen": "python3 ../bin/haal_evenementen.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@supabase/supabase-js": "^2.49.0"
+  }
+}

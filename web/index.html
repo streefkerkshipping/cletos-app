@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <title>Cletos</title>
+  <meta name="description" content="What’s coming up, when, where, and who else is going.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icoon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Cletos">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="kop">
+    <div class="merk">Cletos</div>
+    <div class="kop-rechts"><button type="button" id="taalknop" class="taalknop" aria-label="Switch language">NL</button><div class="wie" id="wie" hidden></div></div>
+  </header>
+
+  <main id="main">
+    <section id="aanmelden" class="paneel" hidden>
+      <h1 data-t="welkom">Welcome</h1>
+      <p class="uitleg" data-t="aanmeld_uitleg"></p>
+      <form id="aanmeldformulier" autocomplete="on">
+        <label for="naam" data-t="naam">Name</label>
+        <input id="naam" name="naam" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="Bas Streefkerk">
+        <label for="woonplaats" data-t="woonplaats">Town</label>
+        <input id="woonplaats" name="woonplaats" type="text" required minlength="2" maxlength="60" autocomplete="address-level2" placeholder="Apeldoorn">
+        <button type="submit" class="knop primair" data-t="aanmelden">Join</button>
+        <p class="fout" id="aanmeldfout" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <div id="app" hidden>
+    <p id="status" role="status" class="status" hidden></p>
+    <p id="alert" role="alert" class="fout" hidden></p>
+
+    <section id="pagina-home" class="pagina" hidden>
+      <h1 id="home-groet" data-t="welkom_thuis">Welcome home</h1>
+      <div class="devotion-nav" id="devotion-nav" hidden>
+        <select id="dev-week" data-t-aria="week_kies"></select>
+        <div class="dagchips" id="dev-dagen" role="tablist"></div>
+      </div>
+      <article class="devotion" id="devotion" hidden>
+        <p class="devotion-kop"><span id="dev-dag"></span> · <span id="dev-week-label"></span></p>
+        <h2 class="devotion-titel" id="dev-titel"></h2>
+        <p class="devotion-bijbel" id="dev-bijbel"></p>
+        <blockquote class="devotion-citaat"><span id="dev-citaat"></span> <a id="dev-link" target="_blank" rel="noopener"></a></blockquote>
+        <div class="devotion-zinnen" id="dev-zinnen"></div>
+        <p class="devotion-gebed" id="dev-gebed"></p>
+        <div class="devotion-acties"><button type="button" class="knop" id="dev-delen" data-t="delen">Share</button><span class="deel-status" id="dev-deelstatus" role="status"></span></div>
+      </article>
+      <article class="devotion" id="terugblik" hidden>
+        <p class="devotion-kop"><span data-t="samenvatting">Summary</span> · <span id="tb-week"></span></p>
+        <h2 class="devotion-titel" id="tb-titel"></h2>
+        <ol class="terugblik-lijst" id="tb-lijst"></ol>
+        <p class="devotion-kop" id="tb-slotkop" data-t="slot_kop">Where he’s taking us</p>
+        <p class="terugblik-slot" id="tb-slot"></p>
+        <blockquote class="devotion-citaat" id="tb-citaat"></blockquote>
+        <div class="devotion-acties"><button type="button" class="knop" id="tb-delen" data-t="delen">Share</button><span class="deel-status" id="tb-deelstatus" role="status"></span></div>
+      </article>
+      <p class="uitleg" id="devotion-leeg" data-t="devotion_leeg" hidden></p>
+      <section class="ask" id="ask">
+        <h2 data-t="ask_titel">Ask the service</h2>
+        <p class="uitleg" data-t="ask_uitleg">Stel een vraag over wat er dit jaar in de diensten is gezegd, in het Nederlands of Engels. Je krijgt een antwoord uit de preken zelf, met de datum en een link naar de seconde in de video waar het gezegd wordt. Staat het niet in de preken, dan zegt Ask the service dat gewoon. Het geeft geen eigen mening en beoordeelt de spreker niet.</p>
+        <form id="askformulier">
+          <label for="askvraag" data-t="ask_label">Your question</label>
+          <input id="askvraag" type="text" maxlength="300" data-t-placeholder="ask_placeholder" autocomplete="off">
+          <button type="submit" class="knop primair" data-t="ask_knop">Ask the service</button>
+        </form>
+        <p class="ask-antwoord" id="askantwoord" role="status" hidden></p>
+      </section>
+      <h2 data-t="zondag_kop">Sunday</h2>
+      <p id="home-zondag" class="uitleg"></p>
+      <h2 data-t="connect_kop">Connect group</h2>
+      <p id="home-connect" class="uitleg"></p>
+    </section>
+
+    <section id="pagina-connect" class="pagina" hidden>
+      <h1 data-t="connect_titel">Connect group</h1>
+      <p class="uitleg" data-t="connect_intro"></p>
+      <div id="connect-lijst" class="rijen"></div>
+      <p id="connect-leeg" class="uitleg" data-t="geen_avond" hidden></p>
+
+      <section class="gebed" id="prayers">
+        <h2 data-t="prayers">Prayers</h2>
+        <p class="uitleg" data-t="prayers_uitleg"></p>
+        <ul class="punten" id="prayer-lijst"></ul>
+        <form class="puntformulier" data-soort="prayer"><input type="text" maxlength="400" data-t-placeholder="prayer_placeholder" data-t-aria="nieuw_prayer"><button type="submit" class="knop primair" data-t="toevoegen">Add</button></form>
+        <label class="anoniem"><input type="checkbox" id="prayer-anoniem"> <span data-t="anoniem_label"></span></label>
+      </section>
+      <section class="gebed" id="praise">
+        <h2 data-t="praise">Praise</h2>
+        <p class="uitleg" data-t="praise_uitleg"></p>
+        <ul class="punten" id="praise-lijst"></ul>
+        <form class="puntformulier" data-soort="praise"><input type="text" maxlength="400" data-t-placeholder="praise_placeholder" data-t-aria="nieuw_praise"><button type="submit" class="knop primair" data-t="toevoegen">Add</button></form>
+      </section>
+    </section>
+
+    <section id="home" class="pagina" hidden>
+      <h1 class="sr" data-t="binnenkort">Coming up for you</h1>
+      <div id="zondag"></div>
+      <section id="week" hidden><h2 data-t="deze_week">Next 7 days</h2><div class="rijen"></div></section>
+      <section id="belangrijk" hidden><h2 data-t="belangrijk">Important</h2><div class="rijen"></div></section>
+      <section id="later" hidden><h2 data-t="later">Later</h2><button type="button" class="toon" id="toon-later"></button><div class="rijen" hidden></div></section>
+      <p class="bijgewerkt" id="bijgewerkt"></p>
+      <p class="voet"><span data-t="voet"></span><a href="https://hillsong.com/netherlands/" rel="noopener" data-t="voet_link">hillsong.com/netherlands</a>.</p>
+    </section>
+    </div>
+  </main>
+
+  <nav class="tabs" id="tabs" hidden aria-label="Pagina's">
+    <a href="#/home" data-pagina="pagina-home" data-t="tab_home">Home</a>
+    <a href="#/agenda" data-pagina="home" data-t="tab_agenda">Agenda</a>
+    <a href="#/connect" data-pagina="pagina-connect" data-t="tab_connect">Connect group</a>
+  </nav>
+
+  <template id="tpl-zondag">
+    <section class="zondag">
+      <h2 class="zondag-kop"></h2>
+      <p class="zondag-waar"><span class="waar"></span> <a class="route" target="_blank" rel="noopener" data-t="route" hidden>Directions</a></p>
+      <div class="tegels"></div>
+    </section>
+  </template>
+  <template id="tpl-tegel">
+    <article class="tegel">
+      <div class="tegel-tijd"></div>
+      <div class="tegel-tot"></div>
+      <span class="sr" aria-hidden="false"></span>
+      <div class="schakels">
+        <div class="schakel"><span class="schakel-label" data-t="service_label">Service</span><button type="button" class="vink tegel-vink" aria-pressed="false" data-t-aria="snel_aan"><span aria-hidden="true">✕</span></button></div>
+        <div class="schakel"><span class="schakel-label" data-t="team">Team</span><button type="button" class="vink tegel-team" aria-pressed="false" data-t-aria="team_aan"><span aria-hidden="true">✕</span></button></div>
+      </div>
+      <div class="keuze">
+        <button type="button" class="knop primair ikga" data-t="ik_ga" hidden>I’m going</button>
+        <button type="button" class="knop tochniet" data-t="toch_niet" hidden>Not going</button>
+        <button type="button" class="knop klein ikhelp" data-t="team" hidden>Team</button>
+        <a class="agenda" data-t="agenda_knop" hidden>Add to calendar</a>
+      </div>
+      <div class="teamkiezer" hidden>
+        <p class="teamvraag" data-t="in_welk_team">Which team?</p>
+        <div class="teams"></div>
+        <form class="teamanders"><input type="text" maxlength="40" data-t-placeholder="ander_team" aria-label="Other team"><button type="submit" class="knop klein" data-t="ok">OK</button></form>
+      </div>
+      <div class="lijst gaan"><span class="lijstkop" data-t="gaan_kop">Going</span><ul class="namen"></ul></div>
+      <div class="lijst helpen" hidden><span class="lijstkop" data-t="team_kop">Team</span><ul class="namen"></ul></div>
+    </article>
+  </template>
+  <template id="tpl-rij">
+    <article class="rij">
+      <div class="rij-kop">
+        <button type="button" class="rij-open" aria-expanded="false">
+          <span class="rij-wanneer"></span>
+          <span class="rij-naam"></span>
+          <span class="rij-meta"></span>
+          <span class="rij-pijl" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="vink" aria-pressed="false" data-t-aria="snel_aan"><span aria-hidden="true">✕</span></button>
+      </div>
+      <div class="rij-meer" hidden>
+        <p class="wanneer-vol"></p>
+        <p class="locatie"></p>
+        <p class="beschrijving" hidden></p>
+        <div class="acties">
+          <a class="knop route" target="_blank" rel="noopener" data-t="route" hidden>Directions</a>
+          <a class="knop aanmeldlink" target="_blank" rel="noopener" data-t="aanmeld_link" hidden>Sign up with the church</a>
+          <a class="knop agenda" data-t="agenda_knop">Add to calendar</a>
+          <button type="button" class="knop primair ikga" data-t="ik_ga">I’m going</button>
+          <button type="button" class="knop tochniet" data-t="toch_niet" hidden>Not going</button>
+        </div>
+        <p class="wiegaat"></p>
+      </div>
+    </article>
+  </template>
+
+  <script src="config.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

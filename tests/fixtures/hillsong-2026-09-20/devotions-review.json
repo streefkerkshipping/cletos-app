@@ -1,0 +1,35 @@
+{
+  "datum": "2026-09-20",
+  "devotions": [
+    {
+      "dag": 1,
+      "oordeel": "PASS",
+      "bevindingen": []
+    },
+    {
+      "dag": 2,
+      "oordeel": "PASS",
+      "bevindingen": []
+    },
+    {
+      "dag": 3,
+      "oordeel": "PASS",
+      "bevindingen": []
+    },
+    {
+      "dag": 4,
+      "oordeel": "PASS",
+      "bevindingen": []
+    },
+    {
+      "dag": 5,
+      "oordeel": "PASS",
+      "bevindingen": []
+    },
+    {
+      "dag": 6,
+      "oordeel": "PASS",
+      "bevindingen": []
+    }
+  ]
+}

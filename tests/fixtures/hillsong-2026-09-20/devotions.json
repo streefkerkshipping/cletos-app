@@ -1,0 +1,457 @@
+{
+  "datum": "2026-09-20",
+  "taal": "en",
+  "titel": "Following God Wholeheartedly",
+  "bron": "Hillsong Church Netherlands, service of 2026-09-20",
+  "preek_start": "50:30",
+  "preek_eind": "1:39:48",
+  "persoonsnamen": [
+    "Richard",
+    "Debbie",
+    "Deb",
+    "Timo",
+    "Tim",
+    "Barrington",
+    "Earl",
+    "Onika",
+    "Pete Gregg",
+    "Pete",
+    "Gregg",
+    "Lissende",
+    "James"
+  ],
+  "devotions": [
+    {
+      "dag": 1,
+      "weekdag": "maandag",
+      "titel": "The Life Jesus Came to Give",
+      "citaat": "I believe that God intends for every one of us to live a life of fulfillment. To live life to the full. To live wholeheartedly.",
+      "tijd": "51:12",
+      "zinnen": [
+        {
+          "tekst": "On Sunday the speaker opened with this: God intends for every one of you to live a life of fulfillment. Full of life, full of freedom, full of peace, full of love.",
+          "tijd": "51:12",
+          "fragment": "God intends for every one of us to live a life of fulfillment ... Full of life. Confident. Passionate. Full of freedom. Full of peace. Full of love."
+        },
+        {
+          "tekst": "He knows this isn't everybody's reality, but he believes it's God's design, and that it's possible for every one of us to live this way.",
+          "tijd": "51:12",
+          "fragment": "I recognize this isn't everybody's reality. But I believe it's God's design and I believe it's possible for every one of us to live this way"
+        },
+        {
+          "tekst": "One of the keys he finds in Numbers 14, where God says of Caleb: he has a different spirit and follows me wholeheartedly.",
+          "tijd": "51:49",
+          "fragment": "because my servant Caleb has a different spirit and follows me wholeheartedly"
+        },
+        {
+          "tekst": "That's the title of the message: Following God wholeheartedly. And the subtitle: living in the fullness of forgiveness, free from the pain of the past.",
+          "tijd": "52:30",
+          "fragment": "That's the title of my message today. Following God wholeheartedly. And I've got a subtitle to go with it, which is living in the fullness of forgiveness or free from the pain of the past."
+        },
+        {
+          "tekst": "God wants you to live wholeheartedly: to put your whole heart into your life, without constantly protecting your heart or checking yourself.",
+          "tijd": "52:30",
+          "fragment": "God wants you to live wholeheartedly, that you can put your whole heart into your life, that you don't need to be constantly protecting your heart, checking yourself"
+        },
+        {
+          "tekst": "A life with an internal freedom and peace, full of faith, hope and love. It's the life that Jesus came to give us. How good is that?",
+          "jezus": true,
+          "tijd": "53:18",
+          "fragment": "Live with an internal freedom and peace, full of faith, hope, and love. It's the life that Jesus came to give us."
+        },
+        {
+          "tekst": "There are things that can and do stop us from living wholeheartedly, and one of them is unforgiveness: not dealing with pain.",
+          "tijd": "53:18",
+          "fragment": "there are things that can and do stop us from living wholeheartedly ... And one of those is unforgiveness. It's not dealing with pain."
+        },
+        {
+          "tekst": "Later in the message he says: God loves you. God's for you. He doesn't want this to be a theory, he wants it to be your reality.",
+          "tijd": "1:22:28",
+          "fragment": "God loves you. God's for you. ... I don't want this to be a theory. I want this to be your reality. God is for you."
+        },
+        {
+          "tekst": "What would it look like to follow Him with your whole heart today?",
+          "vraag": true
+        }
+      ],
+      "gebed": {
+        "tekst": "Lord, search my heart. Holy Spirit, bring to mind what I can handle, whatever is stopping me from wholeheartedly following You.",
+        "tijd": "1:24:17",
+        "fragment": "Lord search our hearts Holy Spirit Holy Spirit bring to mind bring to mind what we can handle what's stopping us from wholeheartedly following God"
+      },
+      "bijbeltekst": "Num. 14:24",
+      "bijbel": {
+        "tijd": "51:49",
+        "fragment": "Numbers chapter 14, verse 24"
+      },
+      "controle": {
+        "check": "PASS",
+        "citaat_ok": true,
+        "fouten": [],
+        "review": "PASS",
+        "bevindingen": [],
+        "status": "PASS"
+      }
+    },
+    {
+      "dag": 2,
+      "weekdag": "dinsdag",
+      "titel": "Fully Seen, Fully Known, Fully Loved",
+      "citaat": "You are fully seen, fully known, fully loved. I'm not talking about your opinions or your actions, but who you really are. Not only does he love you, he delights in you.",
+      "tijd": "58:01",
+      "zinnen": [
+        {
+          "tekst": "The key to living wholeheartedly, the speaker says, is founded in how you see God.",
+          "tijd": "53:18",
+          "fragment": "the key to this, I believe, is founded in how you see God"
+        },
+        {
+          "tekst": "Right back in the garden, the enemy came to get people to question God: Did God really say that? Does God really love you? Is God really for you?",
+          "tijd": "53:56",
+          "fragment": "the enemy comes and gets them to question God. Did God really say that? ... Does God really love you? ... Is God really for you?"
+        },
+        {
+          "tekst": "Those are the questions of the enemy, and he wants to keep you from the fullness of life.",
+          "tijd": "54:29",
+          "fragment": "They're the questions of the enemy ... He wants to keep you from the fullness of life."
+        },
+        {
+          "tekst": "Jesus said it as clearly as it gets, in John 10:10: the enemy comes to steal, kill and destroy, but I have come that you might have life, and life to the full.",
+          "jezus": true,
+          "tijd": "55:06",
+          "fragment": "In John chapter 10, verse 10, I don't know if he could have said it any more clearly. He says the enemy comes to steal, kill and destroy. But Jesus said, I've come that you might have life and life to the full."
+        },
+        {
+          "tekst": "The Father has qualified you. You don't need to qualify. He has rescued you from the dominion of darkness and brought you into the kingdom of the Son he loves.",
+          "tijd": "55:40",
+          "fragment": "the Father has qualified you you don't need to qualify he qualifies you ... he has rescued us from the dominion of darkness and brought us into the kingdom of the Son that he loves"
+        },
+        {
+          "tekst": "He told about a cabin in the middle of nowhere, where dark is dark and he had to feel his way around. That's the dominion of darkness: you can't see the truth about God, and you can't see the truth about yourself.",
+          "tijd": "56:16",
+          "fragment": "a cabin in the middle of nowhere ... dark is dark, you can't see in front of you ... I had to feel my way around ... The dominion of darkness is a spiritual darkness where you can't see the truth about God, you can't see the truth about yourself"
+        },
+        {
+          "tekst": "In that dark we try to work our lives out, and we try to determine our value by our performance or by how other people see us.",
+          "tijd": "57:21",
+          "fragment": "we're trying to work our lives out insecurity can reign we can try to determine our value by our performance or by how other people see us"
+        },
+        {
+          "tekst": "Do you realize it? You are fully seen, fully known, fully loved. Not only does He love you, He delights in you. So good.",
+          "tijd": "58:01",
+          "fragment": "do you realize that ... you are fully seen fully known fully loved ... not only does he love you he delights in you"
+        },
+        {
+          "tekst": "How do you see Him today, and do you believe He delights in you?",
+          "vraag": true
+        }
+      ],
+      "gebed": {
+        "tekst": "Lord, I release it to You, knowing that I am safe in Your hands. There's no safer place in this world than in Your hands.",
+        "tijd": "1:25:28",
+        "fragment": "we release it to you ... knowing that we are safe in your hands there's no safer place in this world than in your hands"
+      },
+      "bijbeltekst": "Col. 1:12–14",
+      "bijbel": {
+        "tijd": "55:06",
+        "fragment": "in Colossians the Bible puts it this way chapter 1 verses 12 to 14"
+      },
+      "controle": {
+        "check": "PASS",
+        "citaat_ok": true,
+        "fouten": [],
+        "review": "PASS",
+        "bevindingen": [],
+        "status": "PASS"
+      }
+    },
+    {
+      "dag": 3,
+      "weekdag": "woensdag",
+      "titel": "Forgive As the Lord Forgave You",
+      "citaat": "We forgive because we've already been forgiven. We receive grace and we give that grace. We are loved and we give that love. God starts this.",
+      "tijd": "1:01:33",
+      "zinnen": [
+        {
+          "tekst": "God has forgiven our sins in Christ. Colossians tells us, the speaker says, that we have redemption, we have the forgiveness of sins.",
+          "jezus": true,
+          "tijd": "1:00:22",
+          "fragment": "He's forgiven our sins in Christ. Colossians tells us as we read that we have redemption, we have the forgiveness of sins."
+        },
+        {
+          "tekst": "Sometimes shame and pain stop us from coming to God with our whole heart. But Hebrews 4:16 says you can boldly come to the throne of grace and find help in your time of need.",
+          "tijd": "1:00:22",
+          "fragment": "shame and pain can stop us from coming to God with our whole heart ... Hebrews 4, verse 16, that we can boldly come to the throne of grace and find help in our time of need"
+        },
+        {
+          "tekst": "Being forgiven and extending forgiveness belong together, he says. Colossians 3:13: forgive as the Lord forgave you.",
+          "tijd": "1:00:58",
+          "fragment": "being forgiven and extending forgiveness ... they belong together Colossians 3 verse 13 says bear with each other and forgive one another if anyone of you has a grievance against someone forgive as the Lord forgave you"
+        },
+        {
+          "tekst": "He doesn't just want to talk about forgiveness. He wants to minister forgiveness, so that you live in its fullness.",
+          "tijd": "1:01:33",
+          "fragment": "I don't just want to talk about forgiveness ... I want to minister forgiveness. I want us to live in its fullness."
+        },
+        {
+          "tekst": "Because the price of unforgiveness is just too high. You may be wounded once, but unforgiveness makes you relive it a thousand times.",
+          "tijd": "1:02:05",
+          "fragment": "the price of unforgiveness, guys, is just too high ... you may be wounded once, but unforgiveness can make you just relive it a thousand times"
+        },
+        {
+          "tekst": "It keeps you tied to the person who hurt you, in your own heart. They live in your heart rent free.",
+          "tijd": "1:03:17",
+          "fragment": "unforgiveness keeps you tied to the person who hurt you in your own heart ... they live in your heart rent free"
+        },
+        {
+          "tekst": "What happened to you may not be your fault, but what you do with it is your responsibility.",
+          "tijd": "1:03:54",
+          "fragment": "What has happened to you may not be your fault, ... but what you do with it is your responsibility"
+        },
+        {
+          "tekst": "You don't choose the wound, but you do choose what you do with the wound. And that's where forgiveness comes in.",
+          "tijd": "1:05:45",
+          "fragment": "We don't choose the wound. We don't choose the cause of the wound. But we choose what we do with the wound. And that's where forgiveness comes in."
+        },
+        {
+          "tekst": "Where could you give the grace you've received from Him today?",
+          "vraag": true
+        }
+      ],
+      "gebed": {
+        "tekst": "God, I'm going to trust You with this. I surrender to You because I trust You, even if I don't fully understand. I know You're good, I know You're for me, and I release it into Your hands.",
+        "tijd": "1:20:44",
+        "fragment": "God, I'm going to trust you with this. I surrender to you because I trust you ... even if I don't fully understand. I know that you're good. I know that you're love. I know that you're for me. I release it into your hands."
+      },
+      "bijbeltekst": "Col. 3:13",
+      "bijbel": {
+        "tijd": "1:01:33",
+        "fragment": "Colossians 3 verse 13 says"
+      },
+      "controle": {
+        "check": "PASS",
+        "citaat_ok": true,
+        "fouten": [],
+        "review": "PASS",
+        "bevindingen": [],
+        "status": "PASS"
+      }
+    },
+    {
+      "dag": 4,
+      "weekdag": "donderdag",
+      "titel": "Trust Jesus With the Justice",
+      "citaat": "Forgiveness will free you. Unforgiveness will imprison you.",
+      "tijd": "1:09:29",
+      "zinnen": [
+        {
+          "tekst": "When you hold on to a debt, you think you're making them pay, but you're the one paying the price. The longer you hold on to offense, the more the offense holds on to you.",
+          "tijd": "1:06:23",
+          "fragment": "I think I'm making them pay. But I'm the one paying the price. The longer I hold on to offense, the more the offense holds on to me."
+        },
+        {
+          "tekst": "But here's the thing: you can trust Jesus with the justice.",
+          "jezus": true,
+          "tijd": "1:06:59",
+          "fragment": "But here's the thing. We can trust Jesus with the justice."
+        },
+        {
+          "tekst": "Jesus told Peter to keep forgiving, and then he told him why: a king cancels a servant's debt that was way beyond what he would earn in a lifetime.",
+          "tijd": "1:06:59",
+          "fragment": "you keep forgiving them and then he tells them why he gives a story of a king ... The amount that is owed is way beyond what they would earn in a lifetime. And the king cancels the debt, forgives the debt."
+        },
+        {
+          "tekst": "The speaker believes Jesus is showing us how life works: we were designed to live in love, grace and mercy, and when we refuse to live that way after receiving forgiveness from God, something happens inside us.",
+          "tijd": "1:08:16",
+          "fragment": "I think Jesus is showing us something about the way life works. That we were designed to live in love and grace and mercy. And when we refuse to live that way, having received forgiveness from God, something happens inside us."
+        },
+        {
+          "tekst": "Hurt people hurt people, until someone breaks the cycle with forgiveness. And you are called to be one of those people.",
+          "tijd": "1:08:16",
+          "fragment": "hurt people hurt people until someone breaks the cycle with forgiveness ... until the cycle stops and we're called to be those people"
+        },
+        {
+          "tekst": "Forgiveness isn't saying that what they did is okay. It isn't forgetting, it isn't reconciliation, and it doesn't mean denying justice.",
+          "tijd": "1:09:29",
+          "fragment": "forgiveness isn't saying that what they did is okay ... Forgiveness isn't forgetting. Forgiveness is not reconciliation ... Forgiveness doesn't mean denying justice"
+        },
+        {
+          "tekst": "It means: I acknowledge what happened, I acknowledge that it hurt, but I choose not to carry that debt anymore. I release it into God's hands because I trust God with it.",
+          "tijd": "1:10:07",
+          "fragment": "Forgiveness means I acknowledge what happened. I acknowledge that it hurt. I acknowledge there was a debt. But I choose not to carry that debt anymore. I release it into God's hands because I trust God with it."
+        },
+        {
+          "tekst": "You forgive not because they deserve freedom. You forgive because you deserve freedom. Come on.",
+          "tijd": "1:10:07",
+          "fragment": "You forgive not because they deserve freedom. You forgive because you deserve freedom."
+        },
+        {
+          "tekst": "Is there a debt you could put into His hands today, trusting Him with the justice?",
+          "vraag": true
+        }
+      ],
+      "gebed": {
+        "tekst": "Search me, God. What do I need to trust You with? Where am I holding unforgiveness?",
+        "tijd": "1:22:28",
+        "fragment": "search me God what do I need to trust you with where am I holding unforgiveness"
+      },
+      "bijbeltekst": "Matt. 18:21–35",
+      "bijbel": {
+        "tijd": "1:06:59",
+        "fragment": "Matthew chapter 18 Peter comes to Jesus and asks Lord how many times should I forgive"
+      },
+      "controle": {
+        "check": "PASS",
+        "citaat_ok": true,
+        "fouten": [],
+        "review": "PASS",
+        "bevindingen": [],
+        "status": "PASS"
+      }
+    },
+    {
+      "dag": 5,
+      "weekdag": "vrijdag",
+      "titel": "Bring It Into His Light",
+      "citaat": "When you bring it into the light, God doesn't shame you. But it's in his light that we will find healing.",
+      "tijd": "1:12:27",
+      "zinnen": [
+        {
+          "tekst": "Sometimes the pain is so great that we hide it in some storage cupboard in our heart. But hiding it doesn't mean it's healed. It keeps it in the darkness, and that darkness is what you've been rescued from.",
+          "tijd": "1:11:19",
+          "fragment": "Sometimes the pain is so great ... some hidden storage cupboard in our heart ... Hiding it doesn't mean it's healed. it keeps it in the darkness ... is what we've been saved from, rescued from"
+        },
+        {
+          "tekst": "So he encourages you: whatever it is for you, bring it to God honestly.",
+          "tijd": "1:12:27",
+          "fragment": "So I encourage you to bring that, whatever it is for you, bring it to God honestly."
+        },
+        {
+          "tekst": "God wants you to live with an inner freedom, and to live the life you were created for.",
+          "tijd": "1:15:21",
+          "fragment": "God wants you to live with an inner freedom ... to live the life that you're created for"
+        },
+        {
+          "tekst": "Jesus opened the scroll in the temple and read: the Spirit of the Lord is on me, he has sent me to proclaim freedom for the prisoners and to set the oppressed free.",
+          "jezus": true,
+          "tijd": "1:16:07",
+          "fragment": "Jesus, he opened the scroll of scriptures in the temple and he opened a passage and said, the spirit of the Lord is on me ... He sent me to proclaim freedom for the prisoners ... to set the oppressed free"
+        },
+        {
+          "tekst": "The speaker has had things to deal with himself. For years he has prayed for himself and his wife to have children, and they haven't seen a miracle there. Then the question comes: can I really trust God with everything?",
+          "tijd": "1:16:53",
+          "fragment": "I've had a number of things that I've had to deal with ... for years I've prayed for myself and Debbie to have children ... and we haven't seen a miracle there and then the question you start thinking can I really trust God with everything"
+        },
+        {
+          "tekst": "He worked through that by knowing God's nature and character. Sometimes we see a part, He sees fully. God's picture is eternal, and you can wholeheartedly trust Him.",
+          "tijd": "1:17:58",
+          "fragment": "I need to know his nature and character. And I do know his nature and character. And I've worked through that ... Sometimes we see a part he sees fully ... God sees a bigger picture and his picture is eternal and we can wholeheartedly trust him"
+        },
+        {
+          "tekst": "He has had to work through deep betrayals from people close to him, but he chooses to live with a freedom of heart. And he wants you to live wholeheartedly in all that God's got for you.",
+          "tijd": "1:20:12",
+          "fragment": "I had to work through deep betrayals from people close to me. But I choose to live with a freedom of heart ... I want you to be able to live wholeheartedly in all that God's got for you."
+        },
+        {
+          "tekst": "With David in Psalm 139 he reads: search me, God, know my heart, lead me in your way. He doesn't believe the Holy Spirit will bring up more than you can handle today. It's one step at a time. God loves you. God's for you.",
+          "tijd": "1:21:53",
+          "fragment": "search me, God. Know my heart ... Lead me in your way ... I don't believe the Holy Spirit will bring stuff up in you ... that's more than you can handle today it's one step at a time ... God loves you. God's for you."
+        },
+        {
+          "tekst": "What would you like to bring into His light today?",
+          "vraag": true
+        }
+      ],
+      "gebed": {
+        "tekst": "Lord, show me what's stopping me from living free from the pain, so that my past won't hold me captive to my future. Holy Spirit, I release it to You.",
+        "tijd": "1:24:55",
+        "fragment": "what's stopping us from living free from the pain so that our past won't hold us captive to our future ... we release it to you"
+      },
+      "bijbeltekst": "Ps. 139:23–24",
+      "bijbel": {
+        "tijd": "1:21:53",
+        "fragment": "In Psalm 139 ... it's in verse 23 and 24"
+      },
+      "controle": {
+        "check": "PASS",
+        "citaat_ok": true,
+        "fouten": [],
+        "review": "PASS",
+        "bevindingen": [],
+        "status": "PASS"
+      }
+    },
+    {
+      "dag": 6,
+      "weekdag": "zaterdag",
+      "titel": "Jesus Took It Upon Himself",
+      "citaat": "Anything that would separate us from God, Jesus took upon himself on the cross, that we could have a right relationship with our loving Father in heaven.",
+      "tijd": "1:35:02",
+      "zinnen": [
+        {
+          "tekst": "At the end of the message the speaker spoke to anyone who doesn't have a relationship with God: I'm talking about how good God is, and how Jesus has come to bring that.",
+          "tijd": "1:33:53",
+          "fragment": "Maybe you're here and you don't have a relationship with God. I'm talking about how good God is. I'm talking about how Jesus has come to bring that."
+        },
+        {
+          "tekst": "In Jesus you are rescued from the dominion of darkness and brought into the kingdom of his Son. You have redemption, forgiveness of sins, freedom, and fullness of life.",
+          "jezus": true,
+          "tijd": "1:34:29",
+          "fragment": "In Jesus, we are rescued from the dominion of darkness. We're brought into the kingdom of light, the kingdom of his Son. we have redemption we have forgiveness of sins we have freedom and life fullness of life"
+        },
+        {
+          "tekst": "And it's not just for this lifetime. The most significant part of your life is eternal, and Jesus came to restore you to a right relationship with God.",
+          "tijd": "1:34:29",
+          "fragment": "it's not just for this lifetime ... the most significant part of our life is eternal and Jesus came to restore us to a right relationship ... with God"
+        },
+        {
+          "tekst": "You can feel your way around in the spiritual darkness of this lifetime and somehow make it work, like he did in that dark room. But you can't do that for eternity.",
+          "tijd": "1:35:02",
+          "fragment": "You can feel your way around. You can make it work somehow like I did walking through the dark room. but you can't do that for eternity."
+        },
+        {
+          "tekst": "He is here to tell you: God sees you, God loves you, God's for you. And Jesus paid a high price for you to live in the fullness of all that God created you for.",
+          "tijd": "1:35:43",
+          "fragment": "I'm here to tell you God sees you, God loves you, God's for you. ... And Jesus paid a high price for you to live in the fullness of all that God created you for."
+        },
+        {
+          "tekst": "He asked: if that's you, raise your hand. And he said: I believe this is the best decision you can make in your life.",
+          "tijd": "1:36:58",
+          "fragment": "If that's you, on the count of three, just raise your hand nice and high so I can see ... I believe this is the best decision you can make in your life"
+        },
+        {
+          "tekst": "Then the whole church family prayed together: I thank you that my past will not determine my future, but my relationship with you will.",
+          "tijd": "1:37:31",
+          "fragment": "we're going to pray together as a church family ... I thank you that my past will not determine my future but my relationship with you will"
+        },
+        {
+          "tekst": "And you don't have to do life alone, or your journey with God alone. The church isn't perfect, but they're for you, and they're not going to hold your past against you.",
+          "tijd": "1:38:39",
+          "fragment": "you don't have to do life alone you don't have to do your journey with god alone we as a church we're not perfect but we're for you we're not going to hold your past against you"
+        },
+        {
+          "tekst": "What will you thank Jesus for today, for what He has done for you?",
+          "vraag": true
+        }
+      ],
+      "gebed": {
+        "tekst": "Dear Jesus, thank You for what You've done for me. I accept that You died for me, for the forgiveness of my sins, and that You rose again to give me this new life. I choose to live Your way and step into the fullness of life that You died to give me.",
+        "tijd": "1:37:31",
+        "fragment": "dear Jesus thank you for what you've done for me I accept that you died for me for the forgiveness of my sins and that you rose again to give me this new life ... I choose to live your way and step into the fullness of life that you died to give me"
+      },
+      "bijbeltekst": "John 10:10",
+      "bijbel": {
+        "tijd": "55:06",
+        "fragment": "In John chapter 10, verse 10"
+      },
+      "controle": {
+        "check": "PASS",
+        "citaat_ok": true,
+        "fouten": [],
+        "review": "PASS",
+        "bevindingen": [],
+        "status": "PASS"
+      }
+    }
+  ]
+}
