@@ -34,7 +34,11 @@ npm run test:rls             # rechten in de echte database (na stap 1–5)
 npm run dev                  # http://127.0.0.1:4173 met testopslag; voor echt: serveer web/ + data/ statisch met config.js
 ```
 
-Een statische host (Cloudflare Pages, Netlify) serveert `web/` als root met `data/` ernaast; `app.js` haalt `data/evenementen.json` relatief op. De agenda ververst via launchd (⬜ nog in te richten, zie BOUWSPEC §2).
+## Online (sinds 2026-09-25)
+
+De app draait op **GitHub Pages** vanuit de openbare repo `streefkerkshipping/cletos-app` (deze map is die repo; de vault negeert hem via `.gitignore`, net als de website). Adres: https://streefkerkshipping.github.io/cletos-app/ en, zodra de CNAME bij TransIP staat (`app` → `streefkerkshipping.github.io`), **https://app.cletos.nl**.
+
+Hoe het werkt: `.github/workflows/pages.yml` maakt bij elke push naar `main` een map `_site/` = `web/` + `data/` + `config.js`. Die `config.js` wordt geschreven uit twee repo-secrets (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, gezet met `gh secret set`); het bestand staat dus niet in git. De anon-sleutel is publiek van ontwerp, de database beschermt zichzelf met RLS. Nieuwe devotions of agenda-items online zetten = de JSON in `data/` bijwerken en pushen. De agenda ververst via launchd (⬜ nog in te richten, zie BOUWSPEC §2).
 
 ## Status
 
