@@ -66,14 +66,18 @@ async function mock(req, res, url) {
   return json(res, 404, { fout: 'onbekend' });
 }
 
+// ASK_DEMO=1: Ask the service als lokale demo (lokaal/ask.mjs, via Bas' eigen Claude Code-login). Alleen op 127.0.0.1.
+const ASK = process.env.ASK_DEMO === '1' ? (await import('../lokaal/ask.mjs')).askRoute : null;
+
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
   if (url.pathname.startsWith('/mock/')) return mock(req, res, url);
-  if (url.pathname === '/config.js' && process.env.KRING_OPSLAG !== 'supabase') { res.writeHead(200, { 'Content-Type': MIME['.js'], 'Cache-Control': 'no-store' }); return res.end(`window.KRING_CONFIG={opslag:'mock',mockUrl:'/mock',verversSeconden:1,nu:${JSON.stringify(NU)}};`); }
+  if (url.pathname === '/ask' && ASK) return ASK(req, res, lees);
+  if (url.pathname === '/config.js' && process.env.KRING_OPSLAG !== 'supabase') { res.writeHead(200, { 'Content-Type': MIME['.js'], 'Cache-Control': 'no-store' }); return res.end(`window.KRING_CONFIG={opslag:'mock',mockUrl:'/mock',verversSeconden:${ASK ? 30 : 1},nu:${JSON.stringify(NU)}${ASK ? ",askUrl:'/ask'" : ''}};`); }
   const p = url.pathname === '/' ? '/index.html' : url.pathname;
   const bestand = p.startsWith('/data/') ? path.join(DATA, p.slice(6)) : path.join(WEB, p);
   if (!bestand.startsWith(WEB) && !bestand.startsWith(DATA)) { res.writeHead(403); return res.end(); }
   if (!existsSync(bestand)) { res.writeHead(404); return res.end('niet gevonden'); }
   res.writeHead(200, { 'Content-Type': MIME[path.extname(bestand)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
   res.end(await readFile(bestand));
-}).listen(PORT, '127.0.0.1', () => console.log(`Cletos testserver op http://127.0.0.1:${PORT} (opslag: mock, data: ${path.relative(ROOT, DATA)})`));
+}).listen(PORT, '127.0.0.1', () => console.log(`Cletos testserver op http://127.0.0.1:${PORT} (opslag: mock, data: ${path.relative(ROOT, DATA)}${ASK ? ', Ask the service: lokale demo' : ''})`));

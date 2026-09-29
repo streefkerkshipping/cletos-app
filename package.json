@@ -11,6 +11,7 @@
     "test:rls": "node --test tests/rls/*.test.mjs",
     "test:e2e": "playwright test",
     "dev": "node tests/dev-server.mjs",
+    "demo": "ASK_DEMO=1 PORT=4180 node tests/dev-server.mjs",
     "haal-evenementen": "python3 ../bin/haal_evenementen.py"
   },
   "devDependencies": {

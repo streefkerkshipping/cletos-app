@@ -280,3 +280,44 @@ test('E9 Nederlands: taalknop → devotion, gebed, weekkiezer, samenvatting en d
   await expect(page.locator('#dev-titel')).toHaveText(d.titel);
   await expect(page.locator('#dev-zinnen p')).toHaveText(d.zinnen.map(z => z.tekst));
 });
+
+test('E10 Ask the service aangesloten: vraag → wachttekst → antwoord met citaat, datum en link naar de seconde; weigering zonder bronnen; storing meldt zich netjes', async ({ page }) => {
+  // De motor zelf (lokaal/ask.mjs) heeft eigen tests; hier speelt de test de serverfunctie na en toetst alleen het scherm.
+  await page.route('**/config.js', r => r.fulfill({ contentType: 'text/javascript', body: "window.KRING_CONFIG={opslag:'mock',mockUrl:'/mock',verversSeconden:1,nu:'2026-09-24T12:00:00+02:00',askUrl:'/ask'};" }));
+  const goed = { antwoord: 'The speaker describes forgiveness as releasing a debt into God’s hands.', weigering: false, bronnen: [
+    { datum: '2026-09-20', titel: 'Following God Wholeheartedly', tijd: '17:26', tijd_sec: 1046, youtube_url: 'https://www.youtube.com/watch?v=AVoWL5wCHuA&t=1046s', citaat: "It's releasing a debt into God's hands" },
+    { datum: '2025-11-02', titel: 'Grace', tijd: '1:02:03', tijd_sec: 3723, youtube_url: 'https://evil.example/watch?t=1', citaat: 'a second quote from another sermon' },
+  ] };
+  let volgende = { status: 200, json: goed }, verzoek = null;
+  await page.route('**/ask', async r => { verzoek = r.request().postDataJSON(); await new Promise(x => setTimeout(x, 400)); await r.fulfill(volgende); });
+  await meldAan(page, 'Bas Streefkerk', 'Apeldoorn', '/');
+  const knop = page.getByRole('button', { name: 'Ask the service' });
+  await page.getByLabel('Your question').fill('What was said about forgiveness?');
+  await knop.click();
+  await expect(page.locator('#asktekst')).toContainText('Searching');
+  await expect(knop).toBeDisabled();
+  await expect(page.locator('#asktekst')).toHaveText(goed.antwoord);
+  await expect(knop).toBeEnabled();
+  expect(verzoek).toEqual({ vraag: 'What was said about forgiveness?', taal: 'en' });
+  await expect(page.locator('#askbronkop')).toBeVisible();
+  await expect(page.locator('#askbronnen li')).toHaveCount(2);
+  const eerste = page.locator('#askbronnen li').first();
+  await expect(eerste.locator('blockquote')).toHaveText("“It's releasing a debt into God's hands”");
+  await expect(eerste.locator('a')).toHaveAttribute('href', 'https://www.youtube.com/watch?v=AVoWL5wCHuA&t=1046s');
+  await expect(eerste).toContainText('20 September 2026');
+  await expect(eerste.locator('a')).toContainText('17:26');
+  // een link die niet naar YouTube wijst wordt geen link
+  await expect(page.locator('#askbronnen li').nth(1).locator('a')).toHaveCount(0);
+  // weigering: de zin staat er, de bronnen van de vorige vraag zijn weg
+  volgende = { status: 200, json: { antwoord: 'That isn’t in the sermons I have.', weigering: true, bronnen: [] } };
+  await page.getByLabel('Your question').fill('What is the wifi password?');
+  await knop.click();
+  await expect(page.locator('#asktekst')).toHaveText('That isn’t in the sermons I have.');
+  await expect(page.locator('#askbronnen li')).toHaveCount(0);
+  await expect(page.locator('#askbronkop')).toBeHidden();
+  // storing van de serverfunctie
+  volgende = { status: 502, json: { fout: 'geen antwoord binnen 240 seconden' } };
+  await knop.click();
+  await expect(page.locator('#asktekst')).toContainText('No answer came back');
+  await expect(knop).toBeEnabled();
+});

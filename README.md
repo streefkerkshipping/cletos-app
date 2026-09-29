@@ -32,7 +32,14 @@ npm run test:py              # feed-script
 npm run test:e2e             # browsertests op 390×844 tegen de testopslag (na stap 6)
 npm run test:rls             # rechten in de echte database (na stap 1–5)
 npm run dev                  # http://127.0.0.1:4173 met testopslag; voor echt: serveer web/ + data/ statisch met config.js
+npm run demo                 # http://127.0.0.1:4180 met een werkend Ask the service (lokale demo, zie hieronder)
 ```
+
+### Ask the service als lokale demo
+
+`npm run demo` start de app op je eigen computer met een werkend Ask the service. De vraag gaat naar Claude Code op dezelfde computer (`claude -p`, model Opus), dat alleen mag lezen in de map met preken. Elk citaat wordt daarna door een script letterlijk in het transcript opgezocht; een citaat dat niet klopt valt weg.
+
+Dit werkt alleen op de computer van wie is ingelogd bij Claude Code, en alleen op het adres 127.0.0.1. Het is geen onderdeel van de online app: een Claude-abonnement mag geen vragen van andere gebruikers afhandelen, daarvoor is een API-sleutel nodig (fase 4). Code: `lokaal/ask.mjs`; tests: `tests/ask.test.mjs` en E10; echte proef: `node tests/controle-ask-demo.mjs <map>`.
 
 ## Online (sinds 2026-09-25)
 

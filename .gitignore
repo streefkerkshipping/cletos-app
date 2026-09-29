@@ -4,3 +4,4 @@ playwright-report/
 .env
 web/config.js
 _site/
+lokaal/ask-log.jsonl

@@ -56,12 +56,33 @@ function toonPagina() {
 }
 window.addEventListener('hashchange', toonPagina);
 
-// Ask the service: de vraagfunctie zelf is fase 4 (serverfunctie met de kennislaag). Tot die tijd zegt dit blok dat eerlijk.
-$('#askformulier').onsubmit = (e) => {
+// Ask the service. Zonder askUrl in de config (app.cletos.nl) zegt dit blok eerlijk dat het nog niet is aangesloten.
+// Met askUrl (nu alleen de lokale demo, lokaal/ask.mjs) gaat de vraag naar de serverfunctie; de citaten zijn daar al gecontroleerd.
+const datumJaar = (d) => new Date(d + 'T12:00:00').toLocaleDateString(taal === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+function askBron(b) {
+  const li = document.createElement('li'), q = document.createElement('blockquote'), p = document.createElement('p');
+  q.textContent = `“${b.citaat}”`;
+  const waar = `${datumJaar(b.datum)}${b.titel ? ' · ' + b.titel : ''} · `;
+  if (String(b.youtube_url).startsWith('https://www.youtube.com/watch?')) { const a = document.createElement('a'); a.href = b.youtube_url; a.target = '_blank'; a.rel = 'noopener'; a.className = 'tijdlink'; a.textContent = b.tijd; p.append(waar, a); }
+  else p.append(waar, b.tijd);
+  li.append(q, p); return li;
+}
+$('#askformulier').onsubmit = async (e) => {
   e.preventDefault();
   const v = $('#askvraag').value.trim(); if (!v) return;
-  const p = $('#askantwoord'); p.hidden = false;
-  p.textContent = cfg?.askUrl ? t('ask_wacht') : t('ask_niet');
+  const tekst = $('#asktekst'), kop = $('#askbronkop'), lijst = $('#askbronnen'), knop = $('#askformulier button');
+  $('#askantwoord').hidden = false; kop.hidden = true; lijst.innerHTML = '';
+  if (!cfg?.askUrl) { tekst.textContent = t('ask_niet'); return; }
+  tekst.textContent = t('ask_wacht'); knop.disabled = true;
+  try {
+    const r = await fetch(cfg.askUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vraag: v, taal }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || typeof d.antwoord !== 'string') throw new Error(d.fout || String(r.status));
+    tekst.textContent = d.antwoord;
+    const bronnen = Array.isArray(d.bronnen) ? d.bronnen : [];
+    lijst.append(...bronnen.map(askBron)); kop.hidden = !bronnen.length;
+  } catch { tekst.textContent = t('ask_fout'); }
+  finally { knop.disabled = false; }
 };
 
 async function toonHome() {

@@ -75,7 +75,11 @@
           <input id="askvraag" type="text" maxlength="300" data-t-placeholder="ask_placeholder" autocomplete="off">
           <button type="submit" class="knop primair" data-t="ask_knop">Ask the service</button>
         </form>
-        <p class="ask-antwoord" id="askantwoord" role="status" hidden></p>
+        <div class="ask-antwoord" id="askantwoord" role="status" hidden>
+          <p class="ask-tekst" id="asktekst"></p>
+          <p class="devotion-kop" id="askbronkop" data-t="ask_bronnen" hidden>From the sermons</p>
+          <ol class="ask-bronnen" id="askbronnen"></ol>
+        </div>
       </section>
       <h2 data-t="zondag_kop">Sunday</h2>
       <p id="home-zondag" class="uitleg"></p>

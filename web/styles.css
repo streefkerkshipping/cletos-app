@@ -138,6 +138,12 @@ form .knop { width: 100%; margin-top: 18px; }
 .ask h2 { margin-top: 0; }
 .ask form .knop { margin-top: 10px; }
 .ask-antwoord { margin: 12px 0 0; font-size: 14px; line-height: 1.5; background: var(--vlak); border-radius: 10px; padding: 10px 12px; }
+.ask-tekst { margin: 0; font-size: 15px; line-height: 1.55; }
+.ask-antwoord .devotion-kop { margin: 14px 0 6px; }
+.ask-bronnen { list-style: none; margin: 0; padding: 0; }
+.ask-bronnen li { padding: 10px 0; border-top: 1px solid var(--lijn); }
+.ask-bronnen blockquote { margin: 0 0 4px; padding: 0 0 0 12px; border-left: 3px solid var(--creme-lijn); font-size: 14px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+.ask-bronnen p { margin: 0 0 0 15px; font-size: 12px; color: var(--stil); }
 .gebed { margin-top: 24px; background: var(--papier); border-radius: 18px; padding: 16px; }
 .gebed h2 { margin-top: 0; }
 .punten { list-style: none; margin: 0 0 8px; padding: 0; }
