@@ -140,21 +140,24 @@ function renderConnect(dagen) {
 
 const WEEKDAGEN_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const WEEKDAGEN_NL = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'];
+// Tweetalige devotions (Bas, 28-09): in het Nederlands het veld dat op _nl eindigt, als de week een goedgekeurde vertaling heeft;
+// anders het Engels. Het citaat heeft geen _nl: dat is letterlijk wat de spreker zei.
+const inTaal = (obj, veld) => (taal === 'nl' && obj?.[veld + '_nl']) || obj?.[veld] || '';
 const yt = (sec) => devoties ? `https://www.youtube.com/watch?v=${devoties.video_id}&t=${sec}s` : '#';
 function deelTekst(soort) {
-  const kop = `${devoties.titel} — Hillsong Church Netherlands, ${datumLang(devoties.week)}`;
+  const kop = `${inTaal(devoties, 'titel')} — Hillsong Church Netherlands, ${datumLang(devoties.week)}`;
   if (soort === 'terugblik') {
-    const regels = devoties.terugblik.dagen.map(d => `${d.dag}. “${d.citaat}” (${d.tijd})\n${d.zin}`);
-    const slot = devoties.terugblik.slot?.tekst ? `\n${t('slot_kop')}: ${devoties.terugblik.slot.tekst}` : '';
+    const regels = devoties.terugblik.dagen.map(d => `${d.dag}. “${d.citaat}” (${d.tijd})\n${inTaal(d, 'zin')}`);
+    const slot = devoties.terugblik.slot?.tekst ? `\n${t('slot_kop')}: ${inTaal(devoties.terugblik.slot, 'tekst')}` : '';
     return `${kop}\n${t('terugblik_titel')}\n\n${regels.join('\n\n')}\n${slot}\n\nhttps://www.youtube.com/watch?v=${devoties.video_id}`;
   }
   const d = devoties.devotions.find(x => x.dag === devDag);
-  return `${d.titel}\n${d.bijbeltekst}\n\n“${d.citaat}” (${d.tijd})\n\n${d.zinnen.map(z => z.tekst).join('\n\n')}\n\n${d.gebed.tekst}\n\n${kop}\n${yt(d.tijd_sec)}`;
+  return `${inTaal(d, 'titel')}\n${inTaal(d, 'bijbeltekst')}\n\n“${d.citaat}” (${d.tijd})\n\n${d.zinnen.map(z => inTaal(z, 'tekst')).join('\n\n')}\n\n${inTaal(d.gebed, 'tekst')}\n\n${kop}\n${yt(d.tijd_sec)}`;
 }
 async function deel(soort, statusEl) {
   const tekst = deelTekst(soort); statusEl.textContent = '';
   try {
-    if (navigator.share) { await navigator.share({ title: devoties.titel, text: tekst }); return; }
+    if (navigator.share) { await navigator.share({ title: inTaal(devoties, 'titel'), text: tekst }); return; }
     await navigator.clipboard.writeText(tekst); statusEl.textContent = t('gekopieerd');
   } catch (err) { if (err?.name !== 'AbortError') { try { await navigator.clipboard.writeText(tekst); statusEl.textContent = t('gekopieerd'); } catch { statusEl.textContent = tekst.slice(0, 80) + '…'; } } }
 }
@@ -168,7 +171,7 @@ function renderDevotion() {
   if (!devoties) return;
   // Weekkiezer: "20 September: titel", nieuwste eerst.
   const sel = $('#dev-week'); sel.innerHTML = '';
-  for (const w of devIndex) { const o = document.createElement('option'); o.value = w.week; o.textContent = `${datumLang(w.week)}: ${w.titel}`; o.selected = w.week === devWeek; sel.append(o); }
+  for (const w of devIndex) { const o = document.createElement('option'); o.value = w.week; o.textContent = `${datumLang(w.week)}: ${inTaal(w, 'titel')}`; o.selected = w.week === devWeek; sel.append(o); }
   // Dag: standaard vandaag (in de nieuwste week), anders de samenvatting.
   const nieuwste = devWeek === devIndex[0]?.week;
   if (devDag === null) devDag = nieuwste ? weekdagNu() : 0;
@@ -181,20 +184,20 @@ function renderDevotion() {
   }
   const weekLabel = t('van_zondag', { d: datumLang(devoties.week) });
   if (devDag === 0) {
-    tb.hidden = false; $('#tb-week').textContent = weekLabel; $('#tb-titel').textContent = `${datumLang(devoties.week)}: ${devoties.titel}`;
+    tb.hidden = false; $('#tb-week').textContent = weekLabel; $('#tb-titel').textContent = `${datumLang(devoties.week)}: ${inTaal(devoties, 'titel')}`;
     const ol = $('#tb-lijst'); ol.innerHTML = '';
-    for (const d of devoties.terugblik.dagen) { const li = document.createElement('li'); const q = document.createElement('strong'); q.textContent = d.citaat; const a = document.createElement('a'); a.href = yt(d.tijd_sec); a.target = '_blank'; a.rel = 'noopener'; a.textContent = d.tijd; a.className = 'tijdlink'; const z = document.createElement('span'); z.textContent = d.zin; li.append(q, ' ', a, document.createElement('br'), z); ol.append(li); }
-    const slot = devoties.terugblik.slot; $('#tb-slot').textContent = slot?.tekst || ''; $('#tb-slotkop').hidden = !slot?.tekst;
+    for (const d of devoties.terugblik.dagen) { const li = document.createElement('li'); const q = document.createElement('strong'); q.textContent = d.citaat; const a = document.createElement('a'); a.href = yt(d.tijd_sec); a.target = '_blank'; a.rel = 'noopener'; a.textContent = d.tijd; a.className = 'tijdlink'; const z = document.createElement('span'); z.textContent = inTaal(d, 'zin'); li.append(q, ' ', a, document.createElement('br'), z); ol.append(li); }
+    const slot = devoties.terugblik.slot; $('#tb-slot').textContent = inTaal(slot, 'tekst'); $('#tb-slotkop').hidden = !slot?.tekst;
     const c = $('#tb-citaat'); c.innerHTML = ''; if (slot?.citaat) { c.append(`“${slot.citaat}” `); const a = document.createElement('a'); a.href = yt(devoties.terugblik.dagen.find(d => d.tijd === slot.tijd)?.tijd_sec ?? 0); a.target = '_blank'; a.rel = 'noopener'; a.textContent = slot.tijd; a.className = 'tijdlink'; c.append(a); } c.hidden = !slot?.citaat;
     return;
   }
   const d = devoties.devotions.find(x => x.dag === devDag); if (!d) { leeg.hidden = false; return; }
   dev.hidden = false;
   $('#dev-dag').textContent = t('dag_van', { dag: (taal === 'nl' ? WEEKDAGEN_NL : WEEKDAGEN_EN)[devDag], n: d.dag }); $('#dev-week-label').textContent = weekLabel;
-  $('#dev-titel').textContent = d.titel; $('#dev-bijbel').textContent = d.bijbeltekst;
+  $('#dev-titel').textContent = inTaal(d, 'titel'); $('#dev-bijbel').textContent = inTaal(d, 'bijbeltekst');
   $('#dev-citaat').textContent = `“${d.citaat}”`; const l = $('#dev-link'); l.href = yt(d.tijd_sec); l.textContent = d.tijd; l.className = 'tijdlink';
-  const z = $('#dev-zinnen'); z.innerHTML = ''; for (const s of d.zinnen) { const p = document.createElement('p'); p.textContent = s.tekst; z.append(p); }
-  $('#dev-gebed').textContent = d.gebed.tekst;
+  const z = $('#dev-zinnen'); z.innerHTML = ''; for (const s of d.zinnen) { const p = document.createElement('p'); p.textContent = inTaal(s, 'tekst'); z.append(p); }
+  $('#dev-gebed').textContent = inTaal(d.gebed, 'tekst');
   $('#dev-deelstatus').textContent = '';
 }
 

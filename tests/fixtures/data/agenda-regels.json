@@ -1,0 +1,10 @@
+{
+  "toelichting": "Namen die uit de kerkagenda worden weggelaten (wekelijkse standaarddingen). Besluit Bas 2026-09-24: het gaat om de diensten en de bijzondere dingen zoals Sisterhood, Youth Night en de conferentie. Exacte naam, hoofdletters tellen niet.",
+  "uitsluiten": [
+    "Worship Rehearsals",
+    "RDG - Youth",
+    "Connect Group"
+  ],
+  "belangrijk_toelichting": "Namen uit de kerkagenda die onder het kopje Belangrijk komen (naast eigen items met \"belangrijk\": true).",
+  "belangrijk": []
+}

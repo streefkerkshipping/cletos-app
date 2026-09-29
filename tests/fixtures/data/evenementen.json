@@ -1,8 +1,88 @@
 {
- "opgehaald_op": "2026-09-28T22:51:26+02:00",
+ "opgehaald_op": "2026-09-24T14:06:46+02:00",
  "bron": "https://hillsongnl.churchsuite.com/embed/calendar/json",
- "vanaf": "2026-09-28",
+ "vanaf": "2026-09-24",
  "evenementen": [
+  {
+   "identifier": "uu9arbay",
+   "naam": "Sisterhood One Day",
+   "start": "2026-09-26 09:00:00",
+   "eind": "2026-09-26 18:00:00",
+   "beschrijving": "Therefore, I urge you, brothers and sisters, in view of God's mercy, to offer your bodies as a living sacrifice, holy and pleasing to God—this is your true and proper worship. Do not conform to the pattern of this world, but be transformed by the renewing of your mind. Then you will be able to test and approve what God's will is—his good, pleasing and perfect will.\n- Romans 12:1-2",
+   "locatie": {
+    "naam": "Dominion Centre",
+    "adres": "Ellermanstraat 30, 1114 AK Amsterdam-Duivendrecht",
+    "lat": 52.32651,
+    "lon": 4.93147
+   },
+   "site": null,
+   "aanmelden": {
+    "nodig": true,
+    "url": "https://hillsongnl.churchsuite.com/events/uu9arbay"
+   },
+   "categorie": "All church event",
+   "belangrijk": false
+  },
+  {
+   "identifier": "2do1gafm",
+   "naam": "10:00 Service AMS",
+   "start": "2026-09-27 10:00:00",
+   "eind": "2026-09-27 11:30:00",
+   "beschrijving": "Looking forward to gathering together as a church community.\n\nWe provide translations via headsets in our services in the following languages:\n10:00 Dutch & Spanish | 12:30 Dutch, Ukrainian & Portuguese",
+   "locatie": {
+    "naam": "Circa",
+    "adres": "Seineweg 2, 1043 BG Amsterdam",
+    "lat": 52.39083,
+    "lon": 4.81737
+   },
+   "site": "AMS",
+   "aanmelden": {
+    "nodig": false,
+    "url": ""
+   },
+   "categorie": "All church event",
+   "belangrijk": false
+  },
+  {
+   "identifier": "rsrnbjkr",
+   "naam": "12:30 Service AMS",
+   "start": "2026-09-27 12:30:00",
+   "eind": "2026-09-27 14:00:00",
+   "beschrijving": "Looking forward to gathering together as a church community.\n\nWe provide translations via headsets in our services in the following languages:\n10:00 Dutch & Spanish | 12:30 Dutch, Ukrainian & Portuguese",
+   "locatie": {
+    "naam": "Circa",
+    "adres": "Seineweg 2, 1043 BG Amsterdam",
+    "lat": 52.39083,
+    "lon": 4.81737
+   },
+   "site": "AMS",
+   "aanmelden": {
+    "nodig": false,
+    "url": ""
+   },
+   "categorie": "All church event",
+   "belangrijk": false
+  },
+  {
+   "identifier": "svjssuhu",
+   "naam": "16:00 Service AMS",
+   "start": "2026-09-27 16:00:00",
+   "eind": "2026-09-27 17:30:00",
+   "beschrijving": "Looking forward to gathering together as a church community.\n\nWe provide translations via headsets in our services in the following languages:\n10:00 Dutch & Spanish | 12:30 Dutch, Ukrainian & Portuguese",
+   "locatie": {
+    "naam": "Circa",
+    "adres": "Seineweg 2, 1043 BG Amsterdam",
+    "lat": 52.39083,
+    "lon": 4.81737
+   },
+   "site": "AMS",
+   "aanmelden": {
+    "nodig": false,
+    "url": ""
+   },
+   "categorie": "All church event",
+   "belangrijk": false
+  },
   {
    "identifier": "connectgroep-2026-09-29",
    "naam": "Connectgroep",
@@ -308,66 +388,6 @@
    "naam": "16:00 Service AMS",
    "start": "2026-10-25 16:00:00",
    "eind": "2026-10-25 17:30:00",
-   "beschrijving": "Looking forward to gathering together as a church community.\n\nWe provide translations via headsets in our services in the following languages:\n10:00 Dutch & Spanish | 12:30 Dutch, Ukrainian & Portuguese",
-   "locatie": {
-    "naam": "Circa",
-    "adres": "Seineweg 2, 1043 BG Amsterdam",
-    "lat": 52.39083,
-    "lon": 4.81737
-   },
-   "site": "AMS",
-   "aanmelden": {
-    "nodig": false,
-    "url": ""
-   },
-   "categorie": "All church event",
-   "belangrijk": false
-  },
-  {
-   "identifier": "c02tubmg",
-   "naam": "10:00 Service AMS",
-   "start": "2026-11-01 10:00:00",
-   "eind": "2026-11-01 11:30:00",
-   "beschrijving": "Looking forward to gathering together as a church community.\n\nWe provide translations via headsets in our services in the following languages:\n10:00 Dutch & Spanish | 12:30 Dutch, Ukrainian & Portuguese",
-   "locatie": {
-    "naam": "Circa",
-    "adres": "Seineweg 2, 1043 BG Amsterdam",
-    "lat": 52.39083,
-    "lon": 4.81737
-   },
-   "site": "AMS",
-   "aanmelden": {
-    "nodig": false,
-    "url": ""
-   },
-   "categorie": "All church event",
-   "belangrijk": false
-  },
-  {
-   "identifier": "1yfwkwzz",
-   "naam": "12:30 Service AMS",
-   "start": "2026-11-01 12:30:00",
-   "eind": "2026-11-01 14:00:00",
-   "beschrijving": "Looking forward to gathering together as a church community.\n\nWe provide translations via headsets in our services in the following languages:\n10:00 Dutch & Spanish | 12:30 Dutch, Ukrainian & Portuguese",
-   "locatie": {
-    "naam": "Circa",
-    "adres": "Seineweg 2, 1043 BG Amsterdam",
-    "lat": 52.39083,
-    "lon": 4.81737
-   },
-   "site": "AMS",
-   "aanmelden": {
-    "nodig": false,
-    "url": ""
-   },
-   "categorie": "All church event",
-   "belangrijk": false
-  },
-  {
-   "identifier": "owkildtt",
-   "naam": "16:00 Service AMS",
-   "start": "2026-11-01 16:00:00",
-   "eind": "2026-11-01 17:30:00",
    "beschrijving": "Looking forward to gathering together as a church community.\n\nWe provide translations via headsets in our services in the following languages:\n10:00 Dutch & Spanish | 12:30 Dutch, Ukrainian & Portuguese",
    "locatie": {
     "naam": "Circa",

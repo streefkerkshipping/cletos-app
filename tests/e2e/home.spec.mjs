@@ -1,5 +1,9 @@
 // E1, E2, S1 — de app in een echte browser op telefoonformaat, tegen de lokale testopslag (tests/dev-server.mjs).
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+// De browsertests draaien op een bevroren kopie van de gegevens (tests/fixtures/data), niet op de echte data/.
+const fixtureWeek = (week) => JSON.parse(readFileSync(new URL(`../fixtures/data/devoties/${week}.json`, import.meta.url), 'utf8'));
 
 const reset = async (request) => { await request.post('/mock/reset'); };
 const meldAan = async (page, naam, connectgroep, pad = '/#/agenda') => {
@@ -239,4 +243,40 @@ test('E8 devotion-menu: dagknoppen, eerdere week als "datum: titel" met samenvat
   await page.getByRole('tab', { name: 'Tue' }).click();
   await expect(page.locator('#dev-dag')).toHaveText('Tuesday, day 2 of 6');
   await expect(page.locator('#dev-link')).toHaveAttribute('href', /0KY9VBJ-oDY/);
+});
+
+test('E9 Nederlands: taalknop → devotion, gebed, weekkiezer, samenvatting en deeltekst in het Nederlands; citaat blijft Engels; week zonder vertaling blijft Engels', async ({ page }) => {
+  const w = fixtureWeek('2026-09-20'); const d = w.devotions.find(x => x.dag === 4);
+  expect(w.talen).toEqual(['en', 'nl']);
+  expect(d.titel_nl).toBeTruthy(); expect(d.titel_nl).not.toBe(d.titel);
+  await page.addInitScript(() => { window.__gedeeld = null; navigator.share = async (x) => { window.__gedeeld = x; }; });
+  await meldAan(page, 'Bas Streefkerk', 'Apeldoorn', '/');
+  await expect(page.locator('#dev-titel')).toHaveText(d.titel);
+  await page.locator('#taalknop').click(); // herlaadt de pagina in het Nederlands
+  await expect(page.locator('#dev-dag')).toHaveText('donderdag, dag 4 van 6');
+  await expect(page.locator('#dev-titel')).toHaveText(d.titel_nl);
+  await expect(page.locator('#dev-bijbel')).toHaveText(d.bijbeltekst_nl);
+  await expect(page.locator('#dev-citaat')).toContainText('Forgiveness will free you'); // letterlijk citaat blijft Engels
+  await expect(page.locator('#dev-zinnen p')).toHaveText(d.zinnen.map(z => z.tekst_nl));
+  await expect(page.locator('#dev-gebed')).toHaveText(d.gebed.tekst_nl);
+  await expect(page.locator('#dev-week option:checked')).toHaveText(`20 september: ${w.titel_nl}`);
+  await page.getByRole('button', { name: 'Delen' }).first().click();
+  const gedeeld = await page.evaluate(() => window.__gedeeld);
+  if (!gedeeld || !gedeeld.text.includes(d.titel_nl) || !gedeeld.text.includes(d.gebed.tekst_nl) || !gedeeld.text.includes(d.citaat)) throw new Error('deeltekst klopt niet: ' + JSON.stringify(gedeeld).slice(0, 300));
+  // samenvatting van de week
+  await page.getByRole('tab', { name: 'Samenvatting' }).click();
+  await expect(page.locator('#tb-titel')).toHaveText(`20 september: ${w.titel_nl}`);
+  await expect(page.locator('#tb-lijst li').first()).toContainText(w.terugblik.dagen[0].zin_nl);
+  await expect(page.locator('#tb-lijst li').first()).toContainText(w.terugblik.dagen[0].citaat);
+  await expect(page.locator('#tb-slot')).toHaveText(w.terugblik.slot.tekst_nl);
+  // een week zonder vertaling valt terug op het Engels in plaats van leeg te blijven
+  const oud = fixtureWeek('2026-08-30'); expect(oud.talen).toBeUndefined();
+  await page.getByLabel('Week').selectOption('2026-08-30');
+  await expect(page.locator('#tb-titel')).toHaveText(`30 augustus: ${oud.titel}`);
+  await page.getByRole('tab', { name: 'di', exact: true }).click();
+  await expect(page.locator('#dev-titel')).toHaveText(oud.devotions[1].titel);
+  // en terug naar Engels
+  await page.locator('#taalknop').click();
+  await expect(page.locator('#dev-titel')).toHaveText(d.titel);
+  await expect(page.locator('#dev-zinnen p')).toHaveText(d.zinnen.map(z => z.tekst));
 });

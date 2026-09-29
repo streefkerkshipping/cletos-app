@@ -8,7 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const WEB = path.join(ROOT, 'web'), DATA = path.join(ROOT, 'data');
+// KRING_DATA: andere datamap (relatief aan app/). De browsertests gebruiken een bevroren kopie (tests/fixtures/data),
+// zodat het publiceren van een nieuwe week of een verse agenda de tests niet breekt. Zonder KRING_DATA: de echte data/.
+const WEB = path.join(ROOT, 'web'), DATA = process.env.KRING_DATA ? path.resolve(ROOT, process.env.KRING_DATA) : path.join(ROOT, 'data');
 const PORT = Number(process.env.PORT || 4173);
 const NU = process.env.KRING_NU || '';
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png' };
@@ -74,4 +76,4 @@ http.createServer(async (req, res) => {
   if (!existsSync(bestand)) { res.writeHead(404); return res.end('niet gevonden'); }
   res.writeHead(200, { 'Content-Type': MIME[path.extname(bestand)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
   res.end(await readFile(bestand));
-}).listen(PORT, '127.0.0.1', () => console.log(`Cletos testserver op http://127.0.0.1:${PORT} (opslag: mock)`));
+}).listen(PORT, '127.0.0.1', () => console.log(`Cletos testserver op http://127.0.0.1:${PORT} (opslag: mock, data: ${path.relative(ROOT, DATA)})`));

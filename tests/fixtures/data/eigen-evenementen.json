@@ -1,0 +1,56 @@
+{
+  "toelichting": "Eigen agenda-items die niet (goed) in de kerkagenda staan, zoals de connectgroep-avond. Bas vult dit in op aanwijzing van de leiders. Velden: identifier (uniek, blijft gelijk), naam, start, eind (JJJJ-MM-DD UU:MM:SS, Amsterdamse tijd), locatie {naam, adres}, beschrijving, aanmelden {nodig, url}. Daarna: npm run haal-evenementen. Extra veld: \"belangrijk\": true zet het item onder het kopje Belangrijk en houdt het zichtbaar tot het voorbij is, ook buiten het venster van 5 weken.",
+  "voorbeeld": {
+    "identifier": "connectgroep-2026-09-30",
+    "naam": "Connectgroep",
+    "start": "2026-09-30 19:30:00",
+    "eind": "2026-09-30 21:30:00",
+    "locatie": {
+      "naam": "Bij Steven en Victoria",
+      "adres": ""
+    },
+    "beschrijving": "Samen over de preek van zondag.",
+    "aanmelden": {
+      "nodig": false,
+      "url": ""
+    },
+    "belangrijk": false
+  },
+  "evenementen": [
+    {
+      "identifier": "hillsong-conference-2026",
+      "naam": "Hillsong Conference Europe",
+      "start": "2026-10-21 00:00:00",
+      "eind": "2026-10-23 23:59:00",
+      "locatie": {
+        "naam": "Londen",
+        "adres": ""
+      },
+      "beschrijving": "Drie dagen conferentie in Londen. Kaarten en programma via de website van de kerk.",
+      "aanmelden": {
+        "nodig": true,
+        "url": "https://hillsong.com/conference/europe/"
+      },
+      "belangrijk": true,
+      "bron": "hillsong.com/netherlands/all/events (gelezen 2026-09-24): 'Hillsong Conference - London, October 21-23'"
+    },
+    {
+      "identifier": "connectgroep-2026-09-29",
+      "naam": "Connectgroep",
+      "start": "2026-09-29 19:00:00",
+      "eind": "2026-09-29 20:45:00",
+      "locatie": {
+        "naam": "Steven's office",
+        "adres": "Minden 50-54, Apeldoorn"
+      },
+      "beschrijving": "You may bring food, snack, drink. No obligation.",
+      "aanmelden": {
+        "nodig": false,
+        "url": ""
+      },
+      "belangrijk": false,
+      "categorie": "Connectgroep",
+      "bron": "Bas, 24-09 (bericht van de leiders: 'CG next week, 29 September 19.00-20.45 at Minden 50-54 Apeldoorn (Steven's office)')"
+    }
+  ]
+}
