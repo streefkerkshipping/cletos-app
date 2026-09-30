@@ -165,14 +165,24 @@ const WEEKDAGEN_NL = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', '
 // anders het Engels. Het citaat heeft geen _nl: dat is letterlijk wat de spreker zei.
 const inTaal = (obj, veld) => (taal === 'nl' && obj?.[veld + '_nl']) || obj?.[veld] || '';
 const yt = (sec) => devoties ? `https://www.youtube.com/watch?v=${devoties.video_id}&t=${sec}s` : '#';
+const stonesVorm = () => devoties?.vorm === 'stones';
 function deelTekst(soort) {
   const kop = `${inTaal(devoties, 'titel')} — Hillsong Church Netherlands, ${datumLang(devoties.week)}`;
+  if (soort === 'samenvatting') {
+    const s = devoties.samenvatting;
+    const delen = s.delen.map(x => `${x.dag}. ${inTaal(x, 'titel')} — “${x.citaat}” (${x.tijd})\n${inTaal(x, 'uitleg')}`);
+    return `${kop}\n\n${t('sv_kop')}: ${inTaal(s.kop, 'tekst')}\n“${s.kop.citaat}” (${s.kop.tijd})\n\n${delen.join('\n\n')}\n\n${t('sv_luister')}: “${s.luister.citaat}” (${s.luister.tijd})\n\n${t('sv_gebed')}: 🙏 ${inTaal(s.gebed, 'tekst')}\n\nhttps://www.youtube.com/watch?v=${devoties.video_id}`;
+  }
   if (soort === 'terugblik') {
     const regels = devoties.terugblik.dagen.map(d => `${d.dag}. “${d.citaat}” (${d.tijd})\n${inTaal(d, 'zin')}`);
     const slot = devoties.terugblik.slot?.tekst ? `\n${t('slot_kop')}: ${inTaal(devoties.terugblik.slot, 'tekst')}` : '';
     return `${kop}\n${t('terugblik_titel')}\n\n${regels.join('\n\n')}\n${slot}\n\nhttps://www.youtube.com/watch?v=${devoties.video_id}`;
   }
   const d = devoties.devotions.find(x => x.dag === devDag);
+  if (stonesVorm()) {
+    // Stones-vorm: titel · deel x van 6 · tijdvak · bijbelvers voluit · kernzin · drie alinea's · vraag · gebed
+    return `${inTaal(d, 'titel')}\n${t('deel_van', { n: d.dag })} · ${d.tijdvak}\n\n${inTaal(d, 'bijbeltekst')} — “${inTaal(d, 'bijbelvers')}”\n\n“${d.citaat}” (${d.tijd})\n\n${d.zinnen.map(z => inTaal(z, 'tekst')).join('\n\n')}\n\n${inTaal(d.vraag, 'tekst')}\n\n🙏 ${inTaal(d.gebed, 'tekst')}\n\n${kop}\n${yt(d.tijdvak_sec)}`;
+  }
   return `${inTaal(d, 'titel')}\n${inTaal(d, 'bijbeltekst')}\n\n“${d.citaat}” (${d.tijd})\n\n${d.zinnen.map(z => inTaal(z, 'tekst')).join('\n\n')}\n\n${inTaal(d.gebed, 'tekst')}\n\n${kop}\n${yt(d.tijd_sec)}`;
 }
 async function deel(soort, statusEl) {
@@ -184,11 +194,29 @@ async function deel(soort, statusEl) {
 }
 $('#dev-delen').onclick = () => deel('devotion', $('#dev-deelstatus'));
 $('#tb-delen').onclick = () => deel('terugblik', $('#tb-deelstatus'));
+$('#sv-delen-knop').onclick = () => deel('samenvatting', $('#sv-deelstatus'));
+const tijdLink = (sec, tekst) => { const a = document.createElement('a'); a.href = yt(sec); a.target = '_blank'; a.rel = 'noopener'; a.textContent = tekst; a.className = 'tijdlink'; return a; };
+// Zondag in de Stones-vorm: het ene punt, de preek in zes delen (kernzin + korte uitleg), één zin om mee te nemen, de uitnodiging, bijbelteksten, slotgebed.
+function renderSamenvatting(weekLabel) {
+  const s = devoties.samenvatting, sv = $('#samenvatting'); sv.hidden = false;
+  $('#sv-week').textContent = weekLabel; $('#sv-titel').textContent = `${datumLang(devoties.week)}: ${inTaal(devoties, 'titel')}`;
+  $('#sv-punt').textContent = inTaal(s.kop, 'tekst');
+  const c = $('#sv-citaat'); c.innerHTML = ''; c.append(`“${s.kop.citaat}” `, tijdLink(s.kop.tijd_sec, s.kop.tijd));
+  const ol = $('#sv-delen'); ol.innerHTML = '';
+  for (const x of s.delen) { const li = document.createElement('li'); const k = document.createElement('strong'); k.textContent = inTaal(x, 'titel'); const q = document.createElement('span'); q.className = 'sv-citaat'; q.textContent = ` — “${x.citaat}” `; const u = document.createElement('span'); u.className = 'sv-uitleg'; u.textContent = inTaal(x, 'uitleg'); li.append(k, q, tijdLink(x.tijd_sec, x.tijd), u); ol.append(li); }
+  const l = $('#sv-luister'); l.innerHTML = ''; l.append(`“${s.luister.citaat}” `, tijdLink(s.luister.tijd_sec, s.luister.tijd));
+  $('#sv-uitnodiging').textContent = inTaal(s.uitnodiging, 'tekst');
+  const uc = $('#sv-uitnodiging-citaat'); uc.innerHTML = ''; uc.append(`“${s.uitnodiging.citaat}” `, tijdLink(s.uitnodiging.tijd_sec, s.uitnodiging.tijd));
+  const ul = $('#sv-bijbel'); ul.innerHTML = '';
+  for (const b of s.bijbelteksten) { const li = document.createElement('li'); const r = document.createElement('strong'); r.textContent = inTaal(b, 'ref'); li.append(r, ` — ${inTaal(b, 'waar')}`); ul.append(li); }
+  $('#sv-gebed').textContent = `🙏 ${inTaal(s.gebed, 'tekst')}`;
+  $('#sv-deelstatus').textContent = '';
+}
 $('#dev-week').onchange = async (e2) => { devWeek = e2.target.value; devoties = await laadWeek(devWeek); devDag = 0; renderDevotion(); };
 
 function renderDevotion() {
   const dev = $('#devotion'), tb = $('#terugblik'), leeg = $('#devotion-leeg'), nav = $('#devotion-nav');
-  dev.hidden = tb.hidden = true; leeg.hidden = !!devoties; nav.hidden = !devoties;
+  dev.hidden = tb.hidden = $('#samenvatting').hidden = true; leeg.hidden = !!devoties; nav.hidden = !devoties;
   if (!devoties) return;
   // Weekkiezer: "20 September: titel", nieuwste eerst.
   const sel = $('#dev-week'); sel.innerHTML = '';
@@ -204,6 +232,7 @@ function renderDevotion() {
     b.onclick = () => { devDag = dag; renderDevotion(); }; chips.append(b);
   }
   const weekLabel = t('van_zondag', { d: datumLang(devoties.week) });
+  if (devDag === 0 && stonesVorm() && devoties.samenvatting) { renderSamenvatting(weekLabel); return; }
   if (devDag === 0) {
     tb.hidden = false; $('#tb-week').textContent = weekLabel; $('#tb-titel').textContent = `${datumLang(devoties.week)}: ${inTaal(devoties, 'titel')}`;
     const ol = $('#tb-lijst'); ol.innerHTML = '';
@@ -216,9 +245,14 @@ function renderDevotion() {
   dev.hidden = false;
   $('#dev-dag').textContent = t('dag_van', { dag: (taal === 'nl' ? WEEKDAGEN_NL : WEEKDAGEN_EN)[devDag], n: d.dag }); $('#dev-week-label').textContent = weekLabel;
   $('#dev-titel').textContent = inTaal(d, 'titel'); $('#dev-bijbel').textContent = inTaal(d, 'bijbeltekst');
+  // Stones-vorm: tijdvak van dit deel, bijbelvers voluit, de vraag, en 🙏 voor het gebed. Oude weken hebben die velden niet.
+  const stones = stonesVorm() && !!d.tijdvak;
+  const deelEl = $('#dev-deel'); deelEl.hidden = !stones; if (stones) { const a = $('a', deelEl); a.href = yt(d.tijdvak_sec); a.textContent = d.tijdvak; }
+  const vers = $('#dev-vers'); vers.hidden = !d.bijbelvers; vers.textContent = d.bijbelvers ? `“${inTaal(d, 'bijbelvers')}”` : '';
   $('#dev-citaat').textContent = `“${d.citaat}”`; const l = $('#dev-link'); l.href = yt(d.tijd_sec); l.textContent = d.tijd; l.className = 'tijdlink';
   const z = $('#dev-zinnen'); z.innerHTML = ''; for (const s of d.zinnen) { const p = document.createElement('p'); p.textContent = inTaal(s, 'tekst'); z.append(p); }
-  $('#dev-gebed').textContent = inTaal(d.gebed, 'tekst');
+  const vraag = $('#dev-vraag'); vraag.hidden = !d.vraag; vraag.textContent = d.vraag ? inTaal(d.vraag, 'tekst') : '';
+  $('#dev-gebed').textContent = (stones ? '🙏 ' : '') + inTaal(d.gebed, 'tekst');
   $('#dev-deelstatus').textContent = '';
 }
 

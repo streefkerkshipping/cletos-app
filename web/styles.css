@@ -112,7 +112,7 @@ form .knop { width: 100%; margin-top: 18px; }
 @media (max-width: 360px) { .rij-meer { padding-left: 14px; } .rij-open { grid-template-columns: 50px 1fr auto 16px; } }
 @media (prefers-reduced-motion: reduce) { .rij-pijl, .vink, .vink .knopje { transition: none; } }
 @media (prefers-color-scheme: dark) {
-  .devotion-bijbel { color: #cfc7b4; }
+  .devotion-bijbel, .devotion-deel { color: #cfc7b4; }
   :root { --inkt: #f2f2f0; --papier: #1d1d1c; --vlak: #101010; --lijn: #33332f; --stil: #a3a29d; --creme: #3b3424; --creme-lijn: #6e6040; }
   .kop { background: #000; }
   .zondag-waar { color: #cfc7b4; }
@@ -129,6 +129,17 @@ form .knop { width: 100%; margin-top: 18px; }
 .tijdlink { font-size: 12px; font-weight: 600; color: var(--stil); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .devotion-zinnen p { margin: 0 0 10px; font-size: 15px; line-height: 1.55; }
 .devotion-gebed { margin: 14px 0 0; font-size: 15px; line-height: 1.5; font-style: italic; }
+/* Stones-vorm (30-09): tijdvak, bijbelvers voluit, vraag; zondag-samenvatting in zes delen */
+.devotion-deel { margin: 0 0 8px; font-size: 13px; color: #5a5548; }
+.devotion-deel .tijdlink { font-size: 13px; }
+.devotion-vers { margin: -8px 0 12px; font-size: 14px; line-height: 1.5; font-style: italic; }
+.devotion-vraag { margin: 6px 0 0; font-size: 15px; line-height: 1.5; font-style: italic; font-weight: 600; }
+.sv-delen { margin: 0 0 14px; padding-left: 20px; font-size: 14px; line-height: 1.5; }
+.sv-delen li { margin-bottom: 10px; }
+.sv-delen .sv-citaat { font-style: italic; }
+.sv-delen .sv-uitleg { display: block; margin-top: 3px; }
+.sv-bijbel { margin: 0 0 14px; padding-left: 18px; font-size: 13px; line-height: 1.5; }
+.sv-bijbel strong { font-weight: 600; }
 .terugblik-lijst { margin: 0 0 14px; padding-left: 20px; font-size: 14px; line-height: 1.5; }
 .terugblik-lijst li { margin-bottom: 8px; }
 .terugblik-slot { margin: 0 0 10px; font-size: 15px; font-weight: 600; line-height: 1.5; }

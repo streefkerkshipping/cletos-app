@@ -51,9 +51,12 @@
       <article class="devotion" id="devotion" hidden>
         <p class="devotion-kop"><span id="dev-dag"></span> · <span id="dev-week-label"></span></p>
         <h2 class="devotion-titel" id="dev-titel"></h2>
+        <p class="devotion-deel" id="dev-deel" hidden><span data-t="kijk_deel">Watch this part</span>: <a target="_blank" rel="noopener" class="tijdlink"></a></p>
         <p class="devotion-bijbel" id="dev-bijbel"></p>
+        <p class="devotion-vers" id="dev-vers" hidden></p>
         <blockquote class="devotion-citaat"><span id="dev-citaat"></span> <a id="dev-link" target="_blank" rel="noopener"></a></blockquote>
         <div class="devotion-zinnen" id="dev-zinnen"></div>
+        <p class="devotion-vraag" id="dev-vraag" hidden></p>
         <p class="devotion-gebed" id="dev-gebed"></p>
         <div class="devotion-acties"><button type="button" class="knop" id="dev-delen" data-t="delen">Share</button><span class="deel-status" id="dev-deelstatus" role="status"></span></div>
       </article>
@@ -65,6 +68,25 @@
         <p class="terugblik-slot" id="tb-slot"></p>
         <blockquote class="devotion-citaat" id="tb-citaat"></blockquote>
         <div class="devotion-acties"><button type="button" class="knop" id="tb-delen" data-t="delen">Share</button><span class="deel-status" id="tb-deelstatus" role="status"></span></div>
+      </article>
+      <article class="devotion" id="samenvatting" hidden>
+        <p class="devotion-kop"><span data-t="samenvatting">Summary</span> · <span id="sv-week"></span></p>
+        <h2 class="devotion-titel" id="sv-titel"></h2>
+        <p class="devotion-kop" data-t="sv_kop">The one point of the sermon</p>
+        <p class="terugblik-slot" id="sv-punt"></p>
+        <blockquote class="devotion-citaat" id="sv-citaat"></blockquote>
+        <p class="devotion-kop" data-t="sv_delen">The sermon in six parts</p>
+        <ol class="sv-delen" id="sv-delen"></ol>
+        <p class="devotion-kop" data-t="sv_luister">One line to take with you</p>
+        <blockquote class="devotion-citaat" id="sv-luister"></blockquote>
+        <p class="devotion-kop" data-t="sv_uitnodiging">The invitation</p>
+        <p class="devotion-tekst" id="sv-uitnodiging"></p>
+        <blockquote class="devotion-citaat" id="sv-uitnodiging-citaat"></blockquote>
+        <p class="devotion-kop" data-t="sv_bijbel">Scriptures from the sermon</p>
+        <ul class="sv-bijbel" id="sv-bijbel"></ul>
+        <p class="devotion-kop" data-t="sv_gebed">Closing prayer</p>
+        <p class="devotion-gebed" id="sv-gebed"></p>
+        <div class="devotion-acties"><button type="button" class="knop" id="sv-delen-knop" data-t="delen">Share</button><span class="deel-status" id="sv-deelstatus" role="status"></span></div>
       </article>
       <p class="uitleg" id="devotion-leeg" data-t="devotion_leeg" hidden></p>
       <section class="ask" id="ask">

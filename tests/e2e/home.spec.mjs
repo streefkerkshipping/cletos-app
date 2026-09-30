@@ -321,3 +321,57 @@ test('E10 Ask the service aangesloten: vraag → wachttekst → antwoord met cit
   await expect(page.locator('#asktekst')).toContainText('No answer came back');
   await expect(knop).toBeEnabled();
 });
+
+test('E11 Stones-vorm (30-09): tijdvak, bijbelvers voluit, drie alinea\'s, vraag en gebed; zondag toont de samenvatting in zes delen; ook in het Nederlands', async ({ page }) => {
+  // De echte week 2026-09-27 (data/) wordt vóór de bevroren fixture-weken gezet, zodat de test de nieuwe vorm op echte data toetst.
+  const week = JSON.parse(readFileSync(new URL('../../data/devoties/2026-09-27.json', import.meta.url), 'utf8'));
+  expect(week.vorm).toBe('stones');
+  const d = week.devotions.find(x => x.dag === 3); expect(d.zinnen).toHaveLength(3); expect(d.vraag.tekst_nl).toBeTruthy();
+  const index = JSON.parse(readFileSync(new URL('../fixtures/data/devoties/index.json', import.meta.url), 'utf8'));
+  await page.route('**/data/devoties/index.json', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify([{ week: week.week, titel: week.titel, video_id: week.video_id, titel_nl: week.titel_nl }, ...index]) }));
+  await page.route('**/data/devoties/2026-09-27.json', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify(week) }));
+  await page.addInitScript(() => { window.__gedeeld = null; navigator.share = async (x) => { window.__gedeeld = x; }; });
+  await meldAan(page, 'Bas Streefkerk', 'Apeldoorn', '/?nu=2026-09-30T09:00:00%2B02:00');
+  await expect(page.locator('#dev-dag')).toHaveText('Wednesday, day 3 of 6');
+  await expect(page.locator('#dev-titel')).toHaveText(d.titel);
+  await expect(page.locator('#dev-deel')).toContainText(d.tijdvak);
+  await expect(page.locator('#dev-deel a')).toHaveAttribute('href', new RegExp(`t=${d.tijdvak_sec}s`));
+  await expect(page.locator('#dev-bijbel')).toHaveText(d.bijbeltekst);
+  await expect(page.locator('#dev-vers')).toContainText(d.bijbelvers);
+  await expect(page.locator('#dev-citaat')).toContainText(d.citaat);
+  await expect(page.locator('#dev-zinnen p')).toHaveText(d.zinnen.map(z => z.tekst));
+  await expect(page.locator('#dev-vraag')).toHaveText(d.vraag.tekst);
+  await expect(page.locator('#dev-gebed')).toHaveText('🙏 ' + d.gebed.tekst);
+  await page.getByRole('button', { name: 'Share' }).first().click();
+  const gedeeld = await page.evaluate(() => window.__gedeeld);
+  if (!gedeeld || !gedeeld.text.includes(d.bijbelvers) || !gedeeld.text.includes(d.vraag.tekst) || !gedeeld.text.includes('part 3 of 6')) throw new Error('deeltekst klopt niet: ' + JSON.stringify(gedeeld).slice(0, 300));
+  // zondag: de samenvatting in zes delen, niet de oude terugblik
+  await page.getByRole('tab', { name: 'Summary' }).click();
+  await expect(page.locator('#samenvatting')).toBeVisible();
+  await expect(page.locator('#terugblik')).toBeHidden();
+  await expect(page.locator('#sv-punt')).toHaveText(week.samenvatting.kop.tekst);
+  await expect(page.locator('#sv-delen li')).toHaveCount(6);
+  await expect(page.locator('#sv-delen li').first()).toContainText(week.samenvatting.delen[0].uitleg);
+  await expect(page.locator('#sv-bijbel li')).toHaveCount(week.samenvatting.bijbelteksten.length);
+  await expect(page.locator('#sv-gebed')).toContainText(week.samenvatting.gebed.tekst);
+  // Nederlands
+  await page.locator('#taalknop').click(); // herlaadt de pagina: woensdag staat weer voor
+  await expect(page.locator('#dev-titel')).toHaveText(d.titel_nl);
+  await page.getByRole('tab', { name: 'Samenvatting' }).click();
+  await expect(page.locator('#sv-punt')).toHaveText(week.samenvatting.kop.tekst_nl);
+  await expect(page.locator('#sv-delen li').first()).toContainText(week.samenvatting.delen[0].uitleg_nl);
+  await expect(page.locator('#sv-delen li').first()).toContainText(week.samenvatting.delen[0].citaat); // citaat blijft Engels
+  await page.getByRole('tab', { name: 'wo', exact: true }).click();
+  await expect(page.locator('#dev-titel')).toHaveText(d.titel_nl);
+  await expect(page.locator('#dev-vers')).toContainText(d.bijbelvers_nl);
+  await expect(page.locator('#dev-zinnen p')).toHaveText(d.zinnen.map(z => z.tekst_nl));
+  await expect(page.locator('#dev-vraag')).toHaveText(d.vraag.tekst_nl);
+  await expect(page.locator('#dev-gebed')).toHaveText('🙏 ' + d.gebed.tekst_nl);
+  // een oude week valt terug op de oude vorm
+  await page.getByLabel('Week').selectOption('2026-09-20');
+  await expect(page.locator('#terugblik')).toBeVisible();
+  await expect(page.locator('#samenvatting')).toBeHidden();
+  await page.getByRole('tab', { name: 'ma', exact: true }).click();
+  await expect(page.locator('#dev-deel')).toBeHidden();
+  await expect(page.locator('#dev-vraag')).toBeHidden();
+});
