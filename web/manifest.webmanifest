@@ -1,7 +1,7 @@
 {
-  "name": "Cletos",
-  "short_name": "Cletos",
-  "description": "Wat is er binnenkort, wanneer, waar, en wie gaat er ook.",
+  "name": "Church Friend",
+  "short_name": "Church Friend",
+  "description": "De devotie van vandaag, wat er binnenkort is, en wie er ook gaat.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

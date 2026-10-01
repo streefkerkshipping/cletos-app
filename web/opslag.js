@@ -1,5 +1,5 @@
 // Opslaglaag: één interface, twee uitvoeringen. 'supabase' voor echt, 'mock' voor tests (tests/dev-server.mjs).
-// Interface: init() → mij() → wordLid(naam, connectgroep) → gaatNaar(ev, rol='gaat'|'helpt', team) → trekIn(ev) → wieGaat() → verwijderMij()
+// Interface: init() → mij() → wordLid(naam, connectgroep: sinds 01-10 een vaste vulwaarde) → gaatNaar(ev, rol='gaat'|'helpt', team) → trekIn(ev) → wieGaat() → verwijderMij()
 // Elke functie gooit een OpslagFout als de opslag niet bereikbaar is; de schermen vangen dat op.
 
 import { parseLokaal } from './logica.js';
@@ -28,19 +28,20 @@ function mock(cfg) {
       if (!r.ok) throw new Error('opslaan geweigerd');
     },
     async trekIn(ev) { const r = await call(`/gaat_naar?event=${encodeURIComponent(ev.identifier)}`, { method: 'DELETE' }); if (!r.ok) throw new Error('intrekken geweigerd'); },
-    async wieGaat() { const r = await call('/gaat_naar'); return (await r.json()).map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden.naam, connectgroep: g.leden.connectgroep, rol: g.rol || 'gaat', team: g.team || null })); },
+    async wieGaat() { const r = await call('/gaat_naar'); return (await r.json()).map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden.naam, rol: g.rol || 'gaat', team: g.team || null })); },
     async verwijderMij() { await call('/leden', { method: 'DELETE' }); },
-    async gebedspunten(vanaf) { const r = await call(`/gebedspunten?vanaf=${vanaf}`); return (await r.json()).map(g => ({ id: g.id, soort: g.soort, tekst: g.tekst, week_eind: g.week_eind, anoniem: !!g.anoniem, naam: g.naam, van_mij: !!g.van_mij })); },
-    async voegPuntToe(soort, tekst, week_eind, anoniem = false) { const r = await call('/gebedspunten', { method: 'POST', body: JSON.stringify({ soort, tekst, week_eind, anoniem }) }); if (!r.ok) throw new Error('toevoegen geweigerd'); },
-    async verwijderPunt(id) { const r = await call(`/gebedspunten?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!r.ok) throw new Error('verwijderen geweigerd'); },
   };
 }
 
 function supabase(cfg) {
-  let sb = null, sessie = null;
-  const laad = async () => {
-    if (sb) return sb;
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/+esm');
+  let sb = null, sessie = null, bezig = null;
+  // Eén client, ook als twee aanroepen tegelijk binnenkomen; na een mislukte poging mag het opnieuw.
+  const laad = () => sb ? Promise.resolve(sb) : (bezig ??= maak().finally(() => { bezig = null; }));
+  const maak = async () => {
+    let createClient;
+    // Laadt de bibliotheek niet (offline, adblocker, storing bij de CDN), dan is dat voor de schermen een storing van de opslag.
+    try { ({ createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/+esm')); }
+    catch { throw new OpslagFout('opslag onbereikbaar'); }
     sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true } });
     return sb;
   };
@@ -83,25 +84,14 @@ function supabase(cfg) {
     },
     async wieGaat() {
       const c = await laad();
-      const rijen = vang(await c.from('gaat_naar').select('event_identifier,lid_id,rol,team,leden(naam,connectgroep)'), 'lijst ophalen');
-      return rijen.map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden?.naam || '', connectgroep: g.leden?.connectgroep || '', rol: g.rol || 'gaat', team: g.team || null }));
+      const rijen = vang(await c.from('gaat_naar').select('event_identifier,lid_id,rol,team,leden(naam)'), 'lijst ophalen');
+      return rijen.map(g => ({ event: g.event_identifier, lid_id: g.lid_id, naam: g.leden?.naam || '', rol: g.rol || 'gaat', team: g.team || null }));
     },
     async verwijderMij() {
       const c = await laad(); const mij = await this.mij(); if (!mij) return;
       vang(await c.from('leden').delete().eq('id', mij.id), 'verwijderen');
       await c.auth.signOut(); sessie = null;
     },
-    async gebedspunten(vanaf) {
-      const c = await laad();
-      const rijen = vang(await c.from('gebedspunten_zicht').select('id,soort,tekst,week_eind,anoniem,naam,van_mij').gte('week_eind', vanaf).order('gemaakt_op'), 'gebedspunten ophalen');
-      return rijen.map(g => ({ id: g.id, soort: g.soort, tekst: g.tekst, week_eind: g.week_eind, anoniem: !!g.anoniem, naam: g.naam, van_mij: !!g.van_mij }));
-    },
-    async voegPuntToe(soort, tekst, week_eind, anoniem = false) {
-      const c = await laad(); const mij = await this.mij(); if (!mij) throw new Error('niet aangemeld');
-      const r = await c.from('gebedspunten').insert({ auteur_lid_id: mij.id, soort, tekst, week_eind, anoniem });
-      if (r.error) vang(r, 'toevoegen');
-    },
-    async verwijderPunt(id) { const c = await laad(); vang(await c.from('gebedspunten').delete().eq('id', id), 'verwijderen'); },
   };
 }
 

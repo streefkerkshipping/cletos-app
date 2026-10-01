@@ -1,4 +1,4 @@
-/* Cletos. Huisstijl uit het prototype: zwart, wit, grijs, crème als accent, Montserrat. Mobiel eerst (390 px).
+/* Church Friend (tot 01-10: Cletos). Huisstijl uit het prototype: zwart, wit, grijs, crème als accent, Montserrat. Mobiel eerst (390 px).
    Eén ding springt eruit: het zondagblok. De rest is rustig en klein. */
 :root {
   --inkt: #141414; --papier: #ffffff; --vlak: #f3f2ef; --lijn: #e2e0da; --stil: #6b6a66; --creme: #efe6d3; --creme-lijn: #d8c9a3;
@@ -119,7 +119,7 @@ form .knop { width: 100%; margin-top: 18px; }
 }
 
 /* Navigatie onderaan */
-.tabs { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--papier); border-top: 1px solid var(--lijn); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); z-index: 3; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); background: var(--papier); border-top: 1px solid var(--lijn); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); z-index: 3; }
 .tabs a { text-align: center; text-decoration: none; color: var(--stil); font-size: 13px; font-weight: 600; padding: 10px 4px; border-radius: 10px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 .tabs a[aria-current="page"] { color: var(--inkt); background: var(--creme); }
 .devotion { background: var(--creme); border-radius: 18px; padding: 18px 16px; margin-bottom: 12px; }
@@ -145,30 +145,6 @@ form .knop { width: 100%; margin-top: 18px; }
 .terugblik-slot { margin: 0 0 10px; font-size: 15px; font-weight: 600; line-height: 1.5; }
 .devotion-kop { margin: 0 0 6px; font-size: 13px; font-weight: 600; }
 .devotion-tekst { margin: 0; font-size: 15px; line-height: 1.5; }
-.ask { margin-top: 24px; background: var(--papier); border-radius: 18px; padding: 16px; }
-.ask h2 { margin-top: 0; }
-.ask form .knop { margin-top: 10px; }
-.ask-antwoord { margin: 12px 0 0; font-size: 14px; line-height: 1.5; background: var(--vlak); border-radius: 10px; padding: 10px 12px; }
-.ask-tekst { margin: 0; font-size: 15px; line-height: 1.55; }
-.ask-antwoord .devotion-kop { margin: 14px 0 6px; }
-.ask-bronnen { list-style: none; margin: 0; padding: 0; }
-.ask-bronnen li { padding: 10px 0; border-top: 1px solid var(--lijn); }
-.ask-bronnen blockquote { margin: 0 0 4px; padding: 0 0 0 12px; border-left: 3px solid var(--creme-lijn); font-size: 14px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
-.ask-bronnen p { margin: 0 0 0 15px; font-size: 12px; color: var(--stil); }
-.gebed { margin-top: 24px; background: var(--papier); border-radius: 18px; padding: 16px; }
-.gebed h2 { margin-top: 0; }
-.punten { list-style: none; margin: 0 0 8px; padding: 0; }
-.punten li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 10px 0; border-top: 1px solid var(--lijn); font-size: 15px; line-height: 1.45; }
-.punten li strong { grid-column: 1; font-size: 12px; font-weight: 600; color: var(--stil); }
-.punten li span { grid-column: 1; }
-.punten li.leeg { color: var(--stil); font-size: 14px; border-top: 0; padding-top: 0; }
-.punt-weg { grid-column: 2; grid-row: 1 / span 2; align-self: center; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--lijn); background: none; color: var(--stil); font: inherit; cursor: pointer; }
-.puntformulier { display: flex; gap: 8px; margin-top: 8px; }
-.puntformulier input { flex: 1; font-size: 15px; padding: 10px 12px; }
-.puntformulier .knop { margin: 0; width: auto; min-height: 44px; padding: 8px 14px; font-size: 14px; }
-.anoniem { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; font-size: 13px; font-weight: 400; color: var(--stil); }
-.anoniem input { width: 18px; height: 18px; margin: 1px 0 0; flex: none; }
-.punten li strong.anoniem-naam { font-style: italic; }
 .devotion-nav { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 #dev-week { font: inherit; font-size: 14px; padding: 9px 12px; border: 1px solid var(--lijn); border-radius: 10px; background: var(--papier); color: var(--inkt); }
 .dagchips { display: flex; gap: 5px; flex-wrap: wrap; }
@@ -221,3 +197,85 @@ html, body { overflow-x: clip; }
   .rij-pijl { grid-area: pijl; }
   .rij.met-datum .rij-open { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: 'naam pijl' 'meta pijl' 'wanneer wanneer'; }
 }
+
+/* Church Friend (01-10): de devotie is de hoofdpagina en moet lekker lezen. Rustig wit vlak, grotere letter, ruime regels. */
+.devotion { background: var(--papier); padding: 22px 18px 20px; }
+.devotion-titel { font-size: 24px; line-height: 1.2; letter-spacing: -.01em; margin: 6px 0 4px; }
+.devotion-kop { color: var(--stil); }
+.devotion-vers { margin: -6px 0 16px; font-size: 15.5px; line-height: 1.6; }
+.devotion-citaat { margin: 0 0 18px; font-size: 18px; line-height: 1.4; border-left-color: var(--creme-lijn); }
+.devotion-zinnen p { margin: 0 0 16px; font-size: 17px; line-height: 1.65; }
+.devotion-vraag { margin: 4px 0 0; padding: 14px 16px; background: var(--creme); border-radius: 12px; font-size: 16.5px; line-height: 1.5; font-style: normal; }
+.devotion-gebed { margin: 16px 0 0; font-size: 16.5px; line-height: 1.6; }
+.sv-delen, .terugblik-lijst { font-size: 16px; line-height: 1.6; }
+.devotion-tekst, .terugblik-slot { font-size: 16.5px; line-height: 1.6; }
+/* De naam wordt pas gevraagd als je in de agenda iets aantikt. */
+.naamvraag { width: min(420px, calc(100vw - 32px)); border: 0; border-radius: 18px; padding: 20px 18px; background: var(--papier); color: var(--inkt); }
+.naamvraag::backdrop { background: rgba(0, 0, 0, .45); }
+.naamvraag h2 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
+.naamvraag .uitleg { margin: 0; }
+.naamvraag .knop + .knop { margin-top: 8px; }
+
+/* Leesstand (Bas, 01-10: "een heel lekker lees achtergrond met lettertype", zoals de devotions in de Alpha-app).
+   Matte papierkleur zonder gloed, Literata (gemaakt voor lang lezen op een scherm), ruime regels, zachte inkt. Zelfde waarden als daar. */
+:root { --lees-papier: #f4eee0; --lees-inkt: #33291c; --lees-zacht: #7a6d59; --lees-lijn: rgba(51, 41, 28, .16); --lees: 'Literata', Georgia, 'Times New Roman', serif; }
+@media (prefers-color-scheme: dark) { :root { --lees-papier: #1c1b19; --lees-inkt: #ddd6c8; --lees-zacht: #9c9484; --lees-lijn: rgba(221, 214, 200, .16); } }
+body[data-pagina="pagina-home"] { background: var(--lees-papier); }
+#pagina-home h1 { color: var(--lees-inkt); }
+#pagina-home .devotion { background: none; border-radius: 0; padding: 10px 4px 0; color: var(--lees-inkt); font-family: var(--lees); }
+#pagina-home .devotion-kop { font-family: var(--font); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--lees-zacht); margin-top: 22px; }
+#pagina-home .devotion > .devotion-kop:first-child { margin-top: 0; }
+#pagina-home .devotion-titel { font-size: 26px; font-weight: 600; line-height: 1.2; letter-spacing: -.01em; margin: 10px 0 6px; }
+#pagina-home .devotion-bijbel, #pagina-home .devotion-deel { font-size: 15px; color: var(--lees-zacht); }
+#pagina-home .devotion-vers { margin: -4px 0 0; font-size: 17px; line-height: 1.65; color: var(--lees-inkt); }
+#pagina-home .devotion-citaat { margin: 22px 0; padding: 2px 0 2px 16px; border-left: 2px solid var(--lees-zacht); font-size: 19.5px; font-style: italic; font-weight: 500; line-height: 1.5; }
+#pagina-home .devotion-zinnen p, #pagina-home .devotion-tekst, #pagina-home .terugblik-slot { font-size: 18px; line-height: 1.75; margin-bottom: 1.05em; font-weight: 400; }
+#pagina-home .devotion-vraag { margin: 22px 0 0; padding: 0; background: none; border-radius: 0; font-size: 19px; font-style: italic; font-weight: 600; line-height: 1.5; }
+#pagina-home .devotion-gebed { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--lees-lijn); color: var(--lees-zacht); font-size: 17.5px; line-height: 1.7; }
+#pagina-home .sv-delen, #pagina-home .terugblik-lijst { font-size: 17.5px; line-height: 1.65; padding-left: 24px; }
+#pagina-home .sv-delen li, #pagina-home .terugblik-lijst li { margin-bottom: 18px; }
+#pagina-home .sv-bijbel { font-size: 16px; line-height: 1.6; }
+#pagina-home .tijdlink { font-family: var(--font); font-style: normal; color: var(--lees-zacht); }
+#pagina-home .devotion-acties { margin-top: 24px; font-family: var(--font); }
+#pagina-home .devotion-acties .knop, #pagina-home #dev-week, #pagina-home .dagchip:not([aria-selected="true"]) { background: none; border-color: var(--lees-lijn); color: var(--lees-inkt); }
+#pagina-home .dagchip[aria-selected="true"] { background: var(--lees-inkt); border-color: var(--lees-inkt); color: var(--lees-papier); }
+/* Leesvoortgang: een dun lijntje bovenin dat meeloopt met het scrollen, zonder script. */
+@supports (animation-timeline: scroll()) {
+  body[data-pagina="pagina-home"]::before { content: ''; position: fixed; inset: 0 0 auto 0; height: 2px; background: var(--lees-zacht); transform-origin: 0 50%; z-index: 6; animation: lees linear both; animation-timeline: scroll(root); }
+  @keyframes lees { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+@media (prefers-reduced-motion: reduce) { body[data-pagina="pagina-home"]::before { display: none; } }
+/* Donker: de naam in de kop bleef donker op zwart (de kop gebruikte de papierkleur, die in donker ook donker is). */
+@media (prefers-color-scheme: dark) { .kop { color: #f2f2f0; } }
+
+/* Delen (01-10): rond zwart WhatsApp-logo met groen icoon, even hoog als de knoppen ernaast. */
+.wa-knop { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 0; padding: 0; background: #111; color: #25d366; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.wa-knop .wa-icoon { width: 22px; height: 22px; }
+.devotion-acties .deel-status { flex-basis: 100%; }
+@media (prefers-color-scheme: dark) { .wa-knop { background: #000; box-shadow: 0 0 0 1px var(--lees-lijn); } }
+
+/* Het beeld van de preek van die week: YouTube-afbeelding, 16:9, met een afspeelrondje. */
+.preek-beeld { position: relative; display: block; margin: 12px 0 14px; border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9; background: #000; }
+.preek-beeld img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.preek-beeld .speel { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: rgba(0, 0, 0, .62); }
+.preek-beeld .speel::after { content: ''; position: absolute; left: 22px; top: 17px; border-style: solid; border-width: 11px 0 11px 18px; border-color: transparent transparent transparent #fff; }
+
+/* De gebeden uit de dienst: eigen pagina naast zaterdag, en een knop ernaartoe onder elke devotie. */
+#pagina-home .naar-gebed { margin-top: 12px; min-height: 40px; padding: 8px 16px; font-family: var(--font); font-size: 14px; background: none; border-color: var(--lees-lijn); color: var(--lees-inkt); }
+#pagina-home .devotion-gebed.gebed-vol { margin-top: 6px; padding-top: 0; border-top: 0; color: var(--lees-inkt); font-style: normal; font-size: 18px; line-height: 1.75; }
+
+/* Witte balk bovenaan (Bas, 01-10): "Welcome home", de weekkiezer en de dagen staan op wit, zodat het leesstuk eronder
+   echt een eigen vlak is. De balk loopt over de hele breedte van het scherm. */
+#pagina-home .leeskop { background: var(--papier); margin: -16px -16px 18px; padding: 16px 16px 12px; border-bottom: 1px solid var(--lees-lijn); box-shadow: 0 0 0 100vmax var(--papier); clip-path: inset(0 -100vmax); }
+#pagina-home .leeskop h1 { color: var(--inkt); margin-top: 6px; }
+#pagina-home .leeskop .devotion-nav { margin-bottom: 0; }
+#pagina-home .leeskop #dev-week, #pagina-home .leeskop .dagchip:not([aria-selected="true"]) { border-color: var(--lijn); color: var(--inkt); }
+#pagina-home .leeskop .dagchip[aria-selected="true"] { background: var(--inkt); border-color: var(--inkt); color: var(--papier); }
+
+/* Het preekbeeld staat in de witte balk, onder de dagen (Bas, 01-10); de hoofdtekst begint eronder op de papierkleur. */
+#pagina-home .leeskop .preek-beeld { margin: 12px 0 4px; }
+
+/* Taalknop voluit (Bas, 01-10): "Switch to Dutch" / "Switch to English". Past de naam er niet naast, dan zakt die een regel. */
+.taalknop { font-size: 12px; padding: 6px 12px; letter-spacing: 0; white-space: nowrap; cursor: pointer; }
+.kop, .kop-rechts { flex-wrap: wrap; }
+.kop-rechts { justify-content: flex-end; row-gap: 6px; }

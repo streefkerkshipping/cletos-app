@@ -1,7 +1,10 @@
 const $ = (s, r = document) => r.querySelector(s);
 // Schermen. Leest data/evenementen.json (statisch) en praat via opslag.js met de opslag. Rechten liggen in de database.
-import { groepeerPerDag, formatteerTijd as fmtTijd, routeLink, isDienst, labelPeriode as lblPeriode, labelDag as lblDag, kortDag as krtDag, datumDeel, icsLink } from './logica.js';
+import { groepeerPerDag, formatteerTijd as fmtTijd, routeLink, isDienst, labelPeriode as lblPeriode, labelDag as lblDag, kortDag as krtDag, datumDeel, icsLink, leesDieplink, korteDeeltekst } from './logica.js';
 import { t, taal, zetTaal, vertaalDom } from './taal.js';
+import { leesDieplink as leesDl } from './logica.js';
+// Een gedeelde link draagt de taal van het bericht: eerst de taal zetten, dan pas de pagina opbouwen.
+{ const dl = leesDl(location.hash); if (dl?.taal && dl.taal !== taal) zetTaal(dl.taal); }
 const formatteerTijd = (s, e) => fmtTijd(s, e, taal);
 const labelPeriode = (s, e) => lblPeriode(s, e, taal);
 const labelDag = (d) => lblDag(d, taal);
@@ -14,7 +17,7 @@ const cfg = window.KRING_CONFIG;
 const nuParam = cfg?.opslag === 'mock' ? new URLSearchParams(location.search).get('nu') : null;
 const nu = () => (nuParam ? new Date(nuParam) : cfg?.nu ? new Date(cfg.nu) : new Date());
 const opslag = maakOpslag(cfg);
-let lid = null, evenementen = [], bijgewerkt = '', wie = [], punten = [], timer = null;
+let lid = null, evenementen = [], bijgewerkt = '', wie = [], timer = null;
 
 const zetStatus = (t) => { const e = $('#status'); e.textContent = t || ''; e.hidden = !t; };
 const zetAlert = (t) => { const e = $('#alert'); e.textContent = t || ''; e.hidden = !t; };
@@ -30,88 +33,61 @@ async function laadEvenementen() {
   }
 }
 
-function toonAanmelden() {
-  $('#aanmelden').hidden = false; $('#home').hidden = true; $('#wie').hidden = true;
-  $('#aanmeldformulier').onsubmit = async (e) => {
-    e.preventDefault();
-    const fout = $('#aanmeldfout'); fout.hidden = true;
-    const knop = $('#aanmeldformulier button'); knop.disabled = true;
-    try {
-      lid = await opslag.wordLid($('#naam').value.trim(), $('#connectgroep').value.trim());
-      onthoudLid(lid);
-      await toonHome();
-    } catch (err) {
-      fout.textContent = err instanceof OpslagFout ? t('aanmeld_fout_storing') : t('aanmeld_fout', { m: err.message });
-      fout.hidden = false;
-    } finally { knop.disabled = false; }
-  };
+// Geen aanmeldscherm (Bas, 01-10): devoties lees je zonder iets in te vullen. Je naam wordt pas gevraagd als je in de
+// agenda aangeeft dat je gaat of servet, en daarna op het toestel onthouden.
+const GEEN_GROEP = '--'; // de kolom connectgroep bestaat nog (2–60 tekens verplicht); de app vraagt en toont hem niet meer
+function vraagNaam() {
+  const dlg = $('#naamvraag'), form = $('#naamformulier'), fout = $('#naamfout'), knop = $('button[type=submit]', form);
+  const annuleer = $('#naam-annuleer');
+  return new Promise((klaar) => {
+    fout.hidden = true; let bezig = false;
+    form.onsubmit = async (e) => {
+      e.preventDefault(); if (bezig) return; fout.hidden = true;
+      const naam = $('#naam').value.trim(); // de database telt de naam zonder spaties eromheen
+      if (naam.length < 2) { fout.textContent = t('naam_te_kort'); fout.hidden = false; return; }
+      bezig = true; knop.disabled = annuleer.disabled = true; // sluiten tijdens het opslaan zou de naam wel en de keuze niet bewaren
+      try { lid = await opslag.wordLid(naam, GEEN_GROEP); onthoudLid(lid); toonWie(); dlg.close(); }
+      catch (err) { fout.textContent = err instanceof OpslagFout ? t('aanmeld_fout_storing') : t('aanmeld_fout', { m: err.message }); fout.hidden = false; }
+      finally { bezig = false; knop.disabled = annuleer.disabled = false; if (!dlg.open) klaar(!!lid); }
+    };
+    annuleer.onclick = () => dlg.close();
+    dlg.oncancel = (e) => { if (bezig) e.preventDefault(); }; // Escape
+    dlg.onclose = () => { if (!bezig) klaar(!!lid); }; // sluit het venster toch tijdens het opslaan, dan rondt de opslag het af
+    dlg.showModal(); $('#naam').focus();
+  });
 }
 
-const PAGINAS = { '#/home': 'pagina-home', '#/agenda': 'home', '#/connect': 'pagina-connect' };
+const PAGINAS = { '#/home': 'pagina-home', '#/agenda': 'home' };
 function toonPagina() {
   const doel = PAGINAS[location.hash] || 'pagina-home';
   for (const s of document.querySelectorAll('.pagina')) s.hidden = s.id !== doel;
+  document.body.dataset.pagina = doel; // de devotiepagina krijgt een eigen, matte leesachtergrond
   for (const l of document.querySelectorAll('#tabs a')) l.setAttribute('aria-current', l.dataset.pagina === doel ? 'page' : 'false');
   window.scrollTo(0, 0);
 }
-window.addEventListener('hashchange', toonPagina);
+window.addEventListener('hashchange', () => { const dl = leesDieplink(location.hash); if (dl?.taal && dl.taal !== taal) return location.reload(); if (dl) { verbruikDieplink(); kiesDevotie(dl.week, dl.dag); } toonPagina(); });
 
-// Ask the service. Zonder askUrl in de config (app.cletos.nl) zegt dit blok eerlijk dat het nog niet is aangesloten.
-// Met askUrl (nu alleen de lokale demo, lokaal/ask.mjs) gaat de vraag naar de serverfunctie; de citaten zijn daar al gecontroleerd.
-const datumJaar = (d) => new Date(d + 'T12:00:00').toLocaleDateString(taal === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-function askBron(b) {
-  const li = document.createElement('li'), q = document.createElement('blockquote'), p = document.createElement('p');
-  q.textContent = `“${b.citaat}”`;
-  const waar = `${datumJaar(b.datum)}${b.titel ? ' · ' + b.titel : ''} · `;
-  if (String(b.youtube_url).startsWith('https://www.youtube.com/watch?')) { const a = document.createElement('a'); a.href = b.youtube_url; a.target = '_blank'; a.rel = 'noopener'; a.className = 'tijdlink'; a.textContent = b.tijd; p.append(waar, a); }
-  else p.append(waar, b.tijd);
-  li.append(q, p); return li;
-}
-$('#askformulier').onsubmit = async (e) => {
-  e.preventDefault();
-  const v = $('#askvraag').value.trim(); if (!v) return;
-  const tekst = $('#asktekst'), kop = $('#askbronkop'), lijst = $('#askbronnen'), knop = $('#askformulier button');
-  $('#askantwoord').hidden = false; kop.hidden = true; lijst.innerHTML = '';
-  if (!cfg?.askUrl) { tekst.textContent = t('ask_niet'); return; }
-  tekst.textContent = t('ask_wacht'); knop.disabled = true;
-  try {
-    const r = await fetch(cfg.askUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vraag: v, taal }) });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok || typeof d.antwoord !== 'string') throw new Error(d.fout || String(r.status));
-    tekst.textContent = d.antwoord;
-    const bronnen = Array.isArray(d.bronnen) ? d.bronnen : [];
-    lijst.append(...bronnen.map(askBron)); kop.hidden = !bronnen.length;
-  } catch { tekst.textContent = t('ask_fout'); }
-  finally { knop.disabled = false; }
-};
-
-async function toonHome() {
-  $('#aanmelden').hidden = true; $('#app').hidden = false; $('#tabs').hidden = false; toonPagina();
-  const w = $('#wie'); w.hidden = false; w.innerHTML = '';
-  w.append(`${lid.naam} · ${lid.connectgroep}`);
+function toonWie() {
+  const w = $('#wie'); w.innerHTML = ''; w.hidden = !lid; if (!lid) return;
+  w.append(lid.naam);
   const uit = document.createElement('button'); uit.type = 'button'; uit.textContent = t('verwijder_mij');
   uit.onclick = async () => { if (!confirm(t('verwijder_bevestig'))) return; try { await opslag.verwijderMij(); lid = null; onthoudLid(null); location.reload(); } catch { zetAlert(t('fout_verwijderen')); } };
   w.append(uit);
+}
+async function toonApp() {
+  $('#app').hidden = false; $('#tabs').hidden = false; toonPagina(); toonWie();
   $('#bijgewerkt').textContent = bijgewerkt ? t('bijgewerkt', { d: new Date(bijgewerkt).toLocaleString(taal === 'nl' ? 'nl-NL' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }) }) : '';
   await ververs(true);
   clearInterval(timer); timer = setInterval(() => ververs(false), (cfg.verversSeconden || 5) * 1000);
 }
 
-const vandaagStr = () => nu().toLocaleDateString('sv-SE', { timeZone: 'Europe/Amsterdam' });
-/** Zondag van deze week (vandaag als het zondag is). */
-function weekEind() {
-  const d = new Date(nu().toLocaleString('en-US', { timeZone: 'Europe/Amsterdam' }));
-  const naarZondag = (7 - d.getDay()) % 7; d.setDate(d.getDate() + naarZondag);
-  return d.toLocaleDateString('sv-SE');
-}
-
 let vorigeStand = '';
 async function ververs(eerste) {
   let storing = false;
-  try { wie = await opslag.wieGaat(); punten = await opslag.gebedspunten(vandaagStr()); zetStatus(''); }
+  try { wie = await opslag.wieGaat(); zetStatus(''); }
   catch (err) { if (!(err instanceof OpslagFout)) throw err; storing = true; if (eerste) wie = []; zetStatus(t('status_storing')); }
   // Alleen opnieuw tekenen als er echt iets veranderd is: anders verspringt de pagina en raakt invoer (teamveld) kwijt.
-  const stand = JSON.stringify({ wie, punten, storing, taal });
+  const stand = JSON.stringify({ wie, storing, taal, lid: lid?.id });
   if (!eerste && stand === vorigeStand) return;
   vorigeStand = stand;
   try { render(); } catch (err) { console.error('render mislukt:', err); throw err; }
@@ -124,7 +100,7 @@ function render() {
   const zondagDoel = $('#zondag'); zondagDoel.innerHTML = '';
   const week = $('#week'), later = $('#later'), belangrijk = $('#belangrijk');
   $('.rijen', week).innerHTML = ''; $('.rijen', later).innerHTML = ''; $('.rijen', belangrijk).innerHTML = '';
-  if (!dagen.length) { zondagDoel.textContent = t('leeg_agenda'); week.hidden = later.hidden = true; return; }
+  if (!dagen.length) { zondagDoel.textContent = t('leeg_agenda'); week.hidden = later.hidden = belangrijk.hidden = true; renderDevotion(); return; }
 
   // Anker: de eerstvolgende dag met een dienst. Belangrijke items krijgen een eigen kop en staan niet dubbel in de lijst.
   const zondag = dagen.find(d => d.items.some(isDienst));
@@ -149,14 +125,7 @@ function render() {
   $('.rijen', later).hidden = !laterOpen;
   knop.onclick = () => { laterOpen = !laterOpen; try { localStorage.setItem('kring.later', laterOpen ? '1' : '0'); } catch {} render(); };
   for (const d of daarna) { const kop = document.createElement('h3'); kop.className = 'later-dag'; kop.textContent = d.label; $('.rijen', later).append(kop); for (const ev of d.items) $('.rijen', later).append(rij(ev, d.datum)); }
-  renderConnect(dagen); renderStart(zondag, dagen); renderPunten();
-}
-
-function renderConnect(dagen) {
-  const lijst = $('#connect-lijst'); lijst.innerHTML = '';
-  const items = dagen.flatMap(d => d.items.map(ev => [ev, d.datum])).filter(([ev]) => ev.categorie === 'Connectgroep');
-  $('#connect-leeg').hidden = !!items.length;
-  items.forEach(([ev, datum], i) => { if (i === 0) open.add(ev.identifier); lijst.append(rij(ev, datum, true)); });
+  renderDevotion();
 }
 
 const WEEKDAGEN_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -166,40 +135,38 @@ const WEEKDAGEN_NL = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', '
 const inTaal = (obj, veld) => (taal === 'nl' && obj?.[veld + '_nl']) || obj?.[veld] || '';
 const yt = (sec) => devoties ? `https://www.youtube.com/watch?v=${devoties.video_id}&t=${sec}s` : '#';
 const stonesVorm = () => devoties?.vorm === 'stones';
-function deelTekst(soort) {
-  const kop = `${inTaal(devoties, 'titel')} — Hillsong Church Netherlands, ${datumLang(devoties.week)}`;
-  if (soort === 'samenvatting') {
-    const s = devoties.samenvatting;
-    const delen = s.delen.map(x => `${x.dag}. ${inTaal(x, 'titel')} — “${x.citaat}” (${x.tijd})\n${inTaal(x, 'uitleg')}`);
-    return `${kop}\n\n${t('sv_kop')}: ${inTaal(s.kop, 'tekst')}\n“${s.kop.citaat}” (${s.kop.tijd})\n\n${delen.join('\n\n')}\n\n${t('sv_luister')}: “${s.luister.citaat}” (${s.luister.tijd})\n\n${t('sv_gebed')}: 🙏 ${inTaal(s.gebed, 'tekst')}\n\nhttps://www.youtube.com/watch?v=${devoties.video_id}`;
-  }
-  if (soort === 'terugblik') {
-    const regels = devoties.terugblik.dagen.map(d => `${d.dag}. “${d.citaat}” (${d.tijd})\n${inTaal(d, 'zin')}`);
-    const slot = devoties.terugblik.slot?.tekst ? `\n${t('slot_kop')}: ${inTaal(devoties.terugblik.slot, 'tekst')}` : '';
-    return `${kop}\n${t('terugblik_titel')}\n\n${regels.join('\n\n')}\n${slot}\n\nhttps://www.youtube.com/watch?v=${devoties.video_id}`;
-  }
-  const d = devoties.devotions.find(x => x.dag === devDag);
-  if (stonesVorm()) {
-    // Stones-vorm: titel · deel x van 6 · tijdvak · bijbelvers voluit · kernzin · drie alinea's · vraag · gebed
-    return `${inTaal(d, 'titel')}\n${t('deel_van', { n: d.dag })} · ${d.tijdvak}\n\n${inTaal(d, 'bijbeltekst')} — “${inTaal(d, 'bijbelvers')}”\n\n“${d.citaat}” (${d.tijd})\n\n${d.zinnen.map(z => inTaal(z, 'tekst')).join('\n\n')}\n\n${inTaal(d.vraag, 'tekst')}\n\n🙏 ${inTaal(d.gebed, 'tekst')}\n\n${kop}\n${yt(d.tijdvak_sec)}`;
-  }
-  return `${inTaal(d, 'titel')}\n${inTaal(d, 'bijbeltekst')}\n\n“${d.citaat}” (${d.tijd})\n\n${d.zinnen.map(z => inTaal(z, 'tekst')).join('\n\n')}\n\n${inTaal(d.gebed, 'tekst')}\n\n${kop}\n${yt(d.tijd_sec)}`;
+// Het beeld van de preek van die week (Bas, 01-10): de YouTube-afbeelding, met een tik naar de video op de juiste seconde.
+const VIDEO_ID = /^[\w-]{6,20}$/;
+function zetBeeld(el, sec, label) {
+  const ok = VIDEO_ID.test(devoties?.video_id || ''); el.hidden = !ok; if (!ok) return;
+  el.href = sec ? yt(sec) : `https://www.youtube.com/watch?v=${devoties.video_id}`; el.setAttribute('aria-label', label);
+  const img = $('img', el), src = `https://i.ytimg.com/vi/${devoties.video_id}/hqdefault.jpg`;
+  img.onerror = () => { el.hidden = true; }; if (img.getAttribute('src') !== src) img.src = src;
 }
-async function deel(soort, statusEl) {
-  const tekst = deelTekst(soort); statusEl.textContent = '';
-  try {
-    if (navigator.share) { await navigator.share({ title: inTaal(devoties, 'titel'), text: tekst }); return; }
-    await navigator.clipboard.writeText(tekst); statusEl.textContent = t('gekopieerd');
-  } catch (err) { if (err?.name !== 'AbortError') { try { await navigator.clipboard.writeText(tekst); statusEl.textContent = t('gekopieerd'); } catch { statusEl.textContent = tekst.slice(0, 80) + '…'; } } }
+// Delen (Bas, 01-10): een kort bericht waarin staat waar het over gaat, met een link naar de devotie in de app.
+const appBasis = () => location.origin + location.pathname;
+const deelTekst = (soort) => korteDeeltekst(devoties, soort === 'devotion' ? devDag : 0, taal, appBasis(), t('lees_hele'));
+async function kopieer(tekst, statusEl, melding) {
+  try { await navigator.clipboard.writeText(tekst); statusEl.textContent = melding; } catch { statusEl.textContent = tekst.length > 90 ? tekst.slice(0, 90) + '…' : tekst; }
 }
-$('#dev-delen').onclick = () => deel('devotion', $('#dev-deelstatus'));
-$('#tb-delen').onclick = () => deel('terugblik', $('#tb-deelstatus'));
-$('#sv-delen-knop').onclick = () => deel('samenvatting', $('#sv-deelstatus'));
+// Drie knoppen onder elke devotie (Bas, 01-10): WhatsApp, algemeen delen (het deelmenu van de telefoon) en de link kopiëren.
+for (const blok of document.querySelectorAll('.devotion-acties')) {
+  const soort = blok.dataset.soort, status = $('.deel-status', blok);
+  $('.wa-knop', blok).onclick = () => { status.textContent = ''; window.open('https://wa.me/?text=' + encodeURIComponent(deelTekst(soort)), '_blank', 'noopener'); };
+  $('.knop:not(.kopieer-knop)', blok).onclick = async () => {
+    const tekst = deelTekst(soort); status.textContent = '';
+    if (!navigator.share) return kopieer(tekst, status, t('gekopieerd'));
+    try { await navigator.share({ title: inTaal(devoties, 'titel'), text: tekst }); } catch (err) { if (err?.name !== 'AbortError') await kopieer(tekst, status, t('gekopieerd')); }
+  };
+  // Kopiëren neemt hetzelfde bericht mee als delen, met de link eronder (Bas, 01-10: alleen een link zegt te weinig).
+  $('.kopieer-knop', blok).onclick = () => kopieer(deelTekst(soort), status, t('gekopieerd'));
+}
 const tijdLink = (sec, tekst) => { const a = document.createElement('a'); a.href = yt(sec); a.target = '_blank'; a.rel = 'noopener'; a.textContent = tekst; a.className = 'tijdlink'; return a; };
 // Zondag in de Stones-vorm: het ene punt, de preek in zes delen (kernzin + korte uitleg), één zin om mee te nemen, de uitnodiging, bijbelteksten, slotgebed.
 function renderSamenvatting(weekLabel) {
   const s = devoties.samenvatting, sv = $('#samenvatting'); sv.hidden = false;
   $('#sv-week').textContent = weekLabel; $('#sv-titel').textContent = `${datumLang(devoties.week)}: ${inTaal(devoties, 'titel')}`;
+  zetBeeld($('#kop-beeld'), 0, t('kijk_preek'));
   $('#sv-punt').textContent = inTaal(s.kop, 'tekst');
   const c = $('#sv-citaat'); c.innerHTML = ''; c.append(`“${s.kop.citaat}” `, tijdLink(s.kop.tijd_sec, s.kop.tijd));
   const ol = $('#sv-delen'); ol.innerHTML = '';
@@ -212,12 +179,26 @@ function renderSamenvatting(weekLabel) {
   $('#sv-gebed').textContent = `🙏 ${inTaal(s.gebed, 'tekst')}`;
   $('#sv-deelstatus').textContent = '';
 }
+const GEBED = 7;
+function renderGebeden(weekLabel) {
+  $('#gebeden').hidden = false; $('#gb-week').textContent = weekLabel;
+  zetBeeld($('#kop-beeld'), devoties.gebeden[0].tijd_sec, t('kijk_deel'));
+  const lijst = $('#gb-lijst'); lijst.innerHTML = '';
+  for (const g of devoties.gebeden) {
+    const kop = document.createElement('p'); kop.className = 'devotion-kop'; kop.append(inTaal(g, 'titel'), ' · ', tijdLink(g.tijd_sec, g.tijd));
+    const p = document.createElement('p'); p.className = 'devotion-gebed gebed-vol'; p.textContent = `🙏 ${inTaal(g, 'tekst')}`;
+    lijst.append(kop, p);
+  }
+}
 $('#dev-week').onchange = async (e2) => { devWeek = e2.target.value; devoties = await laadWeek(devWeek); devDag = 0; renderDevotion(); };
 
 function renderDevotion() {
   const dev = $('#devotion'), tb = $('#terugblik'), leeg = $('#devotion-leeg'), nav = $('#devotion-nav');
-  dev.hidden = tb.hidden = $('#samenvatting').hidden = true; leeg.hidden = !!devoties; nav.hidden = !devoties;
+  dev.hidden = tb.hidden = $('#samenvatting').hidden = $('#gebeden').hidden = true; leeg.hidden = !!devoties; nav.hidden = !devoties;
   if (!devoties) return;
+  // De gebeden uit de dienst (Bas, 01-10): een eigen knop naast zaterdag, en onder elke devotie een knop ernaartoe.
+  const heeftGebeden = !!devoties.gebeden?.length; if (devDag === GEBED && !heeftGebeden) devDag = 0;
+  for (const k of document.querySelectorAll('.naar-gebed')) { k.hidden = !heeftGebeden; k.onclick = () => { devDag = GEBED; renderDevotion(); window.scrollTo(0, 0); }; }
   // Weekkiezer: "20 September: titel", nieuwste eerst.
   const sel = $('#dev-week'); sel.innerHTML = '';
   for (const w of devIndex) { const o = document.createElement('option'); o.value = w.week; o.textContent = `${datumLang(w.week)}: ${inTaal(w, 'titel')}`; o.selected = w.week === devWeek; sel.append(o); }
@@ -225,16 +206,20 @@ function renderDevotion() {
   const nieuwste = devWeek === devIndex[0]?.week;
   if (devDag === null) devDag = nieuwste ? weekdagNu() : 0;
   const chips = $('#dev-dagen'); chips.innerHTML = '';
-  for (const dag of [0, 1, 2, 3, 4, 5, 6]) {
+  for (const dag of heeftGebeden ? [0, 1, 2, 3, 4, 5, 6, GEBED] : [0, 1, 2, 3, 4, 5, 6]) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'chip dagchip'; b.setAttribute('role', 'tab');
-    b.textContent = dag === 0 ? t('samenvatting') : t('dag_kort')[dag]; b.setAttribute('aria-selected', String(dag === devDag));
-    if (nieuwste && dag > weekdagNu() && weekdagNu() !== 0) b.disabled = true; // nog niet aan de beurt
+    b.textContent = dag === 0 ? t('samenvatting') : dag === GEBED ? t('gebed_tab') : t('dag_kort')[dag]; b.setAttribute('aria-selected', String(dag === devDag));
+    if (nieuwste && dag !== GEBED && dag > weekdagNu() && weekdagNu() !== 0) b.disabled = true; // nog niet aan de beurt
     b.onclick = () => { devDag = dag; renderDevotion(); }; chips.append(b);
   }
+  // De gekozen knop schuift in beeld (de rij is op een telefoon breder dan het scherm), zonder de pagina te verschuiven.
+  const gekozen = chips.querySelector('[aria-selected="true"]'); if (gekozen) chips.scrollLeft = Math.max(0, gekozen.offsetLeft - chips.offsetLeft - (chips.clientWidth - gekozen.offsetWidth) / 2);
   const weekLabel = t('van_zondag', { d: datumLang(devoties.week) });
+  if (devDag === GEBED) { renderGebeden(weekLabel); return; }
   if (devDag === 0 && stonesVorm() && devoties.samenvatting) { renderSamenvatting(weekLabel); return; }
   if (devDag === 0) {
     tb.hidden = false; $('#tb-week').textContent = weekLabel; $('#tb-titel').textContent = `${datumLang(devoties.week)}: ${inTaal(devoties, 'titel')}`;
+    zetBeeld($('#kop-beeld'), 0, t('kijk_preek'));
     const ol = $('#tb-lijst'); ol.innerHTML = '';
     for (const d of devoties.terugblik.dagen) { const li = document.createElement('li'); const q = document.createElement('strong'); q.textContent = d.citaat; const a = document.createElement('a'); a.href = yt(d.tijd_sec); a.target = '_blank'; a.rel = 'noopener'; a.textContent = d.tijd; a.className = 'tijdlink'; const z = document.createElement('span'); z.textContent = inTaal(d, 'zin'); li.append(q, ' ', a, document.createElement('br'), z); ol.append(li); }
     const slot = devoties.terugblik.slot; $('#tb-slot').textContent = inTaal(slot, 'tekst'); $('#tb-slotkop').hidden = !slot?.tekst;
@@ -247,6 +232,7 @@ function renderDevotion() {
   $('#dev-titel').textContent = inTaal(d, 'titel'); $('#dev-bijbel').textContent = inTaal(d, 'bijbeltekst');
   // Stones-vorm: tijdvak van dit deel, bijbelvers voluit, de vraag, en 🙏 voor het gebed. Oude weken hebben die velden niet.
   const stones = stonesVorm() && !!d.tijdvak;
+  zetBeeld($('#kop-beeld'), stones ? d.tijdvak_sec : d.tijd_sec, t('kijk_deel'));
   const deelEl = $('#dev-deel'); deelEl.hidden = !stones; if (stones) { const a = $('a', deelEl); a.href = yt(d.tijdvak_sec); a.textContent = d.tijdvak; }
   const vers = $('#dev-vers'); vers.hidden = !d.bijbelvers; vers.textContent = d.bijbelvers ? `“${inTaal(d, 'bijbelvers')}”` : '';
   $('#dev-citaat').textContent = `“${d.citaat}”`; const l = $('#dev-link'); l.href = yt(d.tijd_sec); l.textContent = d.tijd; l.className = 'tijdlink';
@@ -254,34 +240,6 @@ function renderDevotion() {
   const vraag = $('#dev-vraag'); vraag.hidden = !d.vraag; vraag.textContent = d.vraag ? inTaal(d.vraag, 'tekst') : '';
   $('#dev-gebed').textContent = (stones ? '🙏 ' : '') + inTaal(d.gebed, 'tekst');
   $('#dev-deelstatus').textContent = '';
-}
-
-function renderPunten() {
-  for (const soort of ['prayer', 'praise']) {
-    const ul = $(`#${soort}-lijst`); ul.innerHTML = '';
-    const lijst = punten.filter(p => p.soort === soort);
-    if (!lijst.length) { const li = document.createElement('li'); li.className = 'leeg'; li.textContent = soort === 'prayer' ? t('geen_prayers') : t('geen_praise'); ul.append(li); continue; }
-    for (const p of lijst) {
-      const li = document.createElement('li'); const n = document.createElement('strong'); n.textContent = p.anoniem ? t('anoniem') : p.naam; if (p.anoniem) n.classList.add('anoniem-naam'); const tx = document.createElement('span'); tx.textContent = p.tekst; li.append(n, tx);
-      if (p.van_mij) { const x = document.createElement('button'); x.type = 'button'; x.className = 'punt-weg'; x.setAttribute('aria-label', t('verwijder_punt')); x.textContent = '✕'; x.onclick = () => actie(() => opslag.verwijderPunt(p.id), t('fout_punt_weg')); li.append(x); }
-      ul.append(li);
-    }
-  }
-}
-for (const f of document.querySelectorAll('.puntformulier')) f.onsubmit = (e) => {
-  e.preventDefault(); const inp = $('input', f); const v = inp.value.trim(); if (!v) return;
-  const anoniem = f.dataset.soort === 'prayer' && $('#prayer-anoniem').checked;
-  actie(async () => { await opslag.voegPuntToe(f.dataset.soort, v, weekEind(), anoniem); inp.value = ''; if (anoniem) $('#prayer-anoniem').checked = false; }, t('fout_toevoegen'));
-};
-
-function renderStart(zondag, dagen) {
-  renderDevotion();
-  if (zondag) {
-    const mijn = wie.filter(g => lid && g.lid_id === lid.id).map(g => zondag.items.find(ev => ev.identifier === g.event)).filter(Boolean);
-    $('#home-zondag').textContent = mijn.length ? t('zondag_gekozen', { dag: zondag.label, t: mijn.map(ev => ev.start.slice(11, 16)).join(taal === 'nl' ? ' en ' : ' and ') }) : t('zondag_niet', { dag: zondag.label });
-  } else $('#home-zondag').textContent = t('zondag_geen');
-  const cg = dagen.flatMap(d => d.items).find(ev => ev.categorie === 'Connectgroep');
-  $('#home-connect').textContent = cg ? `${labelDag(datumDeel(cg.start))}, ${formatteerTijd(cg.start, cg.eind)} · ${[cg.locatie.naam, cg.locatie.adres].filter(Boolean).join(', ')}` : t('connect_geen');
 }
 
 function zondagBlok(d) {
@@ -304,11 +262,20 @@ async function laadWeek(week) {
 }
 fetch('data/devoties/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).then(async (idx) => {
   devIndex = idx; if (!idx.length) return;
-  devWeek = idx[0].week; devoties = await laadWeek(devWeek); devDag = null; if (lid) renderDevotion();
+  const dl = leesDieplink(location.hash);
+  if (dl) { verbruikDieplink(); if (await kiesDevotie(dl.week, dl.dag)) return; } // onbekende week of ontbrekend bestand: gewoon vandaag
+  devWeek = idx[0].week; devoties = await laadWeek(devWeek); devDag = null; renderDevotion();
 }).catch(() => {});
+// Deep link (#/d/<week>/<dag>): opent precies die devotie, ook een dag die deze week nog niet aan de beurt is.
+async function kiesDevotie(week, dag) {
+  if (!devIndex.some(w => w.week === week)) return false;
+  const d = await laadWeek(week).catch(() => null); if (!d) return false;
+  devWeek = week; devoties = d; devDag = dag; renderDevotion(); return true;
+}
+// De link is eenmalig: daarna staat de app weer op #/home, zodat herladen vandaag toont en dezelfde link opnieuw werkt.
+function verbruikDieplink() { try { history.replaceState(null, '', location.pathname + location.search + '#/home'); } catch {} }
 const weekdagNu = () => new Date(nu().toLocaleString('en-US', { timeZone: 'Europe/Amsterdam' })).getDay();
 const datumLang = (week) => new Date(week + 'T12:00:00').toLocaleDateString(taal === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long' });
-fetch('data/connectgroepen.json').then(r => r.json()).then(d => { const dl = $('#connectgroepen'); if (!dl) return; dl.innerHTML = ''; for (const g of d.connectgroepen || []) { const o = document.createElement('option'); o.value = g; dl.append(o); } }).catch(() => {});
 let teams = []; fetch('data/teams.json').then(r => r.json()).then(d => { teams = d.teams || []; }).catch(() => {});
 const teamOpen = new Set();
 
@@ -364,7 +331,7 @@ function vulLijst(blok, gaan, sleutel, metTeam) {
   const ul = $('.namen', blok);
   const alles = uitgeklapt.has(sleutel);
   const toon = alles ? gaan : gaan.slice(0, MAX_NAMEN);
-  if (gaan.length) for (const g of toon) { const li = document.createElement('li'); const n = document.createElement('span'); n.className = 'n'; n.textContent = g.naam; const w = document.createElement('span'); w.className = 'w'; w.textContent = metTeam && g.team ? `${g.connectgroep} · ${g.team}` : g.connectgroep; li.append(n, w); if (lid && g.lid_id === lid.id) li.classList.add('ik'); ul.append(li); }
+  if (gaan.length) for (const g of toon) { const li = document.createElement('li'); const n = document.createElement('span'); n.className = 'n'; n.textContent = g.naam; li.append(n); if (metTeam && g.team) { const w = document.createElement('span'); w.className = 'w'; w.textContent = g.team; li.append(w); } if (lid && g.lid_id === lid.id) li.classList.add('ik'); ul.append(li); }
   else { const li = document.createElement('li'); li.className = 'leeg'; li.textContent = t('nog_niemand'); ul.append(li); }
   if (gaan.length > MAX_NAMEN) {
     const meer = document.createElement('button'); meer.type = 'button'; meer.className = 'meer';
@@ -404,7 +371,7 @@ function rij(ev, datum, metDatum = false) {
   const ag = $('.agenda', r); ag.href = icsLink(ev); ag.download = `cletos-${ev.identifier}.ics`;
   $('.ikga', r).hidden = ikGa; $('.tochniet', r).hidden = !ikGa;
   const wg = $('.wiegaat', r); wg.innerHTML = '';
-  if (gaan.length) { wg.append(taal === 'nl' ? 'Gaat ook: ' : 'Also going: '); gaan.forEach((g, i) => { const s = document.createElement('strong'); s.textContent = `${g.naam} · ${g.connectgroep}`; wg.append(s); if (i < gaan.length - 1) wg.append(', '); }); }
+  if (gaan.length) { wg.append(taal === 'nl' ? 'Gaat ook: ' : 'Also going: '); gaan.forEach((g, i) => { const s = document.createElement('strong'); s.textContent = g.naam; wg.append(s); if (i < gaan.length - 1) wg.append(', '); }); }
   else wg.textContent = taal === 'nl' ? 'Nog niemand aangemeld.' : 'No one signed up yet.';
   $('.ikga', r).onclick = () => actie(() => opslag.gaatNaar(ev), t('fout_ikga'));
   $('.tochniet', r).onclick = () => actie(() => opslag.trekIn(ev), t('fout_intrekken'));
@@ -413,6 +380,11 @@ function rij(ev, datum, metDatum = false) {
 
 async function actie(fn, melding) {
   zetAlert('');
+  if (!lid) {
+    // Het toestel kan al een naam hebben die de app nog niet kent (gestart tijdens een storing, of ingevuld in een ander tabblad).
+    try { lid = await opslag.mij(); } catch {}
+    if (lid) { onthoudLid(lid); toonWie(); } else if (!(await vraagNaam())) return;
+  }
   try { await fn(); await ververs(false); }
   catch (err) { zetAlert(err instanceof OpslagFout ? melding : t('niet_gelukt', { m: err.message })); }
 }
@@ -423,10 +395,11 @@ const onthoudenLid = () => { try { return JSON.parse(localStorage.getItem('kring
 
 (async function start() {
   if ('serviceWorker' in navigator && cfg?.opslag !== 'mock') { try { await navigator.serviceWorker.register('sw.js'); } catch {} }
-  await laadEvenementen();
+  // Eerst de pagina, dan de opslag: de devotie en de agenda wachten nooit op de database (Bas, 01-10: lezen zonder iets in te vullen).
+  $('#app').hidden = false; $('#tabs').hidden = false; toonPagina();
+  await laadEvenementen(); render();
   let storing = false;
   try { await opslag.init(); lid = await opslag.mij(); onthoudLid(lid); }
   catch (err) { storing = err instanceof OpslagFout; lid = storing ? onthoudenLid() : null; }
-  if (lid) { await toonHome(); if (storing) zetStatus(t('status_storing')); }
-  else toonAanmelden();
+  await toonApp(); if (storing) zetStatus(t('status_storing'));
 })();

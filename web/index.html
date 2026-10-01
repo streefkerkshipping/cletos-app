@@ -4,49 +4,37 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111111">
-  <title>Cletos</title>
-  <meta name="description" content="What’s coming up, when, where, and who else is going.">
+  <title>Church Friend</title>
+  <meta name="description" content="Today’s devotion, what’s coming up, and who else is going.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icoon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Cletos">
+  <meta name="apple-mobile-web-app-title" content="Church Friend">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..600;1,7..72,400..500&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="kop">
-    <div class="merk">Cletos</div>
-    <div class="kop-rechts"><button type="button" id="taalknop" class="taalknop" aria-label="Switch language">NL</button><div class="wie" id="wie" hidden></div></div>
+    <div class="merk">Church Friend</div>
+    <div class="kop-rechts"><button type="button" id="taalknop" class="taalknop">Switch to Dutch</button><div class="wie" id="wie" hidden></div></div>
   </header>
 
   <main id="main">
-    <section id="aanmelden" class="paneel" hidden>
-      <h1 data-t="welkom">Welcome</h1>
-      <p class="uitleg" data-t="aanmeld_uitleg"></p>
-      <form id="aanmeldformulier" autocomplete="on">
-        <label for="naam" data-t="naam">Name</label>
-        <input id="naam" name="naam" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="Bas Streefkerk">
-        <label for="connectgroep" data-t="connectgroep">Connect group</label>
-        <input id="connectgroep" name="connectgroep" type="text" required minlength="2" maxlength="60" autocomplete="off" placeholder="Apeldoorn" list="connectgroepen">
-        <datalist id="connectgroepen"></datalist>
-        <p class="veld-uitleg" data-t="connectgroep_uitleg">The town of your connect group, e.g. Apeldoorn.</p>
-        <button type="submit" class="knop primair" data-t="aanmelden">Join</button>
-        <p class="fout" id="aanmeldfout" role="alert" hidden></p>
-      </form>
-    </section>
-
     <div id="app" hidden>
     <p id="status" role="status" class="status" hidden></p>
     <p id="alert" role="alert" class="fout" hidden></p>
 
     <section id="pagina-home" class="pagina" hidden>
+      <div class="leeskop">
       <h1 id="home-groet" data-t="welkom_thuis">Welcome home</h1>
       <div class="devotion-nav" id="devotion-nav" hidden>
         <select id="dev-week" data-t-aria="week_kies"></select>
         <div class="dagchips" id="dev-dagen" role="tablist"></div>
+      </div>
+      <a class="preek-beeld" id="kop-beeld" target="_blank" rel="noopener" hidden><img alt="" loading="lazy" decoding="async"><span class="speel" aria-hidden="true"></span></a>
       </div>
       <article class="devotion" id="devotion" hidden>
         <p class="devotion-kop"><span id="dev-dag"></span> · <span id="dev-week-label"></span></p>
@@ -58,7 +46,8 @@
         <div class="devotion-zinnen" id="dev-zinnen"></div>
         <p class="devotion-vraag" id="dev-vraag" hidden></p>
         <p class="devotion-gebed" id="dev-gebed"></p>
-        <div class="devotion-acties"><button type="button" class="knop" id="dev-delen" data-t="delen">Share</button><span class="deel-status" id="dev-deelstatus" role="status"></span></div>
+        <div class="devotion-acties" data-soort="devotion"><button type="button" class="wa-knop" data-t-aria="deel_whatsapp"><svg class="wa-icoon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button><button type="button" class="knop" id="dev-delen" data-t="delen">Share</button><button type="button" class="knop kopieer-knop" data-t="kopieer_link">Copy</button><span class="deel-status" id="dev-deelstatus" role="status"></span></div>
+        <button type="button" class="knop naar-gebed" data-t="gebed_knop" hidden>Last week’s prayer</button>
       </article>
       <article class="devotion" id="terugblik" hidden>
         <p class="devotion-kop"><span data-t="samenvatting">Summary</span> · <span id="tb-week"></span></p>
@@ -67,7 +56,8 @@
         <p class="devotion-kop" id="tb-slotkop" data-t="slot_kop">Where the sermon is taking us</p>
         <p class="terugblik-slot" id="tb-slot"></p>
         <blockquote class="devotion-citaat" id="tb-citaat"></blockquote>
-        <div class="devotion-acties"><button type="button" class="knop" id="tb-delen" data-t="delen">Share</button><span class="deel-status" id="tb-deelstatus" role="status"></span></div>
+        <div class="devotion-acties" data-soort="terugblik"><button type="button" class="wa-knop" data-t-aria="deel_whatsapp"><svg class="wa-icoon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button><button type="button" class="knop" id="tb-delen" data-t="delen">Share</button><button type="button" class="knop kopieer-knop" data-t="kopieer_link">Copy</button><span class="deel-status" id="tb-deelstatus" role="status"></span></div>
+        <button type="button" class="knop naar-gebed" data-t="gebed_knop" hidden>Last week’s prayer</button>
       </article>
       <article class="devotion" id="samenvatting" hidden>
         <p class="devotion-kop"><span data-t="samenvatting">Summary</span> · <span id="sv-week"></span></p>
@@ -86,48 +76,15 @@
         <ul class="sv-bijbel" id="sv-bijbel"></ul>
         <p class="devotion-kop" data-t="sv_gebed">Closing prayer</p>
         <p class="devotion-gebed" id="sv-gebed"></p>
-        <div class="devotion-acties"><button type="button" class="knop" id="sv-delen-knop" data-t="delen">Share</button><span class="deel-status" id="sv-deelstatus" role="status"></span></div>
+        <div class="devotion-acties" data-soort="samenvatting"><button type="button" class="wa-knop" data-t-aria="deel_whatsapp"><svg class="wa-icoon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button><button type="button" class="knop" id="sv-delen-knop" data-t="delen">Share</button><button type="button" class="knop kopieer-knop" data-t="kopieer_link">Copy</button><span class="deel-status" id="sv-deelstatus" role="status"></span></div>
+        <button type="button" class="knop naar-gebed" data-t="gebed_knop" hidden>Last week’s prayer</button>
+      </article>
+      <article class="devotion" id="gebeden" hidden>
+        <p class="devotion-kop"><span data-t="gebed_tab">Prayer</span> · <span id="gb-week"></span></p>
+        <h2 class="devotion-titel" data-t="gebed_knop">Last week’s prayer</h2>
+        <div id="gb-lijst"></div>
       </article>
       <p class="uitleg" id="devotion-leeg" data-t="devotion_leeg" hidden></p>
-      <section class="ask" id="ask">
-        <h2 data-t="ask_titel">Ask the service</h2>
-        <p class="uitleg" data-t="ask_uitleg">Stel een vraag over wat er dit jaar in de diensten is gezegd, in het Nederlands of Engels. Je krijgt een antwoord uit de preken zelf, met de datum en een link naar de seconde in de video waar het gezegd wordt. Staat het niet in de preken, dan zegt Ask the service dat gewoon. Het geeft geen eigen mening en beoordeelt de spreker niet.</p>
-        <form id="askformulier">
-          <label for="askvraag" data-t="ask_label">Your question</label>
-          <input id="askvraag" type="text" maxlength="300" data-t-placeholder="ask_placeholder" autocomplete="off">
-          <button type="submit" class="knop primair" data-t="ask_knop">Ask the service</button>
-        </form>
-        <div class="ask-antwoord" id="askantwoord" role="status" hidden>
-          <p class="ask-tekst" id="asktekst"></p>
-          <p class="devotion-kop" id="askbronkop" data-t="ask_bronnen" hidden>From the sermons</p>
-          <ol class="ask-bronnen" id="askbronnen"></ol>
-        </div>
-      </section>
-      <h2 data-t="zondag_kop">Sunday</h2>
-      <p id="home-zondag" class="uitleg"></p>
-      <h2 data-t="connect_kop">Connect group</h2>
-      <p id="home-connect" class="uitleg"></p>
-    </section>
-
-    <section id="pagina-connect" class="pagina" hidden>
-      <h1 data-t="connect_titel">Connect group</h1>
-      <p class="uitleg" data-t="connect_intro"></p>
-      <div id="connect-lijst" class="rijen"></div>
-      <p id="connect-leeg" class="uitleg" data-t="geen_avond" hidden></p>
-
-      <section class="gebed" id="prayers">
-        <h2 data-t="prayers">Prayers</h2>
-        <p class="uitleg" data-t="prayers_uitleg"></p>
-        <ul class="punten" id="prayer-lijst"></ul>
-        <form class="puntformulier" data-soort="prayer"><input type="text" maxlength="400" data-t-placeholder="prayer_placeholder" data-t-aria="nieuw_prayer"><button type="submit" class="knop primair" data-t="toevoegen">Add</button></form>
-        <label class="anoniem"><input type="checkbox" id="prayer-anoniem"> <span data-t="anoniem_label"></span></label>
-      </section>
-      <section class="gebed" id="praise">
-        <h2 data-t="praise">Praise</h2>
-        <p class="uitleg" data-t="praise_uitleg"></p>
-        <ul class="punten" id="praise-lijst"></ul>
-        <form class="puntformulier" data-soort="praise"><input type="text" maxlength="400" data-t-placeholder="praise_placeholder" data-t-aria="nieuw_praise"><button type="submit" class="knop primair" data-t="toevoegen">Add</button></form>
-      </section>
     </section>
 
     <section id="home" class="pagina" hidden>
@@ -143,10 +100,21 @@
   </main>
 
   <nav class="tabs" id="tabs" hidden aria-label="Pagina's">
-    <a href="#/home" data-pagina="pagina-home" data-t="tab_home">Home</a>
-    <a href="#/agenda" data-pagina="home" data-t="tab_agenda">Agenda</a>
-    <a href="#/connect" data-pagina="pagina-connect" data-t="tab_connect">Connect group</a>
+    <a href="#/home" data-pagina="pagina-home" data-t="tab_home">Devotion</a>
+    <a href="#/agenda" data-pagina="home" data-t="tab_agenda">Events</a>
   </nav>
+
+  <dialog id="naamvraag" class="naamvraag" aria-labelledby="naamvraag-kop">
+    <form id="naamformulier" autocomplete="on">
+      <h2 id="naamvraag-kop" data-t="naam_kop">What’s your name?</h2>
+      <p class="uitleg" data-t="naam_uitleg"></p>
+      <label for="naam" data-t="naam">Name</label>
+      <input id="naam" name="naam" type="text" required minlength="2" maxlength="60" autocomplete="name">
+      <p class="fout" id="naamfout" role="alert" hidden></p>
+      <button type="submit" class="knop primair" data-t="naam_opslaan">Save</button>
+      <button type="button" class="knop" id="naam-annuleer" data-t="annuleer">Cancel</button>
+    </form>
+  </dialog>
 
   <template id="tpl-zondag">
     <section class="zondag">

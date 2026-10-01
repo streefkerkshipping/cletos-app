@@ -91,3 +91,35 @@ export function maakIcs(ev, url = '') {
   return regels.join('\r\n') + '\r\n';
 }
 export const icsLink = (ev) => 'data:text/calendar;charset=utf-8,' + encodeURIComponent(maakIcs(ev));
+
+/** Deep link naar één devotie in de app: #/d/<week>/<dag>[/<taal>] (dag 0 = de zondag-samenvatting, dag 7 = de gebeden uit de dienst).
+ *  De taal reist mee, zodat wie een Nederlands bericht krijgt de devotie ook in het Nederlands opent. */
+const DIEPLINK = /^#\/d\/(\d{4}-\d{2}-\d{2})\/([0-7])(?:\/(nl|en))?$/;
+export function leesDieplink(hash) { const m = DIEPLINK.exec(hash || ''); return m ? { week: m[1], dag: Number(m[2]), taal: m[3] || null } : null; }
+export const dieplink = (basis, week, dag, taal = '') => `${basis}#/d/${week}/${dag}${taal ? '/' + taal : ''}`;
+
+/** De eerste n zinnen van een alinea, tot aan de eerste weglating ("..."). */
+export function eersteZinnen(tekst, n = 2) {
+  const tot = String(tekst || '').split(/\s*\.\.\.\s*/)[0];
+  return (tot.match(/[^.!?]+[.!?]+["”']?/g) || [tot]).slice(0, n).join('').trim();
+}
+
+/** Kort deelbericht (Bas, 01-10): het begin van de devotie, een kort stukje met de oplossing, en de link naar de hele
+ *  daily devotion. Begin en oplossing zijn letterlijke stukken uit de alinea's (veld "deel"); ontbreekt dat veld, dan
+ *  de eerste twee zinnen en de kernzin. Er komt geen nieuwe tekst bij. */
+export function korteDeeltekst(week, dag, taal, basis, leesLabel) {
+  const inTaal = (obj, veld) => (taal === 'nl' && obj?.[veld + '_nl']) || obj?.[veld] || '';
+  const slot = `${leesLabel}: ${dieplink(basis, week.week, dag, taal)}`;
+  const blokken = (...b) => b.filter(Boolean).join('\n\n');
+  const q = (x) => x && `“${x}”`;
+  if (dag === 0) {
+    const s = week.vorm === 'stones' ? week.samenvatting : null;
+    const punt = s ? inTaal(s.kop, 'tekst') : inTaal(week.terugblik?.slot, 'tekst');
+    const zin = s ? inTaal(s.luister, 'citaat') : (week.terugblik?.slot?.citaat || '');
+    return blokken(inTaal(week, 'titel'), punt, q(zin), slot);
+  }
+  const d = week.devotions.find(x => x.dag === dag), deel = d.deel || {};
+  const begin = (taal === 'nl' ? deel.begin_nl : deel.begin) || eersteZinnen(inTaal(d.zinnen[0], 'tekst'));
+  const oplossing = (taal === 'nl' ? deel.oplossing_nl : deel.oplossing) || d.citaat;
+  return blokken(`${inTaal(d, 'titel')}\n${inTaal(d, 'bijbeltekst')}`, q(begin), oplossing !== begin && q(oplossing), slot);
+}
