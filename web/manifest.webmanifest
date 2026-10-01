@@ -1,7 +1,7 @@
 {
   "name": "Church Friend",
   "short_name": "Church Friend",
-  "description": "De devotie van vandaag, wat er binnenkort is, en wie er ook gaat.",
+  "description": "De devotie van vandaag en wat er binnenkort is in de kerk.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

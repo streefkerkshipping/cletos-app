@@ -7,23 +7,8 @@ import { eersteZinnen } from '../../web/logica.js';
 const fixtureWeek = (week) => JSON.parse(readFileSync(new URL(`../fixtures/data/devoties/${week}.json`, import.meta.url), 'utf8'));
 
 const reset = async (request) => { await request.post('/mock/reset'); };
-// Church Friend (01-10): er is geen aanmeldscherm meer. Deze helper zet een toestel klaar dat zijn naam al eens heeft
-// ingevuld (zoals een terugkerende bezoeker); de naamvraag zelf wordt getoetst in E2 en E13.
-let teller = 0;
-const meldAan = async (page, naam, _connectgroep, pad = '/#/agenda') => {
-  const toestel = `test-toestel-${Date.now()}-${++teller}`;
-  await page.addInitScript((id) => { localStorage.setItem('kring.toestel', id); }, toestel);
-  const r = await page.request.post('/mock/leden', { headers: { 'X-Toestel': toestel }, data: { naam, connectgroep: '--' } });
-  expect(r.status()).toBe(201);
-  await page.goto(pad);
-};
-const vulNaamIn = async (page, naam) => {
-  const dlg = page.getByRole('dialog');
-  await expect(dlg).toBeVisible();
-  await dlg.getByLabel('Name', { exact: true }).fill(naam);
-  await dlg.getByRole('button', { name: 'Save' }).click();
-  await expect(dlg).toBeHidden();
-};
+// Events zonder aanmelden (01-10): de app vraagt nergens meer een naam. De helper opent alleen nog de pagina.
+const meldAan = async (page, _naam, _connectgroep, pad = '/#/agenda') => { await page.goto(pad); };
 
 test.beforeEach(async ({ request }) => { await reset(request); });
 
@@ -35,6 +20,8 @@ test('E1 agenda → Coming up for you: zondagblok met adres, route en drie diens
   await expect(zondag).toContainText('Seineweg 2');
   await expect(zondag.getByRole('link', { name: 'Directions' })).toHaveAttribute('href', /52\.39083,4\.81737/);
   const tegel = zondag.getByTestId('event-2do1gafm');
+  await expect(tegel.getByRole('link', { name: 'Add to calendar' })).toHaveAttribute('download', 'cletos-2do1gafm.ics');
+  await expect(tegel.getByRole('link', { name: 'Add to calendar' })).toHaveAttribute('href', /^data:text\/calendar/);
   await expect(tegel).toContainText('10:00');
   await expect(tegel).toContainText('until 11:30');
   await expect(tegel).toContainText('10:00 Service AMS');
@@ -43,9 +30,9 @@ test('E1 agenda → Coming up for you: zondagblok met adres, route en drie diens
   // een gewoon evenement is een ingeklapte regel: opentikken toont adres/acties
   const rij = page.getByTestId('event-uu9arbay');
   await expect(rij).toContainText('Sisterhood One Day');
-  await expect(rij.getByRole('button', { name: 'I’m going' })).toBeHidden();
+  await expect(rij.locator('.rij-meer')).toBeHidden();
   await rij.getByRole('button', { name: /Sisterhood One Day/ }).click();
-  await expect(rij.getByRole('button', { name: 'I’m going' })).toBeVisible();
+  await expect(rij.locator('.rij-meer')).toBeVisible();
   await expect(rij.locator('.wanneer-vol')).toHaveText('Saturday 26 September, 09:00–18:00');
   await expect(rij.getByRole('link', { name: 'Sign up with the church' })).toBeVisible();
   await expect(rij.getByRole('link', { name: 'Add to calendar' })).toHaveAttribute('download', 'cletos-uu9arbay.ics');
@@ -64,97 +51,26 @@ test('E1 agenda → Coming up for you: zondagblok met adres, route en drie diens
   await expect(page.getByTestId('event-8oychdjx')).toContainText('Youth Night');
 });
 
-test('E2 zonder aanmelden: eerste tik op een dienst vraagt je naam → ik ga; blijft na herladen, tweede toestel ziet het zonder zelf een naam in te vullen, intrekken werkt in beide', async ({ browser, page }) => {
+test('E2 geen enkele vorm van aanmelden: geen schakelaars, geen "ik ga", geen namen, geen naamvraag, en de app praat niet met een database', async ({ page, request }) => {
+  await request.post('/mock/seed', { data: { event: 'rsrnbjkr', n: 3, start: '2026-09-27 12:30:00' } }); // er staan namen in de opslag
+  const verzoeken = []; page.on('request', r => { if (/\/mock\/(mij|leden|gaat_naar|gebedspunten)|supabase/.test(r.url())) verzoeken.push(r.url()); });
   await page.goto('/#/agenda');
-  await expect(page.getByRole('dialog')).toBeHidden();
-  await expect(page.locator('#wie')).toBeHidden();
-  const kaart = page.getByTestId('event-2do1gafm');
-  await kaart.locator('.tegel-vink').click();
-  await vulNaamIn(page, 'Bas Streefkerk');
-  await expect(page.locator('#wie')).toContainText('Bas Streefkerk');
-  expect(await (await page.request.get('/mock/leden')).json()).toMatchObject([{ naam: 'Bas Streefkerk', connectgroep: '--' }]); // de app vraagt geen connectgroep meer
-  await expect(kaart.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
-  await expect(kaart.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
-  const ag = kaart.getByRole('link', { name: 'Add to calendar' });
-  await expect(ag).toHaveAttribute('href', /^data:text\/calendar/);
-  await expect(ag).toHaveAttribute('download', 'cletos-2do1gafm.ics');
-  await page.reload();
-  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
-  await expect(page.getByTestId('event-2do1gafm')).toContainText('Bas Streefkerk'); await expect(page.getByTestId('event-2do1gafm')).not.toContainText('--');
-
-  const ctx2 = await browser.newContext(); const p2 = await ctx2.newPage();
-  await p2.goto('/#/agenda'); // een bezoeker die niets heeft ingevuld ziet wie er gaat
-  await expect(p2.getByTestId('event-2do1gafm')).toContainText('Bas Streefkerk', { timeout: 5000 });
-  await expect(p2.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'false');
-
-  await page.getByTestId('event-2do1gafm').locator('.tegel-vink').click();
-  await expect(page.getByTestId('event-2do1gafm')).not.toContainText('Bas Streefkerk');
-  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'false');
-  await expect(p2.getByTestId('event-2do1gafm')).not.toContainText('Bas Streefkerk', { timeout: 6000 });
-  await ctx2.close();
-});
-
-test('S1 opslag onbereikbaar → evenementen blijven zichtbaar, melding, ik-ga faalt netjes', async ({ page, request }) => {
-  await meldAan(page, 'Bas Streefkerk', 'Apeldoorn');
-  await expect(page.getByTestId('event-2do1gafm')).toBeVisible();
-  await request.post('/mock/storing?aan=1');
-  await page.reload();
-  await expect(page.getByTestId('event-2do1gafm')).toBeVisible();
-  await expect(page.locator('#status')).toContainText('Storage is unavailable');
-  await page.getByTestId('event-2do1gafm').locator('.tegel-vink').click();
-  await expect(page.getByRole('alert')).toContainText('failed');
-  await expect(page.getByTestId('event-2do1gafm').locator('.tegel-vink')).toHaveAttribute('aria-checked', 'false');
-  await request.post('/mock/storing?aan=0');
-});
-
-test('E2b zeven mensen bij 12:30 → twee namen en een knopje "nog 5" dat de rest toont', async ({ page, request }) => {
-  await request.post('/mock/seed', { data: { event: 'rsrnbjkr', n: 7, start: '2026-09-27 12:30:00' } });
-  await request.post('/mock/seed', { data: { event: 'uu9arbay', n: 2, start: '2026-09-26 09:00:00' } });
-  await meldAan(page, 'Bas Streefkerk', 'Apeldoorn');
-  // regels tonen een teller
-  const sis = page.getByTestId('event-uu9arbay');
-  await expect(sis.locator('.tel')).toHaveText('2 going');
-  await sis.getByRole('button', { name: /Sisterhood One Day/ }).click();
-  await sis.getByRole('button', { name: 'I’m going' }).click();
-  await expect(sis.locator('.tel')).toHaveText('you + 2');
-  const tegel = page.getByTestId('event-rsrnbjkr');
-  await expect(tegel.locator('.lijst.gaan .namen li')).toHaveCount(2);
-  const meer = tegel.getByRole('button', { name: 'Show 5 more' });
-  await expect(meer).toHaveText('5 more');
-  await meer.click();
-  await expect(tegel.locator('.lijst.gaan .namen li')).toHaveCount(7);
-  await expect(tegel).toContainText('Truus');
-  await tegel.getByRole('button', { name: 'Show fewer' }).click();
-  await expect(tegel.locator('.lijst.gaan .namen li')).toHaveCount(2);
-});
-
-test('E3 Team-schakelaar → teamkiezer → naam onder Team; Team uit = alleen gaan; ander team via invulveld; volgorde koppen', async ({ page }) => {
-  await meldAan(page, 'Bas Streefkerk', 'Apeldoorn');
-  const tegel = page.getByTestId('event-rsrnbjkr');
-  await tegel.locator('.tegel-team').click();
-  await expect(tegel.getByText('Which team?')).toBeVisible();
-  await tegel.getByRole('button', { name: 'Welcome' }).click();
-  await expect(tegel.locator('.lijst.helpen .teamregel')).toHaveText('Welcome: Bas Streefkerk');
-  await expect(tegel.locator('.lijst.gaan')).toContainText('no one yet');
-  await expect(tegel.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
-  await expect(tegel.locator('.tegel-team')).toHaveAttribute('aria-checked', 'true');
-  await tegel.locator('.tegel-team').click();
-  await expect(tegel.locator('.lijst.helpen')).toBeHidden();
-  await expect(tegel.locator('.lijst.gaan')).toContainText('Bas Streefkerk');
-  await expect(tegel.locator('.tegel-vink')).toHaveAttribute('aria-checked', 'true');
-  await expect(tegel.locator('.tegel-team')).toHaveAttribute('aria-checked', 'false');
-  // ander team via invulveld
-  await tegel.locator('.tegel-team').click();
-  await tegel.getByLabel('Other team').fill('Techniek');
-  await tegel.getByRole('button', { name: 'OK' }).click();
-  await expect(tegel.locator('.lijst.helpen .teamregel')).toHaveText('Techniek: Bas Streefkerk');
-  await expect(tegel.getByRole('button', { name: 'Shuttle' })).toBeHidden();
-  // service uit → ook team weg
-  await tegel.locator('.tegel-vink').click();
-  await expect(tegel.locator('.tegel-team')).toHaveAttribute('aria-checked', 'false');
-  await expect(tegel.locator('.lijst.helpen')).toBeHidden();
+  await expect(page.getByTestId('event-rsrnbjkr')).toBeVisible();
+  await expect(page.locator('[role=switch]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /going|Team|Remove me|Save/ })).toHaveCount(0);
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.locator('#home')).not.toContainText('Karin');
+  await expect(page.locator('#home')).not.toContainText(/going|no one yet/i);
+  await expect(page.locator('#wie')).toHaveCount(0);
+  await page.getByTestId('event-uu9arbay').getByRole('button', { name: /Sisterhood One Day/ }).click();
+  await expect(page.getByTestId('event-uu9arbay').locator('.acties a:visible')).toHaveText(['Directions', 'Sign up with the church', 'Add to calendar']);
+  await page.waitForTimeout(1500); // de oude app vroeg elke seconde de namenlijst op
+  expect(verzoeken).toEqual([]);
   const koppen = await page.locator('#home h2').allTextContents();
   assertVolgorde(koppen);
+  // Nederlands: de tab heet Events
+  await page.locator('#taalknop').click();
+  await expect(page.locator('#tabs a')).toHaveText(['Devotie', 'Events']);
 });
 function assertVolgorde(k) { const i = (n) => k.findIndex(x => x.startsWith(n)); if (!(i('Sunday') < i('Next 7 days') && i('Next 7 days') < i('Important') && i('Important') < i('Later'))) throw new Error('koppen in verkeerde volgorde: ' + k.join(' | ')); }
 
@@ -162,8 +78,7 @@ test('E4 twee pagina\'s: de devotie van vandaag staat er meteen, zonder aanmelde
   await page.goto('/');
   await expect(page).toHaveTitle('Church Friend');
   await expect(page.locator('.merk')).toHaveText('Church Friend');
-  await expect(page.getByRole('dialog')).toBeHidden();
-  await expect(page.getByLabel('Name', { exact: true })).toBeHidden();
+  await expect(page.getByLabel('Name', { exact: true })).toHaveCount(0);
   // donderdag = dag 4 uit de week van 20 september
   await expect(page.locator('#dev-dag')).toHaveText('Thursday, day 4 of 6');
   await expect(page.locator('#dev-titel')).toHaveText('Trust Jesus With the Justice');
@@ -189,22 +104,6 @@ test('E6 zondag: terugblik met zes hoofdteksten en het slot', async ({ page }) =
   await expect(page.locator('#tb-lijst li')).toHaveCount(6);
   await expect(page.locator('#tb-lijst')).toContainText('Forgiveness will free you. Unforgiveness will imprison you.');
   await expect(page.locator('#tb-slot')).toContainText('Unforgiveness costs you');
-});
-
-test('E5 vinkje in de ingeklapte regel: ✕ → tik → ✓ en "jij gaat", zonder openklappen; nog een tik → weg', async ({ page }) => {
-  await meldAan(page, 'Bas Streefkerk', 'Apeldoorn');
-  const rij = page.getByTestId('event-uu9arbay');
-  const vink = rij.locator('.vink');
-  await expect(vink).toHaveAttribute('aria-checked', 'false');
-  await expect(vink).toHaveAttribute('aria-checked', 'false');
-  await vink.click();
-  await expect(vink).toHaveAttribute('aria-checked', 'true');
-  await expect(vink).toHaveAttribute('aria-checked', 'true');
-  await expect(rij.locator('.tel')).toHaveText('you’re going');
-  await expect(rij.locator('.rij-meer')).toBeHidden();
-  await vink.click();
-  await expect(vink).toHaveAttribute('aria-checked', 'false');
-  await expect(rij.locator('.tel')).toHaveCount(0);
 });
 
 test('E8 devotion-menu: dagknoppen, eerdere week als "datum: titel" met samenvatting, deelknop geeft een kort bericht met een link naar de app', async ({ page }) => {
@@ -248,7 +147,7 @@ test('E9 Nederlands: taalknop → devotion, gebed, weekkiezer, samenvatting en d
   await page.getByRole('button', { name: 'Switch to Dutch' }).click(); // herlaadt de pagina in het Nederlands
   await expect(page.locator('#taalknop')).toHaveText('Switch to English'); // de knop is vervangen
   await expect(page.getByRole('button', { name: 'Switch to Dutch' })).toHaveCount(0);
-  await expect(page.locator('#tabs a')).toHaveText(['Devotie', 'Agenda']);
+  await expect(page.locator('#tabs a')).toHaveText(['Devotie', 'Events']);
   await expect(page.locator('#dev-dag')).toHaveText('donderdag, dag 4 van 6');
   await expect(page.locator('#dev-titel')).toHaveText(d.titel_nl);
   await expect(page.locator('#dev-bijbel')).toHaveText(d.bijbeltekst_nl);
@@ -408,84 +307,4 @@ test('E12 deep link: #/d/<week>/<dag> opent precies die devotie, zonder aanmelde
   await page.goto('/#/d/2026-09-20/3/en');
   await expect(page.locator('#dev-titel')).toHaveText(w.devotions.find(x => x.dag === 3).titel);
   await expect(page.locator('#tabs a').first()).toHaveText('Devotion');
-});
-
-test('E13 naamvraag: annuleren slaat niets op; een regel in de agenda vraagt ook je naam; storing bij opslaan meldt zich in het venster; daarna is het één tik', async ({ page, request }) => {
-  await page.goto('/#/agenda');
-  const rij = page.getByTestId('event-uu9arbay'), vink = rij.locator('.vink');
-  await vink.click();
-  const dlg = page.getByRole('dialog');
-  await expect(dlg).toBeVisible();
-  await expect(dlg).toContainText('Others will see your name');
-  await dlg.getByRole('button', { name: 'Cancel' }).click();
-  await expect(dlg).toBeHidden();
-  await expect(vink).toHaveAttribute('aria-checked', 'false');
-  expect(await (await request.get('/mock/leden')).json()).toHaveLength(0);
-  // storing: de naam wordt niet opgeslagen, het venster blijft open met een melding
-  await vink.click();
-  await request.post('/mock/storing?aan=1');
-  await dlg.getByLabel('Name', { exact: true }).fill('Bas Streefkerk');
-  await dlg.getByRole('button', { name: 'Save' }).click();
-  await expect(dlg.getByRole('alert')).toContainText('storage is unavailable');
-  await expect(dlg).toBeVisible();
-  await request.post('/mock/storing?aan=0');
-  await dlg.getByRole('button', { name: 'Save' }).click();
-  await expect(dlg).toBeHidden();
-  await expect(vink).toHaveAttribute('aria-checked', 'true');
-  await expect(rij.locator('.tel')).toHaveText('you’re going');
-  // tweede event: geen naamvraag meer, één tik
-  const tegel = page.getByTestId('event-rsrnbjkr');
-  await tegel.locator('.tegel-team').click();
-  await tegel.getByRole('button', { name: 'Welcome' }).click();
-  await expect(dlg).toBeHidden();
-  await expect(tegel.locator('.lijst.helpen .teamregel')).toHaveText('Welcome: Bas Streefkerk');
-  // de naam is onthouden na herladen; "Remove me" haalt naam en keuzes weg
-  await page.reload();
-  await expect(page.locator('#wie')).toContainText('Bas Streefkerk');
-  page.once('dialog', d => d.accept());
-  await page.locator('#wie').getByRole('button', { name: 'Remove me' }).click();
-  await expect(page.locator('#wie')).toBeHidden();
-  await expect(page.getByTestId('event-rsrnbjkr')).not.toContainText('Bas Streefkerk');
-});
-
-test('E14 de opslag houdt het lezen niet tegen: devotie en agenda staan er ook als de opslag hangt; een toestel dat al een naam heeft krijgt de naamvraag niet opnieuw; Escape tijdens opslaan sluit het venster niet; naam met alleen spaties wordt geweigerd', async ({ page, request }) => {
-  // 1. de opslag antwoordt niet: de devotie en de agenda staan er toch
-  let laatLos; const wacht = new Promise(r => { laatLos = r; });
-  await page.route('**/mock/mij', async r => { await wacht; await r.continue().catch(() => {}); });
-  await page.goto('/');
-  await expect(page.locator('#dev-titel')).toHaveText('Trust Jesus With the Justice');
-  await page.getByRole('link', { name: 'Events' }).dispatchEvent('click');
-  await expect(page.getByTestId('event-2do1gafm')).toBeVisible();
-  laatLos(); // vanaf hier antwoordt de opslag weer gewoon
-  // 2. het toestel heeft al een naam, maar de app startte tijdens een storing en kent hem niet
-  const toestel = await page.evaluate(() => localStorage.getItem('kring.toestel'));
-  await request.post('/mock/storing?aan=1');
-  await page.reload();
-  await expect(page.locator('#status')).toContainText('Storage is unavailable');
-  await request.post('/mock/storing?aan=0');
-  expect((await request.post('/mock/leden', { headers: { 'X-Toestel': toestel }, data: { naam: 'Bas Streefkerk', connectgroep: '--' } })).status()).toBe(201);
-  const vink = page.getByTestId('event-uu9arbay').locator('.vink');
-  await vink.click();
-  await expect(vink).toHaveAttribute('aria-checked', 'true');
-  await expect(page.getByRole('dialog')).toBeHidden();
-  await expect(page.locator('#wie')).toContainText('Bas Streefkerk');
-  // 3. nieuw toestel: spaties tellen niet als naam; Escape tijdens het opslaan sluit niet, en de keuze wordt bewaard
-  page.once('dialog', d => d.accept());
-  await page.locator('#wie').getByRole('button', { name: 'Remove me' }).click();
-  await expect(page.locator('#wie')).toBeHidden();
-  const vink2 = page.getByTestId('event-uu9arbay').locator('.vink');
-  await vink2.click();
-  const dlg = page.getByRole('dialog');
-  await dlg.getByLabel('Name', { exact: true }).fill(' a ');
-  await dlg.getByRole('button', { name: 'Save' }).click();
-  await expect(dlg.getByRole('alert')).toContainText('at least two letters');
-  expect(await (await request.get('/mock/leden')).json()).toHaveLength(0);
-  await page.route('**/mock/leden', async r => { await new Promise(x => setTimeout(x, 600)); await r.continue(); });
-  await dlg.getByLabel('Name', { exact: true }).fill('Bas Streefkerk');
-  await dlg.getByRole('button', { name: 'Save' }).click();
-  await expect(dlg.getByRole('button', { name: 'Cancel' })).toBeDisabled();
-  await page.keyboard.press('Escape');
-  await expect(dlg).toBeVisible();
-  await expect(dlg).toBeHidden({ timeout: 4000 });
-  await expect(vink2).toHaveAttribute('aria-checked', 'true');
 });

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111111">
   <title>Church Friend</title>
-  <meta name="description" content="Today’s devotion, what’s coming up, and who else is going.">
+  <meta name="description" content="Today’s devotion and what’s coming up at church.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icoon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,13 +19,11 @@
 <body>
   <header class="kop">
     <div class="merk">Church Friend</div>
-    <div class="kop-rechts"><button type="button" id="taalknop" class="taalknop">Switch to Dutch</button><div class="wie" id="wie" hidden></div></div>
+    <div class="kop-rechts"><button type="button" id="taalknop" class="taalknop">Switch to Dutch</button></div>
   </header>
 
   <main id="main">
     <div id="app" hidden>
-    <p id="status" role="status" class="status" hidden></p>
-    <p id="alert" role="alert" class="fout" hidden></p>
 
     <section id="pagina-home" class="pagina" hidden>
       <div class="leeskop">
@@ -104,17 +102,6 @@
     <a href="#/agenda" data-pagina="home" data-t="tab_agenda">Events</a>
   </nav>
 
-  <dialog id="naamvraag" class="naamvraag" aria-labelledby="naamvraag-kop">
-    <form id="naamformulier" autocomplete="on">
-      <h2 id="naamvraag-kop" data-t="naam_kop">What’s your name?</h2>
-      <p class="uitleg" data-t="naam_uitleg"></p>
-      <label for="naam" data-t="naam">Name</label>
-      <input id="naam" name="naam" type="text" required minlength="2" maxlength="60" autocomplete="name">
-      <p class="fout" id="naamfout" role="alert" hidden></p>
-      <button type="submit" class="knop primair" data-t="naam_opslaan">Save</button>
-      <button type="button" class="knop" id="naam-annuleer" data-t="annuleer">Cancel</button>
-    </form>
-  </dialog>
 
   <template id="tpl-zondag">
     <section class="zondag">
@@ -128,23 +115,7 @@
       <div class="tegel-tijd"></div>
       <div class="tegel-tot"></div>
       <span class="sr" aria-hidden="false"></span>
-      <div class="schakels">
-        <div class="schakel"><span class="schakel-label" data-t="service_label">Service</span><button type="button" class="vink tegel-vink" role="switch" aria-checked="false" data-t-aria="snel_aan"><span class="knopje" aria-hidden="true"></span></button></div>
-        <div class="schakel"><span class="schakel-label" data-t="team">Team</span><button type="button" class="vink tegel-team" role="switch" aria-checked="false" data-t-aria="team_aan"><span class="knopje" aria-hidden="true"></span></button></div>
-      </div>
-      <div class="keuze">
-        <button type="button" class="knop primair ikga" data-t="ik_ga" hidden>I’m going</button>
-        <button type="button" class="knop tochniet" data-t="toch_niet" hidden>Not going</button>
-        <button type="button" class="knop klein ikhelp" data-t="team" hidden>Team</button>
-        <a class="agenda" data-t="agenda_knop" hidden>Add to calendar</a>
-      </div>
-      <div class="teamkiezer" hidden>
-        <p class="teamvraag" data-t="in_welk_team">Which team?</p>
-        <div class="teams"></div>
-        <form class="teamanders"><input type="text" maxlength="40" data-t-placeholder="ander_team" aria-label="Other team"><button type="submit" class="knop klein" data-t="ok">OK</button></form>
-      </div>
-      <div class="lijst gaan"><span class="lijstkop" data-t="gaan_kop">Going</span><ul class="namen"></ul></div>
-      <div class="lijst helpen" hidden><span class="lijstkop" data-t="team_kop">Team</span><ul class="namen"></ul></div>
+      <a class="agenda" data-t="agenda_knop">Add to calendar</a>
     </article>
   </template>
   <template id="tpl-rij">
@@ -156,7 +127,6 @@
           <span class="rij-meta"></span>
           <span class="rij-pijl" aria-hidden="true"></span>
         </button>
-        <button type="button" class="vink" role="switch" aria-checked="false" data-t-aria="snel_aan"><span class="knopje" aria-hidden="true"></span></button>
       </div>
       <div class="rij-meer" hidden>
         <p class="wanneer-vol"></p>
@@ -166,10 +136,7 @@
           <a class="knop route" target="_blank" rel="noopener" data-t="route" hidden>Directions</a>
           <a class="knop aanmeldlink" target="_blank" rel="noopener" data-t="aanmeld_link" hidden>Sign up with the church</a>
           <a class="knop agenda" data-t="agenda_knop">Add to calendar</a>
-          <button type="button" class="knop primair ikga" data-t="ik_ga">I’m going</button>
-          <button type="button" class="knop tochniet" data-t="toch_niet" hidden>Not going</button>
         </div>
-        <p class="wiegaat"></p>
       </div>
     </article>
   </template>

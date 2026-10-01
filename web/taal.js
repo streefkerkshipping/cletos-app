@@ -19,7 +19,7 @@ export const TEKST = {
     dagen: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], kort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   },
   nl: {
-    tab_home: 'Devotie', tab_agenda: 'Agenda', taal_wissel: 'Switch to English',
+    tab_home: 'Devotie', tab_agenda: 'Events', taal_wissel: 'Switch to English',
     naam_kop: 'Wat is je naam?', naam_uitleg: 'Anderen zien je naam bij de dingen waar je naartoe gaat. Je telefoon onthoudt hem, en je kunt jezelf altijd weer verwijderen.', naam_opslaan: 'Opslaan', naam_te_kort: 'Vul minstens twee letters in.', annuleer: 'Annuleren', lees_hele: 'Lees de hele daily devotion', deel_whatsapp: 'Deel via WhatsApp', kopieer_link: 'Kopieer',
     naam: 'Naam', verwijder_mij: 'Verwijder mij', verwijder_bevestig: 'Je naam en al je keuzes worden verwijderd. Doorgaan?',
     binnenkort: 'Binnenkort voor jou', deze_week: 'Komende 7 dagen', belangrijk: 'Belangrijk', later: 'Later', toon_meer: 'Toon {n} volgende', verberg: 'Verberg', leeg_agenda: 'Er staat niets in de agenda voor de komende weken.',

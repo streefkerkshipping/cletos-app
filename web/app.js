@@ -1,5 +1,6 @@
 const $ = (s, r = document) => r.querySelector(s);
-// Schermen. Leest data/evenementen.json (statisch) en praat via opslag.js met de opslag. Rechten liggen in de database.
+// Schermen. Leest data/devoties/ en data/evenementen.json (statisch). Sinds 01-10 (Bas: "elke vorm van aanmelding kan eruit")
+// praat de app niet meer met een database: de agenda is een lijst events, zonder namen.
 import { groepeerPerDag, formatteerTijd as fmtTijd, routeLink, isDienst, labelPeriode as lblPeriode, labelDag as lblDag, kortDag as krtDag, datumDeel, icsLink, leesDieplink, korteDeeltekst } from './logica.js';
 import { t, taal, zetTaal, vertaalDom } from './taal.js';
 import { leesDieplink as leesDl } from './logica.js';
@@ -11,16 +12,11 @@ const labelDag = (d) => lblDag(d, taal);
 document.documentElement.lang = taal; vertaalDom();
 $('#taalknop').textContent = t('taal_wissel');
 $('#taalknop').onclick = () => { zetTaal(taal === 'en' ? 'nl' : 'en'); location.reload(); };
-import { maakOpslag, OpslagFout } from './opslag.js';
 
 const cfg = window.KRING_CONFIG;
 const nuParam = cfg?.opslag === 'mock' ? new URLSearchParams(location.search).get('nu') : null;
 const nu = () => (nuParam ? new Date(nuParam) : cfg?.nu ? new Date(cfg.nu) : new Date());
-const opslag = maakOpslag(cfg);
-let lid = null, evenementen = [], bijgewerkt = '', wie = [], timer = null;
-
-const zetStatus = (t) => { const e = $('#status'); e.textContent = t || ''; e.hidden = !t; };
-const zetAlert = (t) => { const e = $('#alert'); e.textContent = t || ''; e.hidden = !t; };
+let evenementen = [], bijgewerkt = '';
 
 async function laadEvenementen() {
   try {
@@ -33,30 +29,6 @@ async function laadEvenementen() {
   }
 }
 
-// Geen aanmeldscherm (Bas, 01-10): devoties lees je zonder iets in te vullen. Je naam wordt pas gevraagd als je in de
-// agenda aangeeft dat je gaat of servet, en daarna op het toestel onthouden.
-const GEEN_GROEP = '--'; // de kolom connectgroep bestaat nog (2–60 tekens verplicht); de app vraagt en toont hem niet meer
-function vraagNaam() {
-  const dlg = $('#naamvraag'), form = $('#naamformulier'), fout = $('#naamfout'), knop = $('button[type=submit]', form);
-  const annuleer = $('#naam-annuleer');
-  return new Promise((klaar) => {
-    fout.hidden = true; let bezig = false;
-    form.onsubmit = async (e) => {
-      e.preventDefault(); if (bezig) return; fout.hidden = true;
-      const naam = $('#naam').value.trim(); // de database telt de naam zonder spaties eromheen
-      if (naam.length < 2) { fout.textContent = t('naam_te_kort'); fout.hidden = false; return; }
-      bezig = true; knop.disabled = annuleer.disabled = true; // sluiten tijdens het opslaan zou de naam wel en de keuze niet bewaren
-      try { lid = await opslag.wordLid(naam, GEEN_GROEP); onthoudLid(lid); toonWie(); dlg.close(); }
-      catch (err) { fout.textContent = err instanceof OpslagFout ? t('aanmeld_fout_storing') : t('aanmeld_fout', { m: err.message }); fout.hidden = false; }
-      finally { bezig = false; knop.disabled = annuleer.disabled = false; if (!dlg.open) klaar(!!lid); }
-    };
-    annuleer.onclick = () => dlg.close();
-    dlg.oncancel = (e) => { if (bezig) e.preventDefault(); }; // Escape
-    dlg.onclose = () => { if (!bezig) klaar(!!lid); }; // sluit het venster toch tijdens het opslaan, dan rondt de opslag het af
-    dlg.showModal(); $('#naam').focus();
-  });
-}
-
 const PAGINAS = { '#/home': 'pagina-home', '#/agenda': 'home' };
 function toonPagina() {
   const doel = PAGINAS[location.hash] || 'pagina-home';
@@ -66,32 +38,6 @@ function toonPagina() {
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', () => { const dl = leesDieplink(location.hash); if (dl?.taal && dl.taal !== taal) return location.reload(); if (dl) { verbruikDieplink(); kiesDevotie(dl.week, dl.dag); } toonPagina(); });
-
-function toonWie() {
-  const w = $('#wie'); w.innerHTML = ''; w.hidden = !lid; if (!lid) return;
-  w.append(lid.naam);
-  const uit = document.createElement('button'); uit.type = 'button'; uit.textContent = t('verwijder_mij');
-  uit.onclick = async () => { if (!confirm(t('verwijder_bevestig'))) return; try { await opslag.verwijderMij(); lid = null; onthoudLid(null); location.reload(); } catch { zetAlert(t('fout_verwijderen')); } };
-  w.append(uit);
-}
-async function toonApp() {
-  $('#app').hidden = false; $('#tabs').hidden = false; toonPagina(); toonWie();
-  $('#bijgewerkt').textContent = bijgewerkt ? t('bijgewerkt', { d: new Date(bijgewerkt).toLocaleString(taal === 'nl' ? 'nl-NL' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }) }) : '';
-  await ververs(true);
-  clearInterval(timer); timer = setInterval(() => ververs(false), (cfg.verversSeconden || 5) * 1000);
-}
-
-let vorigeStand = '';
-async function ververs(eerste) {
-  let storing = false;
-  try { wie = await opslag.wieGaat(); zetStatus(''); }
-  catch (err) { if (!(err instanceof OpslagFout)) throw err; storing = true; if (eerste) wie = []; zetStatus(t('status_storing')); }
-  // Alleen opnieuw tekenen als er echt iets veranderd is: anders verspringt de pagina en raakt invoer (teamveld) kwijt.
-  const stand = JSON.stringify({ wie, storing, taal, lid: lid?.id });
-  if (!eerste && stand === vorigeStand) return;
-  vorigeStand = stand;
-  try { render(); } catch (err) { console.error('render mislukt:', err); throw err; }
-}
 
 let laterOpen = false; try { laterOpen = localStorage.getItem('kring.later') === '1'; } catch {}
 
@@ -276,8 +222,6 @@ async function kiesDevotie(week, dag) {
 function verbruikDieplink() { try { history.replaceState(null, '', location.pathname + location.search + '#/home'); } catch {} }
 const weekdagNu = () => new Date(nu().toLocaleString('en-US', { timeZone: 'Europe/Amsterdam' })).getDay();
 const datumLang = (week) => new Date(week + 'T12:00:00').toLocaleDateString(taal === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long' });
-let teams = []; fetch('data/teams.json').then(r => r.json()).then(d => { teams = d.teams || []; }).catch(() => {});
-const teamOpen = new Set();
 
 function tegel(ev) {
   const el = $('#tpl-tegel').content.cloneNode(true).querySelector('.tegel');
@@ -286,60 +230,8 @@ function tegel(ev) {
   $('.tegel-tijd', el).textContent = ev.start.slice(11, 16);
   $('.tegel-tot', el).textContent = tijd.includes('–') ? t('tot', { t: tijd.split('–')[1] }) : '';
   $('.sr', el).textContent = ev.naam;
-  const alle = wie.filter(g => g.event === ev.identifier);
-  const mijn = lid ? alle.find(g => g.lid_id === lid.id) : null;
-  const ikGa = mijn?.rol === 'gaat', ikHelp = mijn?.rol === 'helpt';
-  el.classList.toggle('gaat', !!mijn);
-  $('.ikga', el).hidden = true; $('.tochniet', el).hidden = true;
-  const help = $('.ikhelp', el); help.hidden = true;
-  const fout = t('fout_opslaan');
-  const vink = $('.tegel-vink', el); vink.setAttribute('aria-checked', String(!!mijn)); vink.setAttribute('aria-label', mijn ? t('snel_af') : t('snel_aan'));
-  vink.onclick = () => { teamOpen.delete(ev.identifier); mijn ? actie(() => opslag.trekIn(ev), t('fout_intrekken')) : actie(() => opslag.gaatNaar(ev, 'gaat', null), t('fout_ikga')); };
-  const teamKnop = $('.tegel-team', el); teamKnop.setAttribute('aria-checked', String(!!ikHelp)); teamKnop.setAttribute('aria-label', ikHelp ? t('team_uit') : t('team_aan'));
-  teamKnop.onclick = () => { if (ikHelp) { teamOpen.delete(ev.identifier); actie(() => opslag.gaatNaar(ev, 'gaat', null), t('fout_opslaan')); } else { teamOpen.has(ev.identifier) ? teamOpen.delete(ev.identifier) : teamOpen.add(ev.identifier); render(); } };
-  const ag = $('.agenda', el); ag.hidden = !mijn; ag.href = icsLink(ev); ag.download = `cletos-${ev.identifier}.ics`;
-  // teamkiezer
-  const kiezer = $('.teamkiezer', el); kiezer.hidden = !teamOpen.has(ev.identifier);
-  const kies = (team) => { teamOpen.delete(ev.identifier); actie(() => opslag.gaatNaar(ev, 'helpt', team), fout); };
-  for (const team of teams) { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = team; b.onclick = () => kies(team); $('.teams', el).append(b); }
-  $('.teamanders', el).onsubmit = (e2) => { e2.preventDefault(); const v = $('input', e2.target).value.trim(); if (v) kies(v); };
-  // twee lijstjes
-  vulLijst($('.lijst.gaan', el), alle.filter(g => g.rol !== 'helpt'), ev.identifier + ':gaan', false);
-  const helpers = alle.filter(g => g.rol === 'helpt'); const lh = $('.lijst.helpen', el); lh.hidden = !helpers.length; vulTeams(lh, helpers, ev.identifier + ':helpen');
+  const ag = $('.agenda', el); ag.href = icsLink(ev); ag.download = `cletos-${ev.identifier}.ics`;
   return el;
-}
-
-const MAX_NAMEN = 2; const uitgeklapt = new Set();
-/** Teamlijst: per team één regel "Kids: Bas Streefkerk, Piet" (Bas, 24-09: zo kort mogelijk maar duidelijk). */
-function vulTeams(blok, helpers, sleutel) {
-  const ul = $('.namen', blok);
-  const perTeam = new Map();
-  for (const g of helpers) { const k = g.team || t('geen_team'); if (!perTeam.has(k)) perTeam.set(k, []); perTeam.get(k).push(g); }
-  const regels = [...perTeam.entries()];
-  const alles = uitgeklapt.has(sleutel);
-  const toon = alles ? regels : regels.slice(0, MAX_NAMEN);
-  for (const [team, leden] of toon) { const li = document.createElement('li'); li.className = 'teamregel'; const n = document.createElement('span'); n.className = 'n'; n.textContent = `${team}: `; li.append(n); leden.forEach((g, i) => { const s = document.createElement('span'); s.textContent = g.naam; if (lid && g.lid_id === lid.id) s.className = 'ikzelf'; li.append(s); if (i < leden.length - 1) li.append(', '); }); ul.append(li); }
-  if (regels.length > MAX_NAMEN) {
-    const meer = document.createElement('button'); meer.type = 'button'; meer.className = 'meer';
-    meer.textContent = alles ? t('minder') : t('nog_n', { n: regels.length - MAX_NAMEN });
-    meer.setAttribute('aria-label', alles ? 'Show fewer' : `Show ${regels.length - MAX_NAMEN} more`);
-    meer.onclick = () => { alles ? uitgeklapt.delete(sleutel) : uitgeklapt.add(sleutel); render(); };
-    ul.after(meer);
-  }
-}
-function vulLijst(blok, gaan, sleutel, metTeam) {
-  const ul = $('.namen', blok);
-  const alles = uitgeklapt.has(sleutel);
-  const toon = alles ? gaan : gaan.slice(0, MAX_NAMEN);
-  if (gaan.length) for (const g of toon) { const li = document.createElement('li'); const n = document.createElement('span'); n.className = 'n'; n.textContent = g.naam; li.append(n); if (metTeam && g.team) { const w = document.createElement('span'); w.className = 'w'; w.textContent = g.team; li.append(w); } if (lid && g.lid_id === lid.id) li.classList.add('ik'); ul.append(li); }
-  else { const li = document.createElement('li'); li.className = 'leeg'; li.textContent = t('nog_niemand'); ul.append(li); }
-  if (gaan.length > MAX_NAMEN) {
-    const meer = document.createElement('button'); meer.type = 'button'; meer.className = 'meer';
-    meer.textContent = alles ? t('minder') : t('nog_n', { n: gaan.length - MAX_NAMEN });
-    meer.setAttribute('aria-label', alles ? 'Show fewer' : `Show ${gaan.length - MAX_NAMEN} more`);
-    meer.onclick = () => { alles ? uitgeklapt.delete(sleutel) : uitgeklapt.add(sleutel); render(); };
-    ul.after(meer);
-  }
 }
 
 const open = new Set();
@@ -347,20 +239,14 @@ function rij(ev, datum, metDatum = false) {
   const r = $('#tpl-rij').content.cloneNode(true).querySelector('.rij');
   r.dataset.testid = `event-${ev.identifier}`;
   if (metDatum) r.classList.add('met-datum');
-  const gaan = wie.filter(g => g.event === ev.identifier);
-  const ikGa = !!lid && gaan.some(g => g.lid_id === lid.id);
-  r.classList.toggle('gaat', ikGa);
   const tijd = formatteerTijd(ev.start, ev.eind);
   $('.rij-wanneer', r).textContent = metDatum ? labelPeriode(ev.start, ev.eind) : `${krtDag(datum, taal)} ${tijd === t('hele_dag') ? '' : tijd.split('–')[0]}`.trim();
   $('.rij-naam', r).textContent = ev.naam;
   const meta = $('.rij-meta', r); meta.innerHTML = '';
-  if (gaan.length) { const tel = document.createElement('span'); tel.className = 'tel'; const anderen = gaan.length - (ikGa ? 1 : 0); tel.textContent = ikGa ? (anderen ? t('jij_plus', { n: anderen }) : t('jij_gaat')) : (gaan.length === 1 ? t('gaat_1') : t('gaan_n', { n: gaan.length })); meta.append(tel); }
   if (ev.aanmelden.nodig) { const s = document.createElement('span'); s.className = 'stil'; s.textContent = t('aanmelden_badge'); meta.append(s); }
   const meer = $('.rij-meer', r), kop = $('.rij-open', r);
   const isOpen = open.has(ev.identifier); meer.hidden = !isOpen; kop.setAttribute('aria-expanded', String(isOpen));
   kop.onclick = () => { const nuOpen = meer.hidden; meer.hidden = !nuOpen; kop.setAttribute('aria-expanded', String(nuOpen)); nuOpen ? open.add(ev.identifier) : open.delete(ev.identifier); };
-  const vink = $('.vink', r); vink.setAttribute('aria-checked', String(ikGa)); vink.setAttribute('aria-label', ikGa ? t('snel_af') : t('snel_aan'));
-  vink.onclick = (e2) => { e2.stopPropagation(); ikGa ? actie(() => opslag.trekIn(ev), t('fout_intrekken')) : actie(() => opslag.gaatNaar(ev), t('fout_ikga')); };
   const meerdaags = datumDeel(ev.start) !== datumDeel(ev.eind || ev.start);
   $('.wanneer-vol', r).textContent = meerdaags ? `${labelPeriode(ev.start, ev.eind)}${tijd === t('hele_dag') ? '' : ', ' + tijd}` : `${labelDag(datumDeel(ev.start))}, ${tijd}`;
   const loc = [ev.locatie.naam, ev.locatie.adres].filter(Boolean).join(', ');
@@ -369,37 +255,12 @@ function rij(ev, datum, metDatum = false) {
   const route = routeLink(ev); if (route) { const a = $('.route', r); a.href = route; a.hidden = false; }
   if (ev.aanmelden.nodig) { const a = $('.aanmeldlink', r); a.href = ev.aanmelden.url; a.hidden = false; }
   const ag = $('.agenda', r); ag.href = icsLink(ev); ag.download = `cletos-${ev.identifier}.ics`;
-  $('.ikga', r).hidden = ikGa; $('.tochniet', r).hidden = !ikGa;
-  const wg = $('.wiegaat', r); wg.innerHTML = '';
-  if (gaan.length) { wg.append(taal === 'nl' ? 'Gaat ook: ' : 'Also going: '); gaan.forEach((g, i) => { const s = document.createElement('strong'); s.textContent = g.naam; wg.append(s); if (i < gaan.length - 1) wg.append(', '); }); }
-  else wg.textContent = taal === 'nl' ? 'Nog niemand aangemeld.' : 'No one signed up yet.';
-  $('.ikga', r).onclick = () => actie(() => opslag.gaatNaar(ev), t('fout_ikga'));
-  $('.tochniet', r).onclick = () => actie(() => opslag.trekIn(ev), t('fout_intrekken'));
   return r;
 }
 
-async function actie(fn, melding) {
-  zetAlert('');
-  if (!lid) {
-    // Het toestel kan al een naam hebben die de app nog niet kent (gestart tijdens een storing, of ingevuld in een ander tabblad).
-    try { lid = await opslag.mij(); } catch {}
-    if (lid) { onthoudLid(lid); toonWie(); } else if (!(await vraagNaam())) return;
-  }
-  try { await fn(); await ververs(false); }
-  catch (err) { zetAlert(err instanceof OpslagFout ? melding : t('niet_gelukt', { m: err.message })); }
-}
-
-// Lokale kopie van "wie ben ik", zodat de agenda ook bij een storing van de opslag getoond wordt.
-const onthoudLid = (l) => { try { l ? localStorage.setItem('kring.lid', JSON.stringify(l)) : localStorage.removeItem('kring.lid'); } catch {} };
-const onthoudenLid = () => { try { return JSON.parse(localStorage.getItem('kring.lid') || 'null'); } catch { return null; } };
-
 (async function start() {
   if ('serviceWorker' in navigator && cfg?.opslag !== 'mock') { try { await navigator.serviceWorker.register('sw.js'); } catch {} }
-  // Eerst de pagina, dan de opslag: de devotie en de agenda wachten nooit op de database (Bas, 01-10: lezen zonder iets in te vullen).
   $('#app').hidden = false; $('#tabs').hidden = false; toonPagina();
   await laadEvenementen(); render();
-  let storing = false;
-  try { await opslag.init(); lid = await opslag.mij(); onthoudLid(lid); }
-  catch (err) { storing = err instanceof OpslagFout; lid = storing ? onthoudenLid() : null; }
-  await toonApp(); if (storing) zetStatus(t('status_storing'));
+  $('#bijgewerkt').textContent = bijgewerkt ? t('bijgewerkt', { d: new Date(bijgewerkt).toLocaleString(taal === 'nl' ? 'nl-NL' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }) }) : '';
 })();
