@@ -116,15 +116,19 @@ function renderSamenvatting(weekLabel) {
   $('#sv-punt').textContent = inTaal(s.kop, 'tekst');
   const c = $('#sv-citaat'); c.innerHTML = ''; c.append(`“${s.kop.citaat}” `, tijdLink(s.kop.tijd_sec, s.kop.tijd));
   const ol = $('#sv-delen'); ol.innerHTML = '';
-  for (const x of s.delen) { const li = document.createElement('li'); const k = document.createElement('strong'); k.textContent = inTaal(x, 'titel'); const q = document.createElement('span'); q.className = 'sv-citaat'; q.textContent = ` — “${x.citaat}” `; const u = document.createElement('span'); u.className = 'sv-uitleg'; u.textContent = inTaal(x, 'uitleg'); li.append(k, q, tijdLink(x.tijd_sec, x.tijd), u); ol.append(li); }
+  for (const x of s.delen) { const li = document.createElement('li'); const lab = puntLabel(devoties.devotions.find(d => d.dag === x.dag)?.punt); if (lab) { const l = document.createElement('span'); l.className = 'sv-label'; l.textContent = lab; li.append(l); } const k = document.createElement('strong'); k.textContent = inTaal(x, 'titel'); const q = document.createElement('span'); q.className = 'sv-citaat'; q.textContent = ` — “${x.citaat}” `; const u = document.createElement('span'); u.className = 'sv-uitleg'; u.textContent = inTaal(x, 'uitleg'); li.append(k, q, tijdLink(x.tijd_sec, x.tijd), u); if (x.vraag) { const v = document.createElement('span'); v.className = 'sv-vraag'; v.textContent = inTaal(x, 'vraag'); li.append(v); } ol.append(li); }
   const l = $('#sv-luister'); l.innerHTML = ''; l.append(`“${s.luister.citaat}” `, tijdLink(s.luister.tijd_sec, s.luister.tijd));
   $('#sv-uitnodiging').textContent = inTaal(s.uitnodiging, 'tekst');
   const uc = $('#sv-uitnodiging-citaat'); uc.innerHTML = ''; uc.append(`“${s.uitnodiging.citaat}” `, tijdLink(s.uitnodiging.tijd_sec, s.uitnodiging.tijd));
   const ul = $('#sv-bijbel'); ul.innerHTML = '';
   for (const b of s.bijbelteksten) { const li = document.createElement('li'); const r = document.createElement('strong'); r.textContent = inTaal(b, 'ref'); li.append(r, ` — ${inTaal(b, 'waar')}`); ul.append(li); }
+  const gp = $('#sv-gebedspunten'); gp.innerHTML = ''; gp.hidden = $('#sv-gebedspunten-kop').hidden = !s.gebedspunten?.length;
+  for (const g of s.gebedspunten || []) { const li = document.createElement('li'); li.textContent = inTaal(g, 'tekst'); gp.append(li); }
   $('#sv-gebed').textContent = `🙏 ${inTaal(s.gebed, 'tekst')}`;
   $('#sv-deelstatus').textContent = '';
 }
+// De punten van de spreker als ruggengraat (Bas, 01-10): "Opening", "Punt 2 van 4", "Uitnodiging". Zonder veld: geen label.
+const puntLabel = (p) => !p ? '' : p.soort === 'punt' ? t('punt_van', { n: p.nr, van: p.van }) : p.soort === 'opening' ? t('punt_opening') : p.soort === 'uitnodiging' ? t('punt_uitnodiging') : '';
 const GEBED = 7;
 function renderGebeden(weekLabel) {
   $('#gebeden').hidden = false; $('#gb-week').textContent = weekLabel;
@@ -176,6 +180,7 @@ function renderDevotion() {
   dev.hidden = false;
   $('#dev-dag').textContent = t('dag_van', { dag: (taal === 'nl' ? WEEKDAGEN_NL : WEEKDAGEN_EN)[devDag], n: d.dag }); $('#dev-week-label').textContent = weekLabel;
   $('#dev-titel').textContent = inTaal(d, 'titel'); $('#dev-bijbel').textContent = inTaal(d, 'bijbeltekst');
+  const pl = puntLabel(d.punt), pe = $('#dev-punt'); pe.hidden = !pl; pe.textContent = pl + (d.punt?.tekst ? `: ${inTaal(d.punt, 'tekst')}` : '');
   // Stones-vorm: tijdvak van dit deel, bijbelvers voluit, de vraag, en 🙏 voor het gebed. Oude weken hebben die velden niet.
   const stones = stonesVorm() && !!d.tijdvak;
   zetBeeld($('#kop-beeld'), stones ? d.tijdvak_sec : d.tijd_sec, t('kijk_deel'));

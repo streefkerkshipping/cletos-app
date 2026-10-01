@@ -15,7 +15,7 @@ export const TEKST = {
     bijgewerkt: 'Calendar updated {d}', voet: 'The calendar comes from the public calendar of Hillsong Church Netherlands. Something wrong? Check ', voet_link: 'hillsong.com/netherlands',
     hoi: 'Hi {n}', welkom_thuis: 'Welcome home', delen: 'Share', gekopieerd: 'Copied. Paste it wherever you like.', week_kies: 'Week', eerdere_weken: 'Earlier weeks', dag_kort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], samenvatting: 'Summary', devotion_leeg: 'No devotion for this week yet.',
     dag_van: '{dag}, day {n} of 6', van_zondag: 'from Sunday {d}', terugblik_titel: 'This week in six lines', slot_kop: 'Where the sermon is taking us',
-    kijk_deel: 'Watch this part', kijk_preek: 'Watch the sermon', gebed_tab: 'Prayer', gebed_knop: 'Last week’s prayer', deel_van: 'part {n} of 6', sv_kop: 'The one point of the sermon', sv_delen: 'The sermon in six parts', sv_luister: 'One line to take with you', sv_uitnodiging: 'The invitation', sv_bijbel: 'Scriptures from the sermon', sv_gebed: 'Closing prayer',
+    kijk_deel: 'Watch this part', kijk_preek: 'Watch the sermon', punt_van: 'Point {n} of {van}', punt_opening: 'Opening', punt_uitnodiging: 'The invitation', sv_gebedspunten: 'Prayer topics', gebed_tab: 'Prayer', gebed_knop: 'Last week’s prayer', deel_van: 'part {n} of 6', sv_kop: 'The one point of the sermon', sv_delen: 'The sermon in six parts, with a question for your group', sv_luister: 'One line to take with you', sv_uitnodiging: 'The invitation', sv_bijbel: 'Scriptures from the sermon', sv_gebed: 'Closing prayer',
     dagen: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], kort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   },
   nl: {
@@ -33,7 +33,7 @@ export const TEKST = {
     bijgewerkt: 'Agenda bijgewerkt op {d}', voet: 'De agenda komt uit de openbare kalender van Hillsong Church Netherlands. Klopt er iets niet? Kijk op ', voet_link: 'hillsong.com/netherlands',
     hoi: 'Hoi {n}', welkom_thuis: 'Welkom thuis', delen: 'Delen', gekopieerd: 'Gekopieerd. Plak het waar je wilt.', week_kies: 'Week', eerdere_weken: 'Eerdere weken', dag_kort: ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'], samenvatting: 'Samenvatting', devotion_leeg: 'Er is nog geen devotion voor deze week.',
     dag_van: '{dag}, dag {n} van 6', van_zondag: 'uit de dienst van zondag {d}', terugblik_titel: 'Deze week in zes regels', slot_kop: 'Waar de preek naartoe werkt',
-    kijk_deel: 'Kijk dit deel', kijk_preek: 'Kijk de preek', gebed_tab: 'Gebed', gebed_knop: 'Gebed van afgelopen week', deel_van: 'deel {n} van 6', sv_kop: 'Het ene punt van de preek', sv_delen: 'De preek in zes delen', sv_luister: 'Eén zin om mee te nemen', sv_uitnodiging: 'De uitnodiging', sv_bijbel: 'Bijbelteksten uit de preek', sv_gebed: 'Slotgebed',
+    kijk_deel: 'Kijk dit deel', kijk_preek: 'Kijk de preek', punt_van: 'Punt {n} van {van}', punt_opening: 'Opening', punt_uitnodiging: 'De uitnodiging', sv_gebedspunten: 'Gebedspunten', gebed_tab: 'Gebed', gebed_knop: 'Gebed van afgelopen week', deel_van: 'deel {n} van 6', sv_kop: 'Het ene punt van de preek', sv_delen: 'De preek in zes delen, met een vraag voor je groep', sv_luister: 'Eén zin om mee te nemen', sv_uitnodiging: 'De uitnodiging', sv_bijbel: 'Bijbelteksten uit de preek', sv_gebed: 'Slotgebed',
     dagen: ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'], kort: ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'],
   },
 };

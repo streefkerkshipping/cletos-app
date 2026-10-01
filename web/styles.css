@@ -9,6 +9,8 @@ html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; font-family: var(--font); color: var(--inkt); background: var(--vlak); line-height: 1.45; padding-bottom: env(safe-area-inset-bottom); }
 .kop { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: calc(12px + env(safe-area-inset-top)) 16px 12px; background: var(--inkt); color: var(--papier); }
 .merk { font-weight: 700; letter-spacing: .06em; font-size: 15px; }
+.merk-blok { display: flex; flex-direction: column; line-height: 1.2; }
+.merk-door { color: var(--creme); font-size: 11px; letter-spacing: .04em; text-decoration: none; }
 .kop-rechts { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .taalknop { background: none; border: 1px solid #555; color: #ddd; border-radius: 999px; padding: 4px 9px; font: inherit; font-size: 11px; font-weight: 700; letter-spacing: .04em; }
 .wie { font-size: 13px; color: var(--creme); display: flex; gap: 10px; align-items: center; min-width: 0; }
@@ -285,3 +287,10 @@ body[data-pagina="pagina-home"] { background: var(--lees-papier); }
 .rij-open { padding-right: 14px; }
 .tegel a.agenda { margin-top: 6px; }
 @media (max-width: 479px) { .tegel a.agenda { grid-column: 2; grid-row: 1 / 3; justify-self: end; margin: 0; } }
+
+/* De punten van de spreker en de vragen voor de connectgroep (Bas, 01-10). */
+#pagina-home .devotion-punt { margin: 2px 0 10px; font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--lees-inkt); }
+#pagina-home .sv-delen .sv-label { display: block; font-family: var(--font); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--lees-zacht); margin-bottom: 2px; }
+#pagina-home .sv-delen .sv-vraag { display: block; margin-top: 10px; padding: 10px 14px; border-left: 2px solid var(--lees-zacht); font-style: italic; font-weight: 600; }
+#pagina-home .sv-gebedspunten { font-size: 17.5px; line-height: 1.65; padding-left: 22px; }
+#pagina-home .sv-gebedspunten li { margin-bottom: 10px; }

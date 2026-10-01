@@ -189,6 +189,7 @@ test('E11 Stones-vorm (30-09): tijdvak, bijbelvers voluit, drie alinea\'s, vraag
   await meldAan(page, 'Bas Streefkerk', 'Apeldoorn', '/?nu=2026-09-30T09:00:00%2B02:00');
   await expect(page.locator('#dev-dag')).toHaveText('Wednesday, day 3 of 6');
   await expect(page.locator('#dev-titel')).toHaveText(d.titel);
+  await expect(page.locator('#dev-punt')).toHaveText(`Point 2 of 4: ${d.punt.tekst}`); // woensdag = het tweede punt van de spreker
   await expect(page.locator('#dev-deel')).toContainText(d.tijdvak);
   await expect(page.locator('#dev-deel a')).toHaveAttribute('href', new RegExp(`t=${d.tijdvak_sec}s`));
   await expect(page.locator('#dev-bijbel')).toHaveText(d.bijbeltekst);
@@ -243,6 +244,11 @@ test('E11 Stones-vorm (30-09): tijdvak, bijbelvers voluit, drie alinea\'s, vraag
   await expect(page.locator('#sv-punt')).toHaveText(week.samenvatting.kop.tekst);
   await expect(page.locator('#sv-delen li')).toHaveCount(6);
   await expect(page.locator('#sv-delen li').first()).toContainText(week.samenvatting.delen[0].uitleg);
+  // Connect Group Notes: bij elk deel het punt van de spreker en één vraag voor de groep; gebedspunten onderaan
+  await expect(page.locator('#sv-delen .sv-vraag')).toHaveText(week.samenvatting.delen.map(x => x.vraag));
+  await expect(page.locator('#sv-delen .sv-vraag')).toHaveCount(6);
+  await expect(page.locator('#sv-delen .sv-label')).toHaveText(['Opening', 'Point 1 of 4', 'Point 2 of 4', 'Point 3 of 4', 'Point 4 of 4', 'The invitation']);
+  await expect(page.locator('#sv-gebedspunten li')).toHaveText(week.samenvatting.gebedspunten.map(g => g.tekst));
   await expect(page.locator('#sv-bijbel li')).toHaveCount(week.samenvatting.bijbelteksten.length);
   await expect(page.locator('#sv-gebed')).toContainText(week.samenvatting.gebed.tekst);
   // Nederlands
@@ -251,6 +257,9 @@ test('E11 Stones-vorm (30-09): tijdvak, bijbelvers voluit, drie alinea\'s, vraag
   await page.getByRole('tab', { name: 'Samenvatting' }).click();
   await expect(page.locator('#sv-punt')).toHaveText(week.samenvatting.kop.tekst_nl);
   await expect(page.locator('#sv-delen li').first()).toContainText(week.samenvatting.delen[0].uitleg_nl);
+  await expect(page.locator('#sv-delen .sv-vraag')).toHaveText(week.samenvatting.delen.map(x => x.vraag_nl));
+  await expect(page.locator('#sv-delen .sv-label').nth(1)).toHaveText('Punt 1 van 4');
+  await expect(page.locator('#sv-gebedspunten li')).toHaveText(week.samenvatting.gebedspunten.map(g => g.tekst_nl));
   await expect(page.locator('#sv-delen li').first()).toContainText(week.samenvatting.delen[0].citaat); // citaat blijft Engels
   await page.getByRole('tab', { name: 'wo', exact: true }).click();
   await expect(page.locator('#dev-titel')).toHaveText(d.titel_nl);
@@ -269,6 +278,7 @@ test('E11 Stones-vorm (30-09): tijdvak, bijbelvers voluit, drie alinea\'s, vraag
   await expect(page.locator('.naar-gebed:visible')).toHaveCount(0);
   await page.getByRole('tab', { name: 'ma', exact: true }).click();
   await expect(page.locator('#dev-deel')).toBeHidden();
+  await expect(page.locator('#dev-punt')).toBeHidden(); // een week zonder punten heeft geen label
   await expect(page.locator('#dev-vraag')).toBeHidden();
 });
 

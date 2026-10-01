@@ -1,5 +1,5 @@
 // Service worker: app-bestanden en de laatst geladen evenementen offline beschikbaar. Opslag (Supabase) gaat er nooit doorheen.
-const CACHE = 'church-friend-v2';
+const CACHE = 'church-friend-v3';
 const APP = ['./', './index.html', './styles.css', './app.js', './logica.js', './taal.js', './manifest.webmanifest', './icoon.svg', './icoon-180.png', './icoon-192.png', './icoon-512.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(APP)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

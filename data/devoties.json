@@ -8,7 +8,7 @@
   "nl"
  ],
  "video_id": "CWuz9Kajzso",
- "gepubliceerd_op": "2026-10-01T12:49:24+02:00",
+ "gepubliceerd_op": "2026-10-01T14:36:10+02:00",
  "devotions": [
   {
    "dag": 1,
@@ -53,6 +53,9 @@
    "titel_nl": "Hij verandert je van binnenuit",
    "bijbeltekst_nl": "Lukas 6:45",
    "bijbelvers_nl": "Een goed mens brengt het goede voort uit de goede schat van zijn hart, en een slecht mens brengt het slechte voort uit de slechte schat van zijn hart. Want waar het hart vol van is, daar loopt de mond van over.",
+   "punt": {
+    "soort": "opening"
+   },
    "deel": {
     "begin": "I've known Jesus since I can't even remember a time when I didn't know him, actually. I was five years old.",
     "oplossing": "But everywhere else in society, we kind of do it the other way around. We focus on the outside. We put makeup on. We put filters on. ... If I look good, I am good. It's just the opposite. But God actually speaks about it's from the inside out and not the outside in. ... He transforms me, he changes me so that I can now live that life. It's from the inside out. So instead of searching for love everywhere and living for love just to feel loved, I can start with: God actually loves me. And when I know he loves me, I can now love other people.",
@@ -103,6 +106,13 @@
    "titel_nl": "Dankbaar voor wat Jezus deed",
    "bijbeltekst_nl": "Matteüs 15:11",
    "bijbelvers_nl": "Wat de mond ingaat, maakt een mens niet onrein, maar wat de mond uitkomt, dat maakt een mens onrein.",
+   "punt": {
+    "soort": "punt",
+    "nr": 1,
+    "van": 4,
+    "tekst": "What we store is what we will serve.",
+    "tekst_nl": "Wat we opslaan is wat we zullen opdienen."
+   },
    "deel": {
     "begin": "So imagine this is your heart or my heart or your husband's heart or your wife's or your friend's heart. And we store up all the kinds of things.",
     "oplossing": "All these things that we have in our heart, they affect our lives. For instance, like gratefulness. What an amazing thing. What an amazing thing. And for me, I've decided never to lose my gratefulness or thankfulness. ... I never want to take for granted: God saved me. Jesus saved me. He has called me into this incredible life. He's forgiven me. He's promised to never leave me, never forsake me.",
@@ -153,6 +163,13 @@
    "titel_nl": "Vraag Hem: haal het alsjeblieft weg",
    "bijbeltekst_nl": "Galaten 6:8",
    "bijbelvers_nl": "Wie zaait om het vlees te behagen, zal van het vlees verderf oogsten. Wie zaait om de Geest te behagen, zal van de Geest eeuwig leven oogsten.",
+   "punt": {
+    "soort": "punt",
+    "nr": 2,
+    "van": 4,
+    "tekst": "What we sow, we will reap.",
+    "tekst_nl": "Wat we zaaien, zullen we oogsten."
+   },
    "deel": {
     "begin": "What we store is what we will serve. Another thing is what we sow, we will reap.",
     "oplossing": "He's knocking on our hearts. He's knocking on our pantry, on our storage space. And he wants to enter, and he wants to help you. ... Not like coming in there and like, why did you do that? ... That's not the voice of God. That's the voice of the accuser. That's your enemy, actually. But God is like, knock, knock. Who's there? Can I come in? Can I just help you? ... Tomorrow you can start with opening your Bible, refueling, asking God: what is it in my heart that needs to be removed today? Please remove it. It hurts. He will do that.",
@@ -203,6 +220,13 @@
    "titel_nl": "Doe de deur open voor Jezus",
    "bijbeltekst_nl": "Openbaring 3:20",
    "bijbelvers_nl": "Zie, Ik sta aan de deur en Ik klop. Als iemand Mijn stem hoort en de deur opendoet, zal Ik bij hem binnenkomen en de maaltijd met hem gebruiken, en hij met Mij.",
+   "punt": {
+    "soort": "punt",
+    "nr": 3,
+    "van": 4,
+    "tekst": "You need help with your storage.",
+    "tekst_nl": "Je hebt hulp nodig met je opslag."
+   },
    "deel": {
     "begin": "This is the whole point actually with Christianity as well. It's not like, oh, let's hide all our bad things and just, just pretend and to be shamed.",
     "oplossing": "And so often we are either filled with condemnation, like we're too ashamed. God, I'm so sorry. I'm too embarrassed of and I'm too ashamed of what I watched online last night. So I won't open the door because it's just too bad. ... Or we think that we can just manage on our own. ... I need to fix this. I will sort this out. But we can never do that on our own. We need help from God.",
@@ -253,6 +277,13 @@
    "titel_nl": "Hij wil je bijvullen",
    "bijbeltekst_nl": "Efeziërs 3:16",
    "bijbelvers_nl": "Ik bid dat Hij u uit de rijkdom van Zijn heerlijkheid mag geven dat u met kracht gesterkt wordt door Zijn Geest in uw innerlijk.",
+   "punt": {
+    "soort": "punt",
+    "nr": 4,
+    "van": 4,
+    "tekst": "When it's empty, we need to refill.",
+    "tekst_nl": "Als het leeg is, moeten we bijvullen."
+   },
    "deel": {
     "begin": "Number four is when it's empty, we need to refill. And I know I've been there.",
     "oplossing": "So everyone needs to refill every day. Every day you need to refill. Every Sunday you need to come to church to refill. ... I pray that out of his glorious riches he may strengthen you with power through his Spirit in your inner being. He wants to do that. And it's so easy for us who live and help a lot of other people ... just to put ourselves at the bottom of the list. ... But that's not a good way, because eventually, you know, what you're giving out will not be good. We all need to put the oxygen mask first.",
@@ -303,6 +334,9 @@
    "titel_nl": "Door Hem kunnen we het wel",
    "bijbeltekst_nl": "Johannes 3:17",
    "bijbelvers_nl": "Want God heeft Zijn Zoon niet naar de wereld gezonden om de wereld te veroordelen ... maar om de wereld door Hem te redden.",
+   "punt": {
+    "soort": "uitnodiging"
+   },
    "deel": {
     "begin": "He is not here to judge your storage or your pantry or, like, judge you, judge your heart, but to save the world through him. And he wants to help you.",
     "oplossing": "God gave us His Son so that we could approach God. Because on our own, we couldn't do it. But through Him, we can. And you don't have to know everything. You don't have to know all the answers. You don't have to even ... be a good Christian. It doesn't start there. It starts with allowing Him to enter our hearts, that we decide to believe Him. We decide that we want to trust Him. We decide to welcome Him, and then He will change us inside and out.",
@@ -401,7 +435,9 @@
     "uitleg_nl": "Haar moeder ruimde haar voorraadkast op en vond vijf pakken bakpoeder en een oude komkommer. Jezus zegt hetzelfde over het hart (Lukas 6:45): wat erin ligt, komt eruit. Overal elders werken we van buiten naar binnen: make-up, filters, een goede handdruk. God werkt andersom. Hij verandert je van binnen, en van daaruit leef je. Je leeft niet vóór liefde, maar vanuit liefde.",
     "titel": "He Changes You Inside Out",
     "titel_nl": "Hij verandert je van binnenuit",
-    "tijd_sec": 3784
+    "tijd_sec": 3784,
+    "vraag": "Where are you still trying to earn something from God, while He already loves you?",
+    "vraag_nl": "Waar probeer jij nog iets bij God te verdienen, terwijl Hij al van je houdt?"
    },
    {
     "dag": 2,
@@ -411,7 +447,9 @@
     "uitleg_nl": "Ze zet het hart neer als een plank vol potten: geloof, afgunst, vrede, boosheid, dankbaarheid, pijn, bitterheid. En uien. Wat in je voorraadkast ligt, zet je op tafel (Matteüs 15:11). Je telt je grammen eiwit; ben je net zo zorgvuldig met wat je in je hart toelaat? Dankbaarheid is de pot die zij bewust bijvult: Jezus heeft haar gered, vergeven, beloofd haar nooit te verlaten. Het gevoel ergens recht op te hebben is de ui: laat die in de koelkast liggen en zelfs de appel smaakt ernaar.",
     "titel": "Grateful for What Jesus Did",
     "titel_nl": "Dankbaar voor wat Jezus deed",
-    "tijd_sec": 4144
+    "tijd_sec": 4144,
+    "vraag": "What has Jesus done for you that you never want to take for granted?",
+    "vraag_nl": "Wat heeft Jezus voor jou gedaan dat je nooit gewoon wilt gaan vinden?"
    },
    {
     "dag": 3,
@@ -421,7 +459,9 @@
     "uitleg_nl": "Galaten 6:8: wat we zaaien, zullen we oogsten. Wat heb je gezaaid dat je met hulp moet weghalen? En wat vul je bewust bij, zoals boosheid over iets wat echt niet eerlijk was? Ook een gedachte is een zaadje: over jezelf, je partner, je toekomst. Soms denken we dat het maar een gedachte is, maar er groeit iets uit.",
     "titel": "Ask Him: Please Remove It",
     "titel_nl": "Vraag Hem: haal het alsjeblieft weg",
-    "tijd_sec": 4639
+    "tijd_sec": 4639,
+    "vraag": "Which voice do you hear when you find something wrong in your heart: the accuser, or Jesus knocking?",
+    "vraag_nl": "Welke stem hoor jij als je iets verkeerds in je hart vindt: de aanklager, of Jezus die klopt?"
    },
    {
     "dag": 4,
@@ -431,7 +471,9 @@
     "uitleg_nl": "Hier kantelt de preek: Jezus staat aan de deur en klopt (Openbaring 3:20). Niet om te zeggen 'waarom heb je dat gedaan'. Dat is de stem van de aanklager, niet van God. God zegt: klop, klop, mag Ik binnenkomen, mag Ik je gewoon helpen? Ezechiël 11:19 is de belofte: het hart van steen weggenomen, een hart van vlees gegeven. Twee dingen houden de deur dicht: schaamte, of denken dat je het zelf wel redt. De ingang is Zijn woord: Jezus klopt op onze deur, maar Jezus is ook het Woord.",
     "titel": "Open the Door to Jesus",
     "titel_nl": "Doe de deur open voor Jezus",
-    "tijd_sec": 4713
+    "tijd_sec": 4713,
+    "vraag": "What keeps you from opening the door: shame, or the feeling that you have to fix it yourself?",
+    "vraag_nl": "Wat houdt jou tegen om de deur open te doen: schaamte, of het gevoel dat je het zelf moet oplossen?"
    },
    {
     "dag": 5,
@@ -441,7 +483,9 @@
     "uitleg_nl": "Voor iedereen die uitdeelt: de baas, de ouder, degene op wie iedereen leunt. Blijf geven zonder bij te vullen en je houdt alleen de uien en de augurken over. Dus vul elke dag bij, en elke zondag, en zet eerst je eigen zuurstofmasker op. Ze leest Efeziërs 3:16 nog een keer, met kracht gesterkt door Zijn Geest in je binnenste, en wijst op het manna: dat gaf God elke dag.",
     "titel": "He Wants to Refill You",
     "titel_nl": "Hij wil je bijvullen",
-    "tijd_sec": 5155
+    "tijd_sec": 5155,
+    "vraag": "How will you let Him refill you this week?",
+    "vraag_nl": "Hoe laat jij je deze week door Hem bijvullen?"
    },
    {
     "dag": 6,
@@ -451,7 +495,9 @@
     "uitleg_nl": "Johannes 3:17: Hij is hier niet om je opslag te beoordelen, maar om te redden. Hij wordt de Helper genoemd omdat Hij wil helpen. Morgen: sla je Bijbel open en vraag God wat er vandaag uit moet, en leef dan met een missie om anderen te voeden. Na het lied komt ze terug voor de uitnodiging: Jezus verwelkomen was de beste beslissing die ze ooit nam, en het begin van alles wat ze vertelde. Je hoeft niet alle antwoorden te hebben. Het begint met Hem binnenlaten.",
     "titel": "Through Him, We Can",
     "titel_nl": "Door Hem kunnen we het wel",
-    "tijd_sec": 5561
+    "tijd_sec": 5561,
+    "vraag": "What does it mean to you that you don't have to be good enough first to come to Jesus?",
+    "vraag_nl": "Wat betekent het voor jou dat je niet eerst goed genoeg hoeft te zijn om bij Jezus te komen?"
    }
   ],
   "bijbelteksten": [
@@ -521,7 +567,21 @@
    "tekst_nl": "God, we willen gewoon eerlijk zijn tegen U. We openen ons hart voor U. God, maak ons nieuw. Haal weg wat weggehaald moet worden. We hebben hulp nodig, God. En vul bij wat bijgevuld moet worden. We heten U welkom in de opslag van ons hart. In Jezus' naam. Amen.",
    "tijd": "1:28:16",
    "tijd_sec": 5296
-  }
+  },
+  "gebedspunten": [
+   {
+    "tekst": "Thank You, Jesus, that You save and forgive us, and that we don't have to earn it.",
+    "tekst_nl": "Dank U, Jezus, dat U ons redt en vergeeft, en dat we dat niet hoeven te verdienen."
+   },
+   {
+    "tekst": "Show us what needs to be removed from our hearts, and give us the courage to open the door to You.",
+    "tekst_nl": "Laat ons zien wat er uit ons hart weg moet, en geef ons de moed om de deur voor U open te doen."
+   },
+   {
+    "tekst": "Refill us every day, so that we have something good to serve to others.",
+    "tekst_nl": "Vul ons elke dag bij, zodat we iets goeds hebben om aan anderen uit te delen."
+   }
+  ]
  },
  "gebeden": [
   {
