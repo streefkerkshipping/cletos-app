@@ -1,0 +1,25 @@
+{
+  "datum": "2026-10-21",
+  "devotions": [
+    {"dag": 1, "oordeel": "PASS", "bevindingen": []},
+    {"dag": 2, "oordeel": "PASS", "bevindingen": []},
+    {"dag": 3, "oordeel": "PASS", "bevindingen": []},
+    {"dag": 4, "oordeel": "PASS", "bevindingen": []},
+    {"dag": 5, "oordeel": "FAIL", "bevindingen": [
+      {
+        "waar": "zin 1",
+        "soort": "C",
+        "probleem": "Slotzin van alinea 1: 'Ik weet dat in een zaal van deze omvang er in deze zaal onreinheid is.' De woordorde is geen Nederlands: 'er' hoort direct achter 'dat' ('dat er in een zaal van deze omvang ... onreinheid is'). Een Nederlandse lezer struikelt hierover.",
+        "engels": "I know in a room this size that in this room there is uncleanness."
+      }
+    ]},
+    {"dag": 6, "oordeel": "FAIL", "bevindingen": [
+      {
+        "waar": "gebed",
+        "soort": "C",
+        "probleem": "In het 'Gebed om Jezus te verwelkomen' (gebeden-blok, het gebed dat na dit deel volgt) staat als aanhef 'Beste Jezus'. 'Beste ...' is in het Nederlands een briefaanhef, geen gebedsaanhef; in een gebed struikelt de lezer erover. Gewoon Nederlands hier is 'Lieve Jezus' of 'Heer Jezus'.",
+        "engels": "Dear Jesus, I ask you to forgive me of all my sins."
+      }
+    ]}
+  ]
+}

@@ -93,8 +93,9 @@ export function maakIcs(ev, url = '') {
 export const icsLink = (ev) => 'data:text/calendar;charset=utf-8,' + encodeURIComponent(maakIcs(ev));
 
 /** Deep link naar één devotie in de app: #/d/<week>/<dag>[/<taal>] (dag 0 = de zondag-samenvatting, dag 7 = de gebeden uit de dienst).
+ *  Een conferentiesessie heeft als sleutel <datum>-c<n> (22-10), bijvoorbeeld #/d/2026-10-21-c1/3 = onderwerp 3 van dag 1.
  *  De taal reist mee, zodat wie een Nederlands bericht krijgt de devotie ook in het Nederlands opent. */
-const DIEPLINK = /^#\/d\/(\d{4}-\d{2}-\d{2})\/([0-7])(?:\/(nl|en))?$/;
+const DIEPLINK = /^#\/d\/(\d{4}-\d{2}-\d{2}(?:-c\d{1,2})?)\/([0-7])(?:\/(nl|en))?$/;
 export function leesDieplink(hash) { const m = DIEPLINK.exec(hash || ''); return m ? { week: m[1], dag: Number(m[2]), taal: m[3] || null } : null; }
 export const dieplink = (basis, week, dag, taal = '') => `${basis}#/d/${week}/${dag}${taal ? '/' + taal : ''}`;
 

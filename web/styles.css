@@ -129,6 +129,7 @@ form .knop { width: 100%; margin-top: 18px; }
 .devotion-bijbel { margin: 0 0 12px; font-size: 13px; color: #5a5548; }
 .devotion-citaat { margin: 0 0 12px; padding: 0 0 0 12px; border-left: 3px solid var(--creme-lijn); font-size: 16px; font-weight: 600; line-height: 1.4; }
 .tijdlink { font-size: 12px; font-weight: 600; color: var(--stil); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.tijdlink.dood { text-decoration: none; } /* conferentie (22-10): een tijd in de opname, geen video om naartoe te gaan */
 .devotion-zinnen p { margin: 0 0 10px; font-size: 15px; line-height: 1.55; }
 .devotion-gebed { margin: 14px 0 0; font-size: 15px; line-height: 1.5; font-style: italic; }
 /* Stones-vorm (30-09): tijdvak, bijbelvers voluit, vraag; zondag-samenvatting in zes delen */

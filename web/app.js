@@ -83,6 +83,12 @@ const yt = (sec) => devoties ? `https://www.youtube.com/watch?v=${devoties.video
 const stonesVorm = () => devoties?.vorm === 'stones';
 // Het beeld van de preek van die week (Bas, 01-10): de YouTube-afbeelding, met een tik naar de video op de juiste seconde.
 const VIDEO_ID = /^[\w-]{6,20}$/;
+// Conferentie (Bas, 22-10: "De dagen worden de onderwerpen of headlines"): één boodschap in zes onderwerpen, geen weekdagen en
+// geen YouTube (eigen opname). De app herkent het aan "soort"; de sessienaam staat in "reeks" (EN) en "reeks_nl".
+const conferentie = () => devoties?.soort === 'conference';
+const heeftVideo = () => VIDEO_ID.test(devoties?.video_id || '');
+// Teksten die bij een conferentie anders heten ("sermon" → "message", "Last week's prayer" → "Prayers from the session"): sleutel + "_c".
+const tc = (k, vars) => t(conferentie() ? k + '_c' : k, vars);
 function zetBeeld(el, sec, label) {
   const ok = VIDEO_ID.test(devoties?.video_id || ''); el.hidden = !ok; if (!ok) return;
   el.href = sec ? yt(sec) : `https://www.youtube.com/watch?v=${devoties.video_id}`; el.setAttribute('aria-label', label);
@@ -91,7 +97,7 @@ function zetBeeld(el, sec, label) {
 }
 // Delen (Bas, 01-10): een kort bericht waarin staat waar het over gaat, met een link naar de devotie in de app.
 const appBasis = () => location.origin + location.pathname;
-const deelTekst = (soort) => korteDeeltekst(devoties, soort === 'devotion' ? devDag : 0, taal, appBasis(), t('lees_hele'));
+const deelTekst = (soort) => korteDeeltekst(devoties, soort === 'devotion' ? devDag : 0, taal, appBasis(), soort === 'devotion' ? tc('lees_hele') : tc('lees_samenvatting'));
 async function kopieer(tekst, statusEl, melding) {
   try { await navigator.clipboard.writeText(tekst); statusEl.textContent = melding; } catch { statusEl.textContent = tekst.length > 90 ? tekst.slice(0, 90) + '…' : tekst; }
 }
@@ -107,11 +113,12 @@ for (const blok of document.querySelectorAll('.devotion-acties')) {
   // Kopiëren neemt hetzelfde bericht mee als delen, met de link eronder (Bas, 01-10: alleen een link zegt te weinig).
   $('.kopieer-knop', blok).onclick = () => kopieer(deelTekst(soort), status, t('gekopieerd'));
 }
-const tijdLink = (sec, tekst) => { const a = document.createElement('a'); a.href = yt(sec); a.target = '_blank'; a.rel = 'noopener'; a.textContent = tekst; a.className = 'tijdlink'; return a; };
+const tijdLink = (sec, tekst) => { if (!heeftVideo()) { const s = document.createElement('span'); s.textContent = tekst; s.className = 'tijdlink dood'; return s; } const a = document.createElement('a'); a.href = yt(sec); a.target = '_blank'; a.rel = 'noopener'; a.textContent = tekst; a.className = 'tijdlink'; return a; };
 // Zondag in de Stones-vorm: het ene punt, de preek in zes delen (kernzin + korte uitleg), één zin om mee te nemen, de uitnodiging, bijbelteksten, slotgebed.
 function renderSamenvatting(weekLabel) {
   const s = devoties.samenvatting, sv = $('#samenvatting'); sv.hidden = false;
-  $('#sv-week').textContent = weekLabel; $('#sv-titel').textContent = `${datumLang(devoties.week)}: ${inTaal(devoties, 'titel')}`;
+  for (const k of ['sv_kop', 'sv_delen', 'sv_bijbel']) $(`[data-t="${k}"]`, sv).textContent = tc(k);
+  $('#sv-week').textContent = weekLabel; $('#sv-titel').textContent = conferentie() ? inTaal(devoties, 'titel') : `${datumLang(devoties.week)}: ${inTaal(devoties, 'titel')}`;
   zetBeeld($('#kop-beeld'), 0, t('kijk_preek'));
   $('#sv-punt').textContent = inTaal(s.kop, 'tekst');
   const c = $('#sv-citaat'); c.innerHTML = ''; c.append(`“${s.kop.citaat}” `, tijdLink(s.kop.tijd_sec, s.kop.tijd));
@@ -131,7 +138,7 @@ function renderSamenvatting(weekLabel) {
 const puntLabel = (p) => !p ? '' : p.soort === 'punt' ? t('punt_van', { n: p.nr, van: p.van }) : p.soort === 'opening' ? t('punt_opening') : p.soort === 'uitnodiging' ? t('punt_uitnodiging') : '';
 const GEBED = 7;
 function renderGebeden(weekLabel) {
-  $('#gebeden').hidden = false; $('#gb-week').textContent = weekLabel;
+  $('#gebeden').hidden = false; $('#gb-week').textContent = weekLabel; $('#gebeden h2').textContent = tc('gebed_knop');
   zetBeeld($('#kop-beeld'), devoties.gebeden[0].tijd_sec, t('kijk_deel'));
   const lijst = $('#gb-lijst'); lijst.innerHTML = '';
   for (const g of devoties.gebeden) {
@@ -148,23 +155,25 @@ function renderDevotion() {
   if (!devoties) return;
   // De gebeden uit de dienst (Bas, 01-10): een eigen knop naast zaterdag, en onder elke devotie een knop ernaartoe.
   const heeftGebeden = !!devoties.gebeden?.length; if (devDag === GEBED && !heeftGebeden) devDag = 0;
-  for (const k of document.querySelectorAll('.naar-gebed')) { k.hidden = !heeftGebeden; k.onclick = () => { devDag = GEBED; renderDevotion(); window.scrollTo(0, 0); }; }
+  for (const k of document.querySelectorAll('.naar-gebed')) { k.hidden = !heeftGebeden; k.textContent = tc('gebed_knop'); k.onclick = () => { devDag = GEBED; renderDevotion(); window.scrollTo(0, 0); }; }
   // Weekkiezer: "20 September: titel", nieuwste eerst.
   const sel = $('#dev-week'); sel.innerHTML = '';
-  for (const w of devIndex) { const o = document.createElement('option'); o.value = w.week; o.textContent = `${datumLang(w.week)}: ${inTaal(w, 'titel')}`; o.selected = w.week === devWeek; sel.append(o); }
+  for (const w of devIndex) { const o = document.createElement('option'); o.value = w.week; o.textContent = `${w.soort === 'conference' ? inTaal(w, 'reeks') : datumLang(w.week)}: ${inTaal(w, 'titel')}`; o.selected = w.week === devWeek; sel.append(o); }
   // Dag: standaard vandaag (in de nieuwste week), anders de samenvatting.
   const nieuwste = devWeek === devIndex[0]?.week;
-  if (devDag === null) devDag = nieuwste ? weekdagNu() : 0;
+  // "Nog niet aan de beurt" hoort bij de nieuwste zondagsweek, ook als een conferentie (22-10) erboven staat.
+  const nieuwsteZondag = devWeek === devIndex.find(w => w.soort !== 'conference')?.week;
+  if (devDag === null) devDag = nieuwste && !conferentie() ? weekdagNu() : 0; // conferentie: altijd eerst de samenvatting
   const chips = $('#dev-dagen'); chips.innerHTML = '';
   for (const dag of heeftGebeden ? [0, 1, 2, 3, 4, 5, 6, GEBED] : [0, 1, 2, 3, 4, 5, 6]) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'chip dagchip'; b.setAttribute('role', 'tab');
-    b.textContent = dag === 0 ? t('samenvatting') : dag === GEBED ? t('gebed_tab') : t('dag_kort')[dag]; b.setAttribute('aria-selected', String(dag === devDag));
-    if (nieuwste && dag !== GEBED && dag > weekdagNu() && weekdagNu() !== 0) b.disabled = true; // nog niet aan de beurt
+    b.textContent = dag === 0 ? t('samenvatting') : dag === GEBED ? t('gebed_tab') : conferentie() ? String(dag) : t('dag_kort')[dag]; b.setAttribute('aria-selected', String(dag === devDag));
+    if (nieuwsteZondag && dag !== GEBED && dag > weekdagNu() && weekdagNu() !== 0) b.disabled = true; // nog niet aan de beurt
     b.onclick = () => { devDag = dag; renderDevotion(); }; chips.append(b);
   }
   // De gekozen knop schuift in beeld (de rij is op een telefoon breder dan het scherm), zonder de pagina te verschuiven.
   const gekozen = chips.querySelector('[aria-selected="true"]'); if (gekozen) chips.scrollLeft = Math.max(0, gekozen.offsetLeft - chips.offsetLeft - (chips.clientWidth - gekozen.offsetWidth) / 2);
-  const weekLabel = t('van_zondag', { d: datumLang(devoties.week) });
+  const weekLabel = conferentie() ? inTaal(devoties, 'reeks') : t('van_zondag', { d: datumLang(devoties.week) });
   if (devDag === GEBED) { renderGebeden(weekLabel); return; }
   if (devDag === 0 && stonesVorm() && devoties.samenvatting) { renderSamenvatting(weekLabel); return; }
   if (devDag === 0) {
@@ -178,15 +187,15 @@ function renderDevotion() {
   }
   const d = devoties.devotions.find(x => x.dag === devDag); if (!d) { leeg.hidden = false; return; }
   dev.hidden = false;
-  $('#dev-dag').textContent = t('dag_van', { dag: (taal === 'nl' ? WEEKDAGEN_NL : WEEKDAGEN_EN)[devDag], n: d.dag }); $('#dev-week-label').textContent = weekLabel;
+  $('#dev-dag').textContent = conferentie() ? t('onderwerp_van', { n: d.dag }) : t('dag_van', { dag: (taal === 'nl' ? WEEKDAGEN_NL : WEEKDAGEN_EN)[devDag], n: d.dag }); $('#dev-week-label').textContent = weekLabel;
   $('#dev-titel').textContent = inTaal(d, 'titel'); $('#dev-bijbel').textContent = inTaal(d, 'bijbeltekst');
   const pl = puntLabel(d.punt), pe = $('#dev-punt'); pe.hidden = !pl; pe.textContent = pl + (d.punt?.tekst ? `: ${inTaal(d.punt, 'tekst')}` : '');
   // Stones-vorm: tijdvak van dit deel, bijbelvers voluit, de vraag, en 🙏 voor het gebed. Oude weken hebben die velden niet.
   const stones = stonesVorm() && !!d.tijdvak;
   zetBeeld($('#kop-beeld'), stones ? d.tijdvak_sec : d.tijd_sec, t('kijk_deel'));
-  const deelEl = $('#dev-deel'); deelEl.hidden = !stones; if (stones) { const a = $('a', deelEl); a.href = yt(d.tijdvak_sec); a.textContent = d.tijdvak; }
+  const deelEl = $('#dev-deel'); deelEl.hidden = !stones || !heeftVideo(); if (!deelEl.hidden) { const a = $('a', deelEl); a.href = yt(d.tijdvak_sec); a.textContent = d.tijdvak; }
   const vers = $('#dev-vers'); vers.hidden = !d.bijbelvers; vers.textContent = d.bijbelvers ? `“${inTaal(d, 'bijbelvers')}”` : '';
-  $('#dev-citaat').textContent = `“${d.citaat}”`; const l = $('#dev-link'); l.href = yt(d.tijd_sec); l.textContent = d.tijd; l.className = 'tijdlink';
+  $('#dev-citaat').textContent = `“${d.citaat}”`; const l = $('#dev-link'); if (heeftVideo()) l.href = yt(d.tijd_sec); else l.removeAttribute('href'); l.textContent = d.tijd; l.className = heeftVideo() ? 'tijdlink' : 'tijdlink dood';
   const z = $('#dev-zinnen'); z.innerHTML = ''; for (const s of d.zinnen) { const p = document.createElement('p'); p.textContent = inTaal(s, 'tekst'); z.append(p); }
   const vraag = $('#dev-vraag'); vraag.hidden = !d.vraag; vraag.textContent = d.vraag ? inTaal(d.vraag, 'tekst') : '';
   $('#dev-gebed').textContent = (stones ? '🙏 ' : '') + inTaal(d.gebed, 'tekst');
@@ -226,7 +235,7 @@ async function kiesDevotie(week, dag) {
 // De link is eenmalig: daarna staat de app weer op #/home, zodat herladen vandaag toont en dezelfde link opnieuw werkt.
 function verbruikDieplink() { try { history.replaceState(null, '', location.pathname + location.search + '#/home'); } catch {} }
 const weekdagNu = () => new Date(nu().toLocaleString('en-US', { timeZone: 'Europe/Amsterdam' })).getDay();
-const datumLang = (week) => new Date(week + 'T12:00:00').toLocaleDateString(taal === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long' });
+const datumLang = (week) => new Date(week.slice(0, 10) + 'T12:00:00').toLocaleDateString(taal === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long' });
 
 function tegel(ev) {
   const el = $('#tpl-tegel').content.cloneNode(true).querySelector('.tegel');

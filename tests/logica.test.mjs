@@ -72,6 +72,8 @@ test('leesDieplink: alleen #/d/<week>/<dag 0–6>[/nl|en]; dieplink maakt dezelf
   assert.deepEqual(leesDieplink('#/d/2026-09-27/4'), { week: '2026-09-27', dag: 4, taal: null });
   assert.deepEqual(leesDieplink('#/d/2026-09-27/0/nl'), { week: '2026-09-27', dag: 0, taal: 'nl' });
   assert.deepEqual(leesDieplink('#/d/2026-09-27/7'), { week: '2026-09-27', dag: 7, taal: null }); // 7 = de gebeden uit de dienst
+  assert.deepEqual(leesDieplink('#/d/2026-10-21-c1/3/nl'), { week: '2026-10-21-c1', dag: 3, taal: 'nl' }); // conferentie (22-10): <datum>-c<n>
+  assert.equal(leesDieplink('#/d/2026-10-21-x1/3'), null);
   for (const h of ['', '#/home', '#/agenda', '#/d/2026-09-27/8', '#/d/2026-9-27/1', '#/d/2026-09-27/4/x', '#/d/2026-09-27/4/nl/x', '#/d/<script>/1']) assert.equal(leesDieplink(h), null, h);
   assert.deepEqual(leesDieplink(new URL(dieplink(BASIS, '2026-09-27', 4, 'en')).hash), { week: '2026-09-27', dag: 4, taal: 'en' });
 });
